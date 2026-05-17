@@ -1,4 +1,5 @@
 import { getAuthenticatedClient, supabaseAdmin } from '../database/supabase';
+import emailService from './emailService';
 
 export interface NotificationRow {
   id: string;
@@ -30,7 +31,38 @@ class NotificationService {
 
     if (error) {
       console.error('Failed to create notification:', error.message);
+      return;
     }
+
+    await this.sendEmailForUser(userId, type, title, body);
+  }
+
+  private async sendEmailForUser(
+    userId: string,
+    type: string,
+    title: string,
+    body: string
+  ): Promise<void> {
+    if (!emailService.isConfigured() || !supabaseAdmin) return;
+
+    const { data: user, error } = await supabaseAdmin
+      .from('users')
+      .select('email, name')
+      .eq('id', userId)
+      .single();
+
+    if (error || !user?.email) {
+      console.error('Could not load user email for notification:', error?.message);
+      return;
+    }
+
+    await emailService.sendNotificationEmail({
+      to: user.email,
+      userName: user.name,
+      title,
+      body,
+      type,
+    });
   }
 
   public async notifyApplicationStatus(
