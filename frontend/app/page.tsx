@@ -9,16 +9,10 @@ export default function Home() {
             Creator Toolkit
           </span>
           <nav className="flex items-center gap-3 text-sm">
-            <Link
-              href="/login"
-              className="rounded-lg px-3 py-2 text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900"
-            >
+            <Link href="/login" className="btn-secondary min-h-11 px-4">
               Sign in
             </Link>
-            <Link
-              href="/signup"
-              className="rounded-lg bg-violet-600 px-3 py-2 font-medium text-white hover:bg-violet-700"
-            >
+            <Link href="/signup" className="btn-primary min-h-11 w-auto px-4">
               Get started
             </Link>
           </nav>
@@ -37,16 +31,10 @@ export default function Home() {
           creators.
         </p>
         <div className="mt-10 flex flex-wrap gap-4">
-          <Link
-            href="/signup"
-            className="rounded-lg bg-violet-600 px-5 py-3 text-sm font-medium text-white hover:bg-violet-700"
-          >
+          <Link href="/signup" className="btn-primary w-auto px-6 sm:min-w-[180px]">
             Create free account
           </Link>
-          <Link
-            href="/login"
-            className="rounded-lg border border-zinc-300 px-5 py-3 text-sm font-medium text-zinc-800 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-900"
-          >
+          <Link href="/login" className="btn-secondary w-auto px-6 sm:min-w-[140px]">
             Sign in
           </Link>
         </div>

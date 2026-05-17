@@ -8,7 +8,8 @@ export function MonthlyTrend({ data }: { data: MonthlyEarnings[] }) {
     <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
       <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">Earnings trend</h2>
       <p className="mt-1 text-sm text-zinc-500">Last 6 months (MNT)</p>
-      <div className="mt-6 flex items-end justify-between gap-2 h-40">
+      <div className="mt-6 -mx-2 overflow-x-auto px-2">
+        <div className="flex min-w-[280px] items-end justify-between gap-2 h-40 sm:min-w-0">
         {data.map((month) => (
           <div key={month.month} className="flex flex-1 flex-col items-center gap-2">
             <span className="text-xs font-medium text-zinc-700 dark:text-zinc-300">
@@ -24,6 +25,7 @@ export function MonthlyTrend({ data }: { data: MonthlyEarnings[] }) {
             <span className="text-[10px] text-zinc-500">{month.label.split(' ')[0]}</span>
           </div>
         ))}
+        </div>
       </div>
     </div>
   );

@@ -123,7 +123,7 @@ export default function SponsorshipDetailPage() {
               {applicationStatusLabel(sponsorship.applicationStatus ?? 'pending')}
             </p>
           ) : (
-            <form onSubmit={handleApply} className="mt-6 space-y-4">
+            <form onSubmit={handleApply} className="mt-6 space-y-4 pb-24 md:pb-0">
               <div>
                 <label
                   htmlFor="message"
@@ -138,19 +138,17 @@ export default function SponsorshipDetailPage() {
                   value={message}
                   onChange={(e) => setMessage(e.target.value)}
                   placeholder="Why you're a fit, your audience, and relevant past work…"
-                  className="mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
+                  className="input-touch mt-1.5 min-h-[120px]"
                 />
               </div>
               {applyError && (
                 <p className="text-sm text-red-600 dark:text-red-400">{applyError}</p>
               )}
-              <button
-                type="submit"
-                disabled={submitting}
-                className="rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-60"
-              >
-                {submitting ? 'Submitting…' : 'Submit application'}
-              </button>
+              <div className="fixed bottom-16 left-0 right-0 z-30 border-t border-zinc-200 bg-white/95 p-4 backdrop-blur md:static md:border-0 md:bg-transparent md:p-0 dark:border-zinc-800 dark:bg-zinc-950/95 md:dark:bg-transparent">
+                <button type="submit" disabled={submitting} className="btn-primary">
+                  {submitting ? 'Submitting…' : 'Submit application'}
+                </button>
+              </div>
             </form>
           )}
         </article>

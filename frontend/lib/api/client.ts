@@ -18,11 +18,16 @@ async function parseError(res: Response): Promise<string> {
   try {
     const data = await res.json();
     if (data && typeof data.error === 'string') return data.error;
+    if (data?.error && typeof data.error.message === 'string') return data.error.message;
   } catch {
     // ignore
   }
+  if (res.status === 401) return 'Please sign in again.';
+  if (res.status >= 500) return 'Something went wrong. Please try again.';
   return res.statusText || 'Request failed';
 }
+
+const FETCH_TIMEOUT_MS = 30_000;
 
 export async function apiFetch<T>(
   path: string,
@@ -31,15 +36,27 @@ export async function apiFetch<T>(
 ): Promise<T> {
   const token = getAccessToken();
 
-  const res = await fetch(`${API_URL}${path}`, {
-    ...options,
-    credentials: 'include',
-    headers: {
-      'Content-Type': 'application/json',
-      ...(token ? { Authorization: `Bearer ${token}` } : {}),
-      ...(options.headers as Record<string, string> | undefined),
-    },
-  });
+  let res: Response;
+  try {
+    res = await fetch(`${API_URL}${path}`, {
+      ...options,
+      credentials: 'include',
+      signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+      headers: {
+        'Content-Type': 'application/json',
+        ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        ...(options.headers as Record<string, string> | undefined),
+      },
+    });
+  } catch (err) {
+    if (err instanceof Error && err.name === 'TimeoutError') {
+      throw new ApiError('Request timed out. Please try again.', 408);
+    }
+    if (!navigator.onLine) {
+      throw new ApiError('You appear to be offline. Check your connection.', 0);
+    }
+    throw new ApiError('Network error. Please try again.', 0);
+  }
 
   if (res.status === 401 && retryOnUnauthorized && path !== '/api/auth/refresh') {
     const refreshed = await refreshAccessToken();
