@@ -66,4 +66,4 @@ curl https://your-frontend.vercel.app
 curl https://api.yourdomain.com/api/health
 ```
 
-Manual QA: see the [QA checklist](/docs/qa-checklist) (also in the app at `/docs/qa-checklist` when the frontend is running).
+Manual QA: see the [QA checklist](/docs/qa-checklist).

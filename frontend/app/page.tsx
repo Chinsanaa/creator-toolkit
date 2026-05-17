@@ -9,6 +9,12 @@ export default function Home() {
             Creator Toolkit
           </span>
           <nav className="flex items-center gap-3 text-sm">
+            <Link
+              href="/docs"
+              className="hidden min-h-11 items-center px-2 text-zinc-600 hover:text-zinc-900 dark:text-zinc-400 dark:hover:text-zinc-100 sm:inline-flex"
+            >
+              Docs
+            </Link>
             <Link href="/login" className="btn-secondary min-h-11 px-4">
               Sign in
             </Link>
