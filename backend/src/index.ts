@@ -4,10 +4,15 @@ dotenv.config();
 import { loadEnvConfig } from './config/env';
 import { createApp } from './app';
 import { startSyncScheduler } from './jobs/syncScheduler';
-import { warnIfMissingServiceRoleKey } from './database/supabase';
+import { hasServiceRoleKey, warnIfMissingServiceRoleKey } from './database/supabase';
 import emailService from './services/emailService';
 
 const config = loadEnvConfig();
+if (config.nodeEnv === 'production' && !hasServiceRoleKey()) {
+  throw new Error(
+    'SUPABASE_SERVICE_ROLE_KEY is required when NODE_ENV=production. Add it from Supabase Dashboard → API → service_role.'
+  );
+}
 warnIfMissingServiceRoleKey();
 emailService.warnIfNotConfigured();
 

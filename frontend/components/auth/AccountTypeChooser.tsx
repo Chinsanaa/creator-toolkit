@@ -39,12 +39,12 @@ export function AccountTypeChooser({ mode }: { mode: ChooserMode }) {
 
   return (
     <div className="w-full max-w-md">
-      <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <p className="text-sm font-medium uppercase tracking-wide text-violet-600">
-          Creator Toolkit
-        </p>
-        <h1 className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{c.title}</h1>
-        <p className="mt-6 text-center text-sm font-medium text-zinc-700 dark:text-zinc-300">
+      <div className="glass-panel p-8 shadow-[var(--shadow-glow)]">
+        <p className="badge-pill">Creator Toolkit</p>
+        <h1 className="font-display mt-3 text-2xl font-bold text-[color:var(--foreground)]">
+          {c.title}
+        </h1>
+        <p className="mt-6 text-center text-sm font-semibold text-[color:var(--foreground)]">
           {c.question}
         </p>
 
@@ -53,17 +53,19 @@ export function AccountTypeChooser({ mode }: { mode: ChooserMode }) {
             href={c.creatorHref}
             label="Creator"
             description="Track earnings, apply to brand deals, and manage payouts."
+            variant="creator"
           />
           <AccountTypeCard
             href={c.sponsorHref}
             label="Sponsor"
             description="Post campaigns and review creator applications."
+            variant="sponsor"
           />
         </div>
 
-        <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-8 text-center text-sm text-[color:var(--muted-foreground)]">
           {c.switchPrompt}{' '}
-          <Link href={c.switchHref} className="font-medium text-violet-600 hover:text-violet-700">
+          <Link href={c.switchHref} className="link-primary">
             {c.switchLabel}
           </Link>
         </p>
@@ -76,18 +78,26 @@ function AccountTypeCard({
   href,
   label,
   description,
+  variant,
 }: {
   href: string;
   label: string;
   description: string;
+  variant: 'creator' | 'sponsor';
 }) {
   return (
     <Link
       href={href}
-      className="block rounded-xl border border-zinc-200 bg-zinc-50 p-5 text-left transition hover:border-violet-400 hover:bg-violet-50/50 dark:border-zinc-700 dark:bg-zinc-900/50 dark:hover:border-violet-600 dark:hover:bg-violet-950/30"
+      className={`block cursor-pointer rounded-2xl border p-5 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+        variant === 'creator'
+          ? 'border-[color:var(--border)] bg-[color:var(--card-muted)] hover:border-[color:var(--primary)]/50'
+          : 'border-[color:var(--border)] bg-[color:var(--accent-soft)]/30 hover:border-[color:var(--accent)]/50'
+      }`}
     >
-      <span className="text-base font-semibold text-zinc-900 dark:text-zinc-50">{label}</span>
-      <p className="mt-1.5 text-sm text-zinc-600 dark:text-zinc-400">{description}</p>
+      <span className="font-display text-base font-bold text-[color:var(--foreground)]">
+        {label}
+      </span>
+      <p className="mt-1.5 text-sm text-[color:var(--muted-foreground)]">{description}</p>
     </Link>
   );
 }

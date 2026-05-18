@@ -1,30 +1,40 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
+
+function subscribeOnlineStatus(onStoreChange: () => void) {
+  window.addEventListener('online', onStoreChange);
+  window.addEventListener('offline', onStoreChange);
+  return () => {
+    window.removeEventListener('online', onStoreChange);
+    window.removeEventListener('offline', onStoreChange);
+  };
+}
+
+function getOnlineSnapshot() {
+  return navigator.onLine;
+}
+
+function getServerOnlineSnapshot() {
+  return true;
+}
 
 export function OfflineBanner() {
-  const [offline, setOffline] = useState(false);
+  const online = useSyncExternalStore(
+    subscribeOnlineStatus,
+    getOnlineSnapshot,
+    getServerOnlineSnapshot
+  );
 
-  useEffect(() => {
-    setOffline(!navigator.onLine);
-    const onOffline = () => setOffline(true);
-    const onOnline = () => setOffline(false);
-    window.addEventListener('offline', onOffline);
-    window.addEventListener('online', onOnline);
-    return () => {
-      window.removeEventListener('offline', onOffline);
-      window.removeEventListener('online', onOnline);
-    };
-  }, []);
-
-  if (!offline) return null;
+  if (online) return null;
 
   return (
     <div
       role="alert"
-      className="bg-amber-500 px-4 py-2 text-center text-sm font-medium text-amber-950"
+      className="bg-[color:var(--primary)] px-4 py-2.5 text-center text-sm font-semibold text-white"
     >
       You are offline. Some features may not work until you reconnect.
     </div>
   );
 }
+

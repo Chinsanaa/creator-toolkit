@@ -10,20 +10,17 @@ import { StatsCards } from '@/components/dashboard/StatsCards';
 import { useAuth } from '@/contexts/AuthContext';
 import { ApiError } from '@/lib/api/client';
 import { getDashboardSummary } from '@/lib/api/dashboard';
+import { PageHeader } from '@/components/ui/PageHeader';
+import type { AuthUser } from '@/lib/types/auth';
 import type { DashboardSummary } from '@/lib/types/dashboard';
 
-export default function DashboardPage() {
-  const { user, loading: authLoading } = useAuth();
+function CreatorDashboardBody({ user }: { user: AuthUser }) {
   const [data, setData] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (authLoading || !user) return;
-
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
     getDashboardSummary()
       .then((summary) => {
@@ -41,34 +38,23 @@ export default function DashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, user]);
-
-  if (authLoading || !user) {
-    return (
-      <DashboardShell>
-        <p className="text-sm text-zinc-500">Loading…</p>
-      </DashboardShell>
-    );
-  }
+  }, []);
 
   return (
-    <DashboardShell>
-      <div className="mb-8">
-        <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-          Hi, {user.name}
-        </h1>
-        <p className="mt-1 text-zinc-600 dark:text-zinc-400">
-          Your earnings overview across connected platforms.
-        </p>
-      </div>
+    <>
+      <PageHeader
+        eyebrow="Creator dashboard"
+        title={`Hi, ${user.name}`}
+        description="Your earnings overview across connected platforms."
+      />
 
-      {loading && <p className="text-sm text-zinc-500">Loading analytics…</p>}
-
-      {error && (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
-          {error}
+      {loading && (
+        <p className="text-sm font-medium text-[color:var(--muted-foreground)]">
+          Loading analytics…
         </p>
       )}
+
+      {error && <p className="alert-error">{error}</p>}
 
       {data && !loading && (
         <div className="space-y-8">
@@ -81,6 +67,24 @@ export default function DashboardPage() {
           <RecentEarnings data={data.recentEarnings} />
         </div>
       )}
+    </>
+  );
+}
+
+export default function DashboardPage() {
+  const { user, loading: authLoading } = useAuth();
+
+  if (authLoading || !user) {
+    return (
+      <DashboardShell>
+        <p className="text-sm text-zinc-500">Loading…</p>
+      </DashboardShell>
+    );
+  }
+
+  return (
+    <DashboardShell>
+      <CreatorDashboardBody key={user.id} user={user} />
     </DashboardShell>
   );
 }

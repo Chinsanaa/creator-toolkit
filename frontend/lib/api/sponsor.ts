@@ -31,14 +31,22 @@ export async function getSponsorCampaign(id: string): Promise<{
   return apiFetch(`/api/sponsor/campaigns/${id}`);
 }
 
-export async function updateCampaignStatus(
-  id: string,
-  status: 'active' | 'closed' | 'draft'
-): Promise<void> {
+export async function publishCampaign(id: string): Promise<void> {
   await apiFetch(`/api/sponsor/campaigns/${id}/status`, {
     method: 'PATCH',
-    body: JSON.stringify({ status }),
+    body: JSON.stringify({ status: 'active' }),
   });
+}
+
+export async function closeCampaign(id: string): Promise<void> {
+  await apiFetch(`/api/sponsor/campaigns/${id}/status`, {
+    method: 'PATCH',
+    body: JSON.stringify({ status: 'closed' }),
+  });
+}
+
+export async function deleteSponsorCampaign(id: string): Promise<void> {
+  await apiFetch(`/api/sponsor/campaigns/${id}`, { method: 'DELETE' });
 }
 
 export async function updateApplicationStatus(

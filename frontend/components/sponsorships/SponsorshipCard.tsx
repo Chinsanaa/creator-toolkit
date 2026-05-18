@@ -16,18 +16,18 @@ export function SponsorshipCard({ sponsorship }: { sponsorship: SponsorshipListi
   return (
     <Link
       href={`/sponsorships/${sponsorship.id}`}
-      className="block rounded-2xl border border-zinc-200 bg-white p-5 transition hover:border-violet-300 hover:shadow-sm dark:border-zinc-800 dark:bg-zinc-950 dark:hover:border-violet-800"
+      className="glass-card block cursor-pointer p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[color:var(--primary)]/40 hover:shadow-md"
     >
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="text-xs font-medium uppercase tracking-wide text-violet-600">
+          <p className="badge-pill !inline-flex !normal-case">
             {sponsorship.sponsor?.name ?? 'Brand partner'}
           </p>
-          <h3 className="mt-1 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+          <h3 className="font-display mt-2 text-lg font-bold text-[color:var(--foreground)]">
             {sponsorship.title.replace(/^\[Demo\]\s*/, '')}
           </h3>
         </div>
-        <p className="shrink-0 text-lg font-semibold text-zinc-900 dark:text-zinc-50">
+        <p className="font-mono-stat shrink-0 text-lg font-semibold text-[color:var(--primary)]">
           {formatMnt(sponsorship.payment_amount_mnt)}
         </p>
       </div>

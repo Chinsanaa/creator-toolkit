@@ -5,7 +5,7 @@ export function MonthlyTrend({ data }: { data: MonthlyEarnings[] }) {
   const max = Math.max(...data.map((d) => d.amountMnt), 1);
 
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
+    <div className="glass-card p-6">
       <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">Earnings trend</h2>
       <p className="mt-1 text-sm text-zinc-500">Last 6 months (MNT)</p>
       <div className="mt-6 -mx-2 overflow-x-auto px-2">

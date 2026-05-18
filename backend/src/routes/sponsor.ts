@@ -37,6 +37,21 @@ router.post('/campaigns', verifyToken, async (req: AuthRequest, res: Response) =
   }
 });
 
+router.delete('/campaigns/:id', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    await sponsorService.deleteCampaign(req.userId!, req.token!, String(req.params.id));
+    res.json({ message: 'Campaign deleted' });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to delete campaign';
+    const status = message.includes('Sponsor account')
+      ? 403
+      : message.includes('not found')
+        ? 404
+        : 400;
+    res.status(status).json({ error: message });
+  }
+});
+
 router.get('/campaigns/:id', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
     const result = await sponsorService.getCampaignApplications(
@@ -55,8 +70,8 @@ router.get('/campaigns/:id', verifyToken, async (req: AuthRequest, res: Response
 router.patch('/campaigns/:id/status', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
     const { status } = req.body;
-    if (!['active', 'closed', 'draft'].includes(status)) {
-      res.status(400).json({ error: 'Invalid status' });
+    if (status !== 'active' && status !== 'closed') {
+      res.status(400).json({ error: 'Status must be active or closed' });
       return;
     }
     await sponsorService.updateCampaignStatus(

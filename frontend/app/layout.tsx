@@ -1,24 +1,32 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import { AuthProvider } from "@/contexts/AuthContext";
-import { ThemeProvider } from "@/lib/theme/ThemeProvider";
-import { ErrorBoundary } from "@/components/ErrorBoundary";
-import { OfflineBanner } from "@/components/OfflineBanner";
-import "./globals.css";
+import type { Metadata } from 'next';
+import { DM_Sans, JetBrains_Mono, Outfit } from 'next/font/google';
+import { AuthProvider } from '@/contexts/AuthContext';
+import { ThemeProvider } from '@/lib/theme/ThemeProvider';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
+import { OfflineBanner } from '@/components/OfflineBanner';
+import './globals.css';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
+const outfit = Outfit({
+  variable: '--font-outfit',
+  subsets: ['latin'],
+  weight: ['500', '600', '700', '800'],
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const dmSans = DM_Sans({
+  variable: '--font-dm-sans',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
+});
+
+const jetbrains = JetBrains_Mono({
+  variable: '--font-jetbrains',
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
 });
 
 export const metadata: Metadata = {
-  title: "Creator Toolkit",
-  description: "Monetization dashboard for Mongolian content creators",
+  title: 'Creator Toolkit',
+  description: 'Monetization dashboard for Mongolian content creators',
 };
 
 export default function RootLayout({
@@ -30,9 +38,16 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      className={`${outfit.variable} ${dmSans.variable} ${jetbrains.variable} h-full antialiased`}
     >
-      <body className="flex min-h-full flex-col">
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var k='ct-theme',t=localStorage.getItem(k),d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.classList.toggle('dark',d);}catch(e){}})();`,
+          }}
+        />
+      </head>
+      <body className="mesh-bg flex min-h-full flex-col">
         <ThemeProvider>
           <ErrorBoundary>
             <AuthProvider>

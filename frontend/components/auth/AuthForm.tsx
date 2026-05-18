@@ -60,15 +60,13 @@ export function AuthForm({
 
   return (
     <div className="w-full max-w-md">
-      <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
+      <div className="glass-panel p-8 shadow-[var(--shadow-glow)]">
         <div className="mb-8">
-          <p className="text-sm font-medium uppercase tracking-wide text-violet-600">
-            Creator Toolkit
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+          <p className="badge-pill">Account</p>
+          <h1 className="font-display mt-3 text-2xl font-bold text-[color:var(--foreground)]">
             {title}
           </h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{subtitle}</p>
+          <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">{subtitle}</p>
         </div>
 
         {beforeForm}
@@ -78,7 +76,7 @@ export function AuthForm({
             <div key={field.name}>
               <label
                 htmlFor={field.name}
-                className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]"
               >
                 {field.label}
               </label>
@@ -93,24 +91,16 @@ export function AuthForm({
             </div>
           ))}
 
-          {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
-              {error}
-            </p>
-          )}
+          {error && <p className="alert-error">{error}</p>}
 
-          <button
-            type="submit"
-            disabled={pending}
-            className="btn-primary"
-          >
+          <button type="submit" disabled={pending} className="btn-primary">
             {pending ? 'Please wait…' : submitLabel}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-6 text-center text-sm text-[color:var(--muted-foreground)]">
           {alternatePrompt}{' '}
-          <Link href={alternateHref} className="font-medium text-violet-600 hover:text-violet-700">
+          <Link href={alternateHref} className="link-primary">
             {alternateLabel}
           </Link>
         </p>

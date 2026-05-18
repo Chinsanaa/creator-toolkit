@@ -15,6 +15,7 @@ import type { PlatformAccount, SyncHistoryEntry } from '@/lib/types/platforms';
 const PLATFORMS = [
   { id: 'tiktok', label: 'TikTok' },
   { id: 'youtube', label: 'YouTube' },
+  { id: 'instagram', label: 'Instagram' },
 ] as const;
 
 export default function PlatformsPage() {
@@ -42,7 +43,25 @@ export default function PlatformsPage() {
   }
 
   useEffect(() => {
-    load();
+    let cancelled = false;
+    void (async () => {
+      try {
+        const [accs, hist] = await Promise.all([listPlatforms(), listSyncHistory()]);
+        if (!cancelled) {
+          setAccounts(accs);
+          setHistory(hist);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof ApiError ? err.message : 'Failed to load platforms');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, []);
 
   async function handleConnect(e: FormEvent) {
@@ -82,7 +101,7 @@ export default function PlatformsPage() {
       <div className="mb-8">
         <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">Platforms</h1>
         <p className="mt-1 text-zinc-600 dark:text-zinc-400">
-          Connect TikTok or YouTube and sync ad revenue into your earnings dashboard.
+          Connect TikTok, YouTube, or Instagram and sync ad revenue into your earnings dashboard.
         </p>
       </div>
 

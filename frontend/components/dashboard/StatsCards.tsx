@@ -25,8 +25,8 @@ export function StatsCards({ data }: { data: DashboardSummary }) {
           mom === null
             ? ''
             : momPositive
-              ? 'text-emerald-600 dark:text-emerald-400'
-              : 'text-red-600 dark:text-red-400'
+              ? 'text-[color:var(--success)]'
+              : 'text-[color:var(--destructive)]'
         }
       />
       <StatCard
@@ -35,7 +35,7 @@ export function StatsCards({ data }: { data: DashboardSummary }) {
         hint={
           data.connectedPlatforms.length > 0
             ? data.connectedPlatforms.map((p) => p.platform).join(', ')
-            : 'Connect TikTok or YouTube'
+            : 'Connect a platform'
         }
       />
     </div>
@@ -54,13 +54,14 @@ function StatCard({
   valueClassName?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
-      <p className="text-sm text-zinc-500">{label}</p>
-      <p className={`mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50 ${valueClassName}`}>
+    <article className="stat-card">
+      <p className="text-sm font-medium text-[color:var(--muted-foreground)]">{label}</p>
+      <p
+        className={`font-mono-stat mt-2 text-2xl font-semibold tracking-tight text-[color:var(--foreground)] ${valueClassName}`}
+      >
         {value}
       </p>
-      <p className="mt-1 text-xs text-zinc-500">{hint}</p>
-    </div>
+      <p className="mt-1 text-xs text-[color:var(--muted)]">{hint}</p>
+    </article>
   );
 }
-

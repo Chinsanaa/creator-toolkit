@@ -7,20 +7,16 @@ import { useAuth } from '@/contexts/AuthContext';
 import { ApiError } from '@/lib/api/client';
 import { getSponsorDashboard } from '@/lib/api/sponsor';
 import { formatMnt } from '@/lib/format';
+import type { AuthUser } from '@/lib/types/auth';
 import type { SponsorDashboardStats } from '@/lib/types/sponsor';
 
-export default function SponsorDashboardPage() {
-  const { user, loading: authLoading } = useAuth();
+function SponsorDashboardBody({ user }: { user: AuthUser }) {
   const [stats, setStats] = useState<SponsorDashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    if (authLoading || !user || user.userType !== 'sponsor') return;
-
     let cancelled = false;
-    setLoading(true);
-    setError(null);
 
     getSponsorDashboard()
       .then((data) => {
@@ -38,18 +34,10 @@ export default function SponsorDashboardPage() {
     return () => {
       cancelled = true;
     };
-  }, [authLoading, user]);
-
-  if (authLoading || !user) {
-    return (
-      <SponsorShell>
-        <p className="text-sm text-zinc-500">Loading…</p>
-      </SponsorShell>
-    );
-  }
+  }, []);
 
   return (
-    <SponsorShell>
+    <>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
@@ -100,6 +88,32 @@ export default function SponsorDashboardPage() {
           View all campaigns →
         </Link>
       </div>
+    </>
+  );
+}
+
+export default function SponsorDashboardPage() {
+  const { user, loading: authLoading } = useAuth();
+
+  if (authLoading || !user) {
+    return (
+      <SponsorShell>
+        <p className="text-sm text-zinc-500">Loading…</p>
+      </SponsorShell>
+    );
+  }
+
+  if (user.userType !== 'sponsor') {
+    return (
+      <SponsorShell>
+        <p className="text-sm text-zinc-500">Sponsor account required.</p>
+      </SponsorShell>
+    );
+  }
+
+  return (
+    <SponsorShell>
+      <SponsorDashboardBody key={user.id} user={user} />
     </SponsorShell>
   );
 }

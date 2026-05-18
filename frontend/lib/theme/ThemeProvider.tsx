@@ -15,6 +15,8 @@ const STORAGE_KEY = 'ct-theme';
 
 interface ThemeContextValue {
   theme: Theme;
+  /** False until client has read localStorage — use to avoid hydration mismatches. */
+  ready: boolean;
   toggleTheme: () => void;
   setTheme: (theme: Theme) => void;
 }
@@ -25,20 +27,29 @@ function applyTheme(theme: Theme) {
   document.documentElement.classList.toggle('dark', theme === 'dark');
 }
 
+function readStoredTheme(): Theme {
+  const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
+  if (stored === 'dark' || stored === 'light') return stored;
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>('light');
+  const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    const stored = localStorage.getItem(STORAGE_KEY) as Theme | null;
-    const initial =
-      stored === 'dark' || stored === 'light'
-        ? stored
-        : window.matchMedia('(prefers-color-scheme: dark)').matches
-          ? 'dark'
-          : 'light';
-    setThemeState(initial);
-    applyTheme(initial);
+    queueMicrotask(() => {
+      const stored = readStoredTheme();
+      setThemeState(stored);
+      applyTheme(stored);
+      setReady(true);
+    });
   }, []);
+
+  useEffect(() => {
+    if (!ready) return;
+    applyTheme(theme);
+  }, [theme, ready]);
 
   const setTheme = useCallback((next: Theme) => {
     setThemeState(next);
@@ -51,8 +62,8 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   }, [theme, setTheme]);
 
   const value = useMemo(
-    () => ({ theme, toggleTheme, setTheme }),
-    [theme, toggleTheme, setTheme]
+    () => ({ theme, ready, toggleTheme, setTheme }),
+    [theme, ready, toggleTheme, setTheme]
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;
@@ -65,4 +76,3 @@ export function useTheme(): ThemeContextValue {
   }
   return ctx;
 }
-
