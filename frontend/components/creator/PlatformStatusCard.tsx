@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { platformLabel } from '@/lib/format';
+import { formatHandle, platformLabel } from '@/lib/format';
 import type { PlatformAccount } from '@/lib/types/dashboard';
 
 const SUPPORTED = ['tiktok', 'youtube'] as const;
@@ -29,7 +29,7 @@ export function PlatformStatusCard({ platforms }: { platforms: PlatformAccount[]
                 <div>
                   <p className="font-medium text-landing-fg">{platformLabel(id)}</p>
                   <p className="text-sm text-landing-muted">
-                    {isConnected && account ? `@${account.platform_username}` : 'Not connected'}
+                    {isConnected && account ? formatHandle(account.platform_username) : 'Not connected'}
                   </p>
                 </div>
               </div>

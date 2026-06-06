@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { CREATOR_SIDEBAR_NAV, isCreatorNavActive } from '@/components/layout/creator-nav';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { formatHandle } from '@/lib/format';
 
 interface CreatorAppShellProps {
   children: React.ReactNode;
@@ -106,7 +107,9 @@ export function CreatorAppShell({
             </div>
             <div className="min-w-0">
               {userName ? <p className="truncate text-sm font-medium text-landing-fg">{userName}</p> : null}
-              {userHandle ? <p className="truncate text-xs text-landing-muted">{userHandle}</p> : null}
+              {userHandle ? (
+                <p className="truncate text-xs text-landing-muted">{formatHandle(userHandle)}</p>
+              ) : null}
             </div>
           </div>
           <div className="p-4">
@@ -129,39 +132,27 @@ export function CreatorAppShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="creator-topbar">
-          <button
-            type="button"
-            className="creator-icon-btn lg:hidden"
-            aria-label="Open account menu"
-            aria-expanded={accountOpen}
-            onClick={() => setAccountOpen(true)}
-          >
-            <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-              <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
-          </button>
-
           <div className="flex-1" />
 
-          <div className="flex items-center gap-3">
+          <div className="creator-topbar-actions flex items-center gap-3">
             <NotificationBell tone="creator" />
             {(userName || userHandle) && (
-              <div className="hidden text-right sm:block">
+              <div className="hidden text-right lg:block">
                 {userName ? <p className="text-sm font-medium text-landing-fg">{userName}</p> : null}
-                {userHandle ? <p className="text-xs text-landing-muted">{userHandle}</p> : null}
+                {userHandle ? (
+                  <p className="text-xs text-landing-muted">{formatHandle(userHandle)}</p>
+                ) : null}
               </div>
             )}
             <button
               type="button"
               className="creator-avatar lg:hidden"
               aria-label="Open account menu"
+              aria-expanded={accountOpen}
               onClick={() => setAccountOpen(true)}
             >
               {(userName?.[0] ?? 'C').toUpperCase()}
             </button>
-            <div className="creator-avatar hidden lg:flex" aria-hidden>
-              {(userName?.[0] ?? 'C').toUpperCase()}
-            </div>
           </div>
         </header>
 

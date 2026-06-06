@@ -10,7 +10,7 @@ import {
   listSyncHistory,
   syncPlatform,
 } from '@/lib/api/platforms';
-import { formatDate, platformLabel } from '@/lib/format';
+import { formatDate, formatHandle, platformLabel } from '@/lib/format';
 import type { PlatformAccount, SyncHistoryEntry } from '@/lib/types/platforms';
 
 const PLATFORMS = [
@@ -112,7 +112,7 @@ export default function PlatformsPage() {
                     <div>
                       <p className="font-medium text-landing-fg">{p.label}</p>
                       <p className="text-sm text-landing-muted">
-                        {account ? `@${account.platform_username}` : 'Not connected'}
+                        {account ? formatHandle(account.platform_username) : 'Not connected'}
                       </p>
                     </div>
                     {account ? (

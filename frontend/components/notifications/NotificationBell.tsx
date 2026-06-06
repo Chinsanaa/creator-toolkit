@@ -46,19 +46,30 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
   }, [load]);
 
   useEffect(() => {
+    if (!open) return;
+
     function onClickOutside(e: MouseEvent) {
       if (panelRef.current && !panelRef.current.contains(e.target as Node)) {
         setOpen(false);
       }
     }
-    if (open) document.addEventListener('mousedown', onClickOutside);
-    return () => document.removeEventListener('mousedown', onClickOutside);
+
+    const timeoutId = window.setTimeout(() => {
+      document.addEventListener('click', onClickOutside);
+    }, 0);
+
+    return () => {
+      window.clearTimeout(timeoutId);
+      document.removeEventListener('click', onClickOutside);
+    };
   }, [open]);
 
   async function handleOpen() {
-    const next = !open;
-    setOpen(next);
-    if (next) await load();
+    setOpen((current) => {
+      const next = !current;
+      if (next) void load();
+      return next;
+    });
   }
 
   async function handleRead(id: string) {
@@ -84,16 +95,21 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
   }
 
   return (
-    <div className="relative" ref={panelRef}>
+    <div className="creator-notify-root relative" ref={panelRef}>
       <button
         type="button"
-        onClick={handleOpen}
+        onClick={(e) => {
+          e.stopPropagation();
+          void handleOpen();
+        }}
         className={
           isCreator
             ? 'creator-icon-btn relative'
             : 'relative rounded-lg border border-border p-2 text-foreground hover:bg-surface dark:border-border dark:text-muted dark:hover:bg-surface'
         }
         aria-label="Notifications"
+        aria-expanded={open}
+        aria-haspopup="dialog"
       >
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
           <path
@@ -117,7 +133,7 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
         <div
           className={
             isCreator
-              ? 'creator-notify-panel absolute right-0 z-50 mt-2 w-80 overflow-hidden sm:w-96'
+              ? 'creator-notify-panel absolute right-0 z-[100] mt-2 w-80 overflow-hidden sm:w-96'
               : 'absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-border bg-card shadow-lg dark:border-border dark:bg-background sm:w-96'
           }
         >

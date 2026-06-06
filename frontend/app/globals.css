@@ -704,13 +704,26 @@ h4 {
 }
 
 .creator-topbar {
+  position: relative;
+  z-index: 40;
   display: flex;
   align-items: center;
   gap: 0.75rem;
+  overflow: visible;
   border-bottom: 1px solid rgb(255 255 255 / 0.6);
   background: rgb(255 255 255 / 0.55);
   padding: 0.875rem 1rem;
   backdrop-filter: blur(14px);
+}
+
+.creator-topbar-actions {
+  position: relative;
+  z-index: 41;
+  overflow: visible;
+}
+
+.creator-notify-root {
+  overflow: visible;
 }
 
 @media (min-width: 640px) {

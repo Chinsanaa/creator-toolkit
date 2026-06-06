@@ -11,6 +11,7 @@ import {
   contentTypeLabel,
   formatDate,
   formatMnt,
+  formatHandle,
 } from '@/lib/format';
 import type { SponsorshipListing } from '@/lib/types/sponsorship';
 
@@ -68,7 +69,7 @@ export default function SponsorshipDetailPage() {
             <div className="creator-hero-card">
               <p className="text-sm font-medium text-landing-muted">
                 {sponsorship.sponsor?.name ?? 'Brand partner'}
-                {sponsorship.sponsor && ` · @${sponsorship.sponsor.username}`}
+                {sponsorship.sponsor && ` · ${formatHandle(sponsorship.sponsor.username)}`}
               </p>
               <h1 className="mt-2 text-2xl font-semibold tracking-tight text-landing-fg sm:text-3xl">
                 {sponsorship.title.replace(/^\[Demo\]\s*/, '')}
