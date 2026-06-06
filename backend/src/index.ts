@@ -1,34 +1,27 @@
-import express from 'express';
-import cors from 'cors';
 import dotenv from 'dotenv';
-
-// Load environment variables
 dotenv.config();
 
-const app = express();
-const PORT = process.env.PORT || 3001;
+import { loadEnvConfig } from './config/env';
+import { createApp } from './app';
+import { startSyncScheduler } from './jobs/syncScheduler';
+import { warnIfMissingServiceRoleKey } from './database/supabase';
+import emailService from './services/emailService';
 
-// Middleware
-app.use(cors());
-app.use(express.json());
+const config = loadEnvConfig();
+warnIfMissingServiceRoleKey();
+emailService.warnIfNotConfigured();
 
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-  res.json({
-    status: 'ok',
-    timestamp: new Date().toISOString(),
-    port: PORT,
-  });
-});
+const app = createApp(config);
+const { port } = config;
 
-// Error handling middleware
-app.use((err: any, req: any, res: any, next: any) => {
-  console.error('Error:', err);
-  res.status(500).json({ error: 'Internal server error' });
-});
-
-// Start server
-app.listen(PORT, () => {
-  console.log(`✓ Server running on http://localhost:${PORT}`);
-  console.log(`✓ Health check: http://localhost:${PORT}/api/health`);
+app.listen(port, () => {
+  console.log(`✓ Server running on http://localhost:${port}`);
+  console.log(`✓ Health check: http://localhost:${port}/api/health`);
+  console.log(`✓ Environment: ${config.nodeEnv}`);
+  console.log(
+    emailService.isConfigured()
+      ? '✓ Email (Resend) enabled'
+      : '○ Email (Resend) disabled — set RESEND_API_KEY and EMAIL_FROM'
+  );
+  startSyncScheduler();
 });
