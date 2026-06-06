@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
-import { Logo } from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export interface NavItem {
@@ -65,13 +64,9 @@ export function AppShell({
                 )}
               </svg>
             </button>
-<<<<<<< HEAD
             <Link href={homeHref} className="truncate">
               <EarnioLogo iconClassName="h-7 w-7" />
             </Link>
-=======
-            <Logo href={homeHref} size="sm" />
->>>>>>> refs/remotes/origin/cursor/2026-06-07-9o3t-79105
             {badge}
           </div>
 

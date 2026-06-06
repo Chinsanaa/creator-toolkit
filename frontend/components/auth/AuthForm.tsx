@@ -26,22 +26,6 @@ interface AuthFormProps {
   legalConsentMode?: 'signup' | 'login';
 }
 
-function AuthLogoMark() {
-  return (
-    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-landing-fg text-white">
-      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M3 12L21 4L14 21L11 13L3 12Z"
-          fill="currentColor"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
-  );
-}
-
 export function AuthForm({
   title,
   subtitle,
@@ -90,14 +74,20 @@ export function AuthForm({
 
   return (
     <div className="w-full max-w-md">
-      <div className="glass-panel p-8 shadow-[var(--shadow-glow)]">
-        <div className="mb-8">
-          <p className="badge-pill">Account</p>
-          <h1 className="font-display mt-3 text-2xl font-bold text-[color:var(--foreground)]">
-            {title}
-          </h1>
-          <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">{subtitle}</p>
+      <div className="auth-card p-8 sm:p-10">
+        <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-landing-fg text-white">
+          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M3 12L21 4L14 21L11 13L3 12Z"
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+          </svg>
         </div>
+        <h1 className="text-2xl font-semibold text-landing-fg">{title}</h1>
+        <p className="mt-2 text-sm text-landing-muted">{subtitle}</p>
 
         {beforeForm}
 
@@ -106,7 +96,7 @@ export function AuthForm({
             <div key={field.name}>
               <label
                 htmlFor={field.name}
-                className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]"
+                className="mb-2 block text-sm font-medium text-landing-fg"
               >
                 {field.label}
               </label>
@@ -121,7 +111,6 @@ export function AuthForm({
             </div>
           ))}
 
-<<<<<<< HEAD
           {legalConsentMode ? (
             <LegalConsent
               mode={legalConsentMode}
@@ -133,18 +122,15 @@ export function AuthForm({
           {error && (
             <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
           )}
-=======
-          {error && <p className="alert-error">{error}</p>}
->>>>>>> refs/remotes/origin/cursor/2026-06-07-9o3t-79105
 
-          <button type="submit" disabled={pending} className="btn-primary">
+          <button type="submit" disabled={pending} className="landing-btn-dark auth-submit">
             {pending ? 'Please wait…' : submitLabel}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-[color:var(--muted-foreground)]">
+        <p className="mt-6 text-center text-sm text-landing-muted">
           {alternatePrompt}{' '}
-          <Link href={alternateHref} className="link-primary">
+          <Link href={alternateHref} className="auth-link">
             {alternateLabel}
           </Link>
         </p>
