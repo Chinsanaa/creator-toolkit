@@ -141,11 +141,13 @@ export default function SponsorCampaignDetailPage() {
       {loading && (
         <p className="mt-8 text-sm text-[color:var(--muted-foreground)]">Loading…</p>
       )}
-      {error && <p className="alert-error mt-8">{error}</p>}
+      {error ? (
+        <p className="mt-8 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+      ) : null}
 
       {campaign && (
         <article className="mt-6 max-w-3xl space-y-10">
-          <div className="glass-panel p-6 sm:p-8">
+          <div className="creator-panel-lg p-6 sm:p-8">
             <CampaignReadOnly campaign={campaign} />
 
             {(legacy || published) && (
@@ -213,7 +215,7 @@ function ApplicationCard({
   const pending = application.status === 'pending';
 
   return (
-    <li className="glass-card p-5">
+    <li className="creator-panel p-5">
       <div>
         <p className="font-semibold text-[color:var(--foreground)]">
           {application.creator?.name ?? 'Creator'}

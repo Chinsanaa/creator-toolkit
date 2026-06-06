@@ -17,6 +17,7 @@ export default function SponsorSignupPage() {
       alternateLabel="Sign in"
       beforeForm={<AuthTypeBackLink audience="sponsor" />}
       legalConsentMode="signup"
+      oauthUserType="sponsor"
       fields={[
         { name: 'name', label: 'Company or brand name', placeholder: 'Your brand' },
         { name: 'username', label: 'Username', placeholder: 'brand_handle' },

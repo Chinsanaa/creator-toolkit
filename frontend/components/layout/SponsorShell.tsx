@@ -8,6 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 const SPONSOR_NAV = [
   { href: '/sponsor/dashboard', label: 'Dashboard' },
   { href: '/sponsor/campaigns', label: 'Campaigns' },
+  { href: '/sponsor/settings', label: 'Settings' },
 ];
 
 export function SponsorShell({ children }: { children: React.ReactNode }) {

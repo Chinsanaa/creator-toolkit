@@ -1,4 +1,10 @@
-const CREATOR_ROUTE_PREFIXES = ['/dashboard', '/sponsorships', '/wallet', '/platforms'] as const;
+const CREATOR_ROUTE_PREFIXES = [
+  '/dashboard',
+  '/sponsorships',
+  '/wallet',
+  '/platforms',
+  '/settings',
+] as const;
 
 export function isCreatorRoute(pathname: string): boolean {
   return CREATOR_ROUTE_PREFIXES.some(

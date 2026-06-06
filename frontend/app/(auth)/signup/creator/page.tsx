@@ -17,6 +17,7 @@ export default function CreatorSignupPage() {
       alternateLabel="Sign in"
       beforeForm={<AuthTypeBackLink audience="creator" />}
       legalConsentMode="signup"
+      oauthUserType="creator"
       fields={[
         { name: 'name', label: 'Full name', placeholder: 'Your name' },
         { name: 'username', label: 'Username', placeholder: 'creator_handle' },

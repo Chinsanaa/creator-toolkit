@@ -3,7 +3,9 @@
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { LegalConsent } from '@/components/auth/LegalConsent';
+import { OAuthProviderButtons } from '@/components/auth/OAuthProviderButtons';
 import { ApiError } from '@/lib/api/client';
+import type { UserType } from '@/lib/types/auth';
 
 interface Field {
   name: string;
@@ -24,6 +26,7 @@ interface AuthFormProps {
   onSubmit: (values: Record<string, string>) => Promise<void>;
   beforeForm?: React.ReactNode;
   legalConsentMode?: 'signup' | 'login';
+  oauthUserType?: UserType;
 }
 
 export function AuthForm({
@@ -37,6 +40,7 @@ export function AuthForm({
   onSubmit,
   beforeForm,
   legalConsentMode,
+  oauthUserType,
 }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
@@ -92,6 +96,26 @@ export function AuthForm({
         {beforeForm}
 
         <form onSubmit={handleSubmit} className="space-y-5">
+          {legalConsentMode === 'signup' ? (
+            <LegalConsent
+              mode={legalConsentMode}
+              checked={acceptedTerms}
+              onCheckedChange={setAcceptedTerms}
+            />
+          ) : null}
+
+          {oauthUserType ? (
+            <div className="space-y-5">
+              <OAuthProviderButtons
+                userType={oauthUserType}
+                disabled={legalConsentMode === 'signup' && !acceptedTerms}
+              />
+              <div className="auth-divider">
+                <span>or continue with email</span>
+              </div>
+            </div>
+          ) : null}
+
           {fields.map((field) => (
             <div key={field.name}>
               <label
@@ -111,7 +135,7 @@ export function AuthForm({
             </div>
           ))}
 
-          {legalConsentMode ? (
+          {legalConsentMode === 'login' ? (
             <LegalConsent
               mode={legalConsentMode}
               checked={acceptedTerms}

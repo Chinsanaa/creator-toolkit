@@ -72,10 +72,111 @@ class AuthService {
     return {
       id: user.id,
       email: user.email ?? '',
-      name: (meta.name as string) ?? '',
+      name: (meta.name as string) ?? (meta.full_name as string) ?? '',
       username: (meta.username as string) ?? '',
       userType: this.normalizeUserType(meta.user_type as string | undefined),
     };
+  }
+
+  private isRecentlyCreatedUser(user: User): boolean {
+    if (!user.created_at) return false;
+    return Date.now() - new Date(user.created_at).getTime() < 5 * 60 * 1000;
+  }
+
+  private async generateUniqueUsername(seed: string): Promise<string> {
+    const base =
+      seed
+        .split('@')[0]
+        .toLowerCase()
+        .replace(/[^a-z0-9_]/g, '')
+        .slice(0, 20) || 'user';
+
+    let candidate = base;
+    for (let suffix = 0; suffix < 10_000; suffix += 1) {
+      if (!(await this.isUsernameTaken(candidate))) {
+        return candidate;
+      }
+      candidate = `${base}${suffix + 1}`.slice(0, 30);
+    }
+
+    return `user_${seed.replace(/[^a-z0-9]/gi, '').slice(0, 8) || 'acct'}`;
+  }
+
+  private async ensureOAuthProfile(
+    user: User,
+    accessToken: string,
+    preferredUserType?: 'creator' | 'sponsor'
+  ): Promise<AuthUser> {
+    let profile: AuthUser;
+    try {
+      profile = await this.getProfile(user.id, accessToken);
+    } catch {
+      profile = this.mapUserFromMetadata(user);
+    }
+
+    if (!supabaseAdmin) {
+      return profile;
+    }
+
+    const meta = user.user_metadata ?? {};
+    const isNewUser = this.isRecentlyCreatedUser(user);
+    const updates: Record<string, string> = {};
+    const metaUpdates: Record<string, string> = {};
+
+    if (
+      preferredUserType &&
+      isNewUser &&
+      !meta.user_type &&
+      profile.userType !== preferredUserType
+    ) {
+      updates.user_type = preferredUserType;
+      metaUpdates.user_type = preferredUserType;
+      profile.userType = preferredUserType;
+    }
+
+    const resolvedName =
+      profile.name ||
+      (meta.name as string | undefined) ||
+      (meta.full_name as string | undefined) ||
+      '';
+
+    if (!profile.username?.trim()) {
+      const seed = user.email ?? user.id;
+      const username = await this.generateUniqueUsername(seed);
+      updates.username = username;
+      metaUpdates.username = username;
+      profile.username = username;
+    }
+
+    if (!profile.name?.trim() && resolvedName) {
+      updates.name = resolvedName;
+      metaUpdates.name = resolvedName;
+      profile.name = resolvedName;
+    } else if (!profile.name?.trim() && profile.username) {
+      updates.name = profile.username;
+      metaUpdates.name = profile.username;
+      profile.name = profile.username;
+    }
+
+    if (Object.keys(updates).length > 0) {
+      await supabaseAdmin.from('users').update(updates).eq('id', user.id);
+    }
+
+    if (Object.keys(metaUpdates).length > 0) {
+      await supabaseAdmin.auth.admin.updateUserById(user.id, {
+        user_metadata: { ...meta, ...metaUpdates },
+      });
+    }
+
+    if (Object.keys(updates).length > 0 || Object.keys(metaUpdates).length > 0) {
+      try {
+        return await this.getProfile(user.id, accessToken);
+      } catch {
+        return profile;
+      }
+    }
+
+    return profile;
   }
 
   private async isUsernameTaken(username: string): Promise<boolean> {
@@ -252,6 +353,80 @@ class AuthService {
 
   public async logout(): Promise<void> {
     await supabase.auth.signOut();
+  }
+
+  public async finishOAuthSession(
+    accessToken: string,
+    refreshToken: string,
+    preferredUserType?: 'creator' | 'sponsor'
+  ): Promise<AuthResponse> {
+    if (!accessToken || !refreshToken) {
+      throw new Error('Missing OAuth session tokens');
+    }
+
+    const { data, error } = await supabase.auth.getUser(accessToken);
+    if (error || !data.user) {
+      throw new Error('Invalid or expired OAuth session');
+    }
+
+    const user = await this.ensureOAuthProfile(
+      data.user,
+      accessToken,
+      preferredUserType === 'creator' || preferredUserType === 'sponsor'
+        ? preferredUserType
+        : undefined
+    );
+
+    return {
+      user,
+      accessToken,
+      refreshToken,
+    };
+  }
+
+  public async deleteAccount(userId: string, email: string, password: string): Promise<void> {
+    if (!email?.trim() || !password) {
+      throw new Error('Password is required to delete your account');
+    }
+
+    if (!supabaseAdmin) {
+      throw new Error(
+        'Account deletion is temporarily unavailable. Please contact support or try again later.'
+      );
+    }
+
+    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+
+    if (signInError || !signInData.user) {
+      throw new Error('Incorrect password');
+    }
+
+    if (signInData.user.id !== userId) {
+      throw new Error('Incorrect password');
+    }
+
+    const { error: profileDeleteError } = await supabaseAdmin.from('users').delete().eq('id', userId);
+
+    if (profileDeleteError) {
+      console.error('Profile delete error:', profileDeleteError);
+      throw new Error(
+        'Could not delete account data. Remove active campaigns or pending payouts, then try again.'
+      );
+    }
+
+    const { error: signOutError } = await supabaseAdmin.auth.admin.signOut(userId, 'global');
+    if (signOutError) {
+      console.error('Sign out error during account deletion:', signOutError);
+    }
+
+    const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
+    if (deleteError) {
+      console.error('Auth delete error:', deleteError);
+      throw new Error('Failed to delete account. Please try again or contact support.');
+    }
   }
 }
 

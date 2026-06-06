@@ -33,3 +33,9 @@ export interface MeResponse {
   userId: string;
   user: AuthUser;
 }
+
+export interface OAuthSessionRequest {
+  accessToken: string;
+  refreshToken: string;
+  userType?: UserType;
+}
