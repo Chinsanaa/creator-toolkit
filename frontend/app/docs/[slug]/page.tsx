@@ -10,9 +10,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const doc = getDoc(slug);
-  if (!doc) return { title: 'Docs | Creator Toolkit' };
+  if (!doc) return { title: 'Docs | Earnio' };
   return {
-    title: `${doc.title} | Creator Toolkit`,
+    title: `${doc.title} | Earnio`,
     description: doc.description,
   };
 }

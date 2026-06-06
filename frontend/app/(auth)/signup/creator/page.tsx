@@ -16,6 +16,7 @@ export default function CreatorSignupPage() {
       alternatePrompt="Already have an account?"
       alternateLabel="Sign in"
       beforeForm={<AuthTypeBackLink audience="creator" />}
+      legalConsentMode="signup"
       fields={[
         { name: 'name', label: 'Full name', placeholder: 'Your name' },
         { name: 'username', label: 'Username', placeholder: 'creator_handle' },
@@ -34,6 +35,7 @@ export default function CreatorSignupPage() {
           name: values.name,
           username: values.username,
           userType: 'creator',
+          acceptedTerms: values.acceptedTerms === 'true',
         });
       }}
     />

@@ -14,7 +14,7 @@ export function MonthlyTrend({ data }: { data: MonthlyEarnings[] }) {
                 {month.amountMnt > 0 ? `${Math.round(month.amountMnt / 1000)}k` : '0'}
               </span>
               <div
-                className="w-full max-w-12 rounded-t-lg bg-landing-fg transition-all"
+                className="w-full max-w-12 rounded-t-lg bg-primary transition-all"
                 style={{ height: `${Math.max((month.amountMnt / max) * 100, 4)}%` }}
                 title={formatMnt(month.amountMnt)}
               />

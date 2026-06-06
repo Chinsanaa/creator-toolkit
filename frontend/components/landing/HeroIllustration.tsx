@@ -13,9 +13,9 @@ function FloatingCard({
       style={delay ? { animationDelay: delay } : undefined}
     >
       <div className="relative flex h-9 w-9 shrink-0 items-center justify-center">
-        <span className="absolute h-9 w-9 rounded-full bg-sky-400/15" />
-        <span className="absolute h-6 w-6 rounded-full bg-sky-400/25" />
-        <span className="relative h-3 w-3 rounded-full bg-sky-500/90" />
+        <span className="absolute h-9 w-9 rounded-full bg-violet-400/15" />
+        <span className="absolute h-6 w-6 rounded-full bg-violet-400/25" />
+        <span className="relative h-3 w-3 rounded-full bg-violet-500/90" />
       </div>
       <div className="flex items-center gap-1 text-sm font-semibold text-landing-fg">
         <svg className="h-3.5 w-3.5 fill-landing-fg" viewBox="0 0 24 24" aria-hidden>

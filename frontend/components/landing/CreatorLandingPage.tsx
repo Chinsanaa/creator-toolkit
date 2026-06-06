@@ -1,6 +1,5 @@
 import Link from 'next/link';
 import { LANDING_CONTENT } from '@/lib/landing/content';
-import { CreatorCtaBand } from '@/components/landing/CreatorCtaBand';
 import { CreatorFaq } from '@/components/landing/CreatorFaq';
 import { CreatorFeatures } from '@/components/landing/CreatorFeatures';
 import { CreatorTestimonials } from '@/components/landing/CreatorTestimonials';
@@ -48,7 +47,6 @@ export function CreatorLandingPage() {
           showDocsLink={false}
         />
         <CreatorFeatures />
-        <CreatorCtaBand signupHref={content.signupHref} signupCta={content.signupCta} />
         <CreatorTestimonials />
         <CreatorFaq />
       </main>

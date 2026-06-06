@@ -24,7 +24,7 @@ class EmailService {
     }
     if (!process.env.EMAIL_FROM?.trim()) {
       console.warn(
-        '⚠ EMAIL_FROM is not set. Email notifications are disabled. Example: Creator Toolkit <onboarding@resend.dev>'
+        '⚠ EMAIL_FROM is not set. Email notifications are disabled. Example: Earnio <onboarding@resend.dev>'
       );
     }
   }

@@ -2,23 +2,10 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { CREATOR_SIDEBAR_NAV, isCreatorNavActive } from '@/components/layout/creator-nav';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
-
-function LogoMark() {
-  return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M3 12L21 4L14 21L11 13L3 12Z"
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 interface CreatorAppShellProps {
   children: React.ReactNode;
@@ -36,29 +23,49 @@ export function CreatorAppShell({
   onLogout,
 }: CreatorAppShellProps) {
   const pathname = usePathname();
-  const [mobileOpen, setMobileOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+
+  useEffect(() => {
+    setAccountOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!accountOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setAccountOpen(false);
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [accountOpen]);
 
   function navActive(href: string, match?: (p: string) => boolean) {
     if (match) return match(pathname);
     return isCreatorNavActive(pathname, href);
   }
 
-  const sidebar = (
+  const desktopSidebar = (
     <>
-      <Link href={homeHref} className="creator-sidebar-logo" onClick={() => setMobileOpen(false)}>
-        <LogoMark />
-        <span>Creator Toolkit</span>
+      <Link href={homeHref} className="creator-sidebar-logo">
+        <EarnioLogo iconClassName="h-7 w-7" />
       </Link>
 
-      <nav className="creator-sidebar-nav">
+      <nav className="creator-sidebar-nav" aria-label="Creator navigation">
         {CREATOR_SIDEBAR_NAV.map((item) => {
           const active = navActive(item.href, item.match);
           return (
             <Link
               key={item.href}
               href={item.href}
-              onClick={() => setMobileOpen(false)}
               className={`creator-sidebar-link ${active ? 'creator-sidebar-link-active' : ''}`}
+              aria-current={active ? 'page' : undefined}
             >
               {item.icon}
               <span>{item.label}</span>
@@ -80,27 +87,54 @@ export function CreatorAppShell({
 
   return (
     <div className="creator-app flex min-h-full">
-      <aside className="creator-sidebar hidden w-56 shrink-0 flex-col lg:flex">{sidebar}</aside>
+      <aside className="creator-sidebar hidden w-56 shrink-0 flex-col lg:flex">{desktopSidebar}</aside>
 
-      {mobileOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
-          <button
-            type="button"
-            className="absolute inset-0 bg-black/30"
-            aria-label="Close menu"
-            onClick={() => setMobileOpen(false)}
-          />
-          <aside className="creator-sidebar relative z-10 flex h-full w-64 flex-col shadow-xl">{sidebar}</aside>
-        </div>
-      ) : null}
+      <div
+        className={`creator-account-menu lg:hidden ${accountOpen ? 'creator-account-menu-open' : ''}`}
+        aria-hidden={!accountOpen}
+      >
+        <button
+          type="button"
+          className="creator-account-menu-backdrop"
+          aria-label="Close account menu"
+          onClick={() => setAccountOpen(false)}
+        />
+        <aside className="creator-account-menu-panel">
+          <div className="flex items-center gap-3 border-b border-sky-100 px-4 py-4">
+            <div className="creator-avatar" aria-hidden>
+              {(userName?.[0] ?? 'C').toUpperCase()}
+            </div>
+            <div className="min-w-0">
+              {userName ? <p className="truncate text-sm font-medium text-landing-fg">{userName}</p> : null}
+              {userHandle ? <p className="truncate text-xs text-landing-muted">{userHandle}</p> : null}
+            </div>
+          </div>
+          <div className="p-4">
+            <button
+              type="button"
+              onClick={() => {
+                setAccountOpen(false);
+                onLogout();
+              }}
+              className="creator-sidebar-logout"
+            >
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+              <span>Log out</span>
+            </button>
+          </div>
+        </aside>
+      </div>
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="creator-topbar">
           <button
             type="button"
             className="creator-icon-btn lg:hidden"
-            aria-label="Open menu"
-            onClick={() => setMobileOpen(true)}
+            aria-label="Open account menu"
+            aria-expanded={accountOpen}
+            onClick={() => setAccountOpen(true)}
           >
             <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
               <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
@@ -117,13 +151,21 @@ export function CreatorAppShell({
                 {userHandle ? <p className="text-xs text-landing-muted">{userHandle}</p> : null}
               </div>
             )}
-            <div className="creator-avatar" aria-hidden>
+            <button
+              type="button"
+              className="creator-avatar lg:hidden"
+              aria-label="Open account menu"
+              onClick={() => setAccountOpen(true)}
+            >
+              {(userName?.[0] ?? 'C').toUpperCase()}
+            </button>
+            <div className="creator-avatar hidden lg:flex" aria-hidden>
               {(userName?.[0] ?? 'C').toUpperCase()}
             </div>
           </div>
         </header>
 
-        <main className="creator-main page-enter flex-1">{children}</main>
+        <main className="creator-main flex-1">{children}</main>
 
         <nav className="creator-bottom-nav lg:hidden" aria-label="Mobile navigation">
           {CREATOR_SIDEBAR_NAV.map((item) => {
@@ -133,9 +175,10 @@ export function CreatorAppShell({
                 key={item.href}
                 href={item.href}
                 className={`creator-bottom-link ${active ? 'creator-bottom-link-active' : ''}`}
+                aria-current={active ? 'page' : undefined}
               >
-                {item.icon}
-                <span>{item.label}</span>
+                <span className="creator-bottom-link-icon">{item.icon}</span>
+                <span className="creator-bottom-link-label">{item.label}</span>
               </Link>
             );
           })}

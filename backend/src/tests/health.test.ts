@@ -32,6 +32,8 @@ describe('404 handler', () => {
     const res = await request(app).get('/api/unknown-route');
 
     assert.equal(res.status, 404);
-    assert.equal(res.body.error, 'Route not found');
+    assert.equal(res.body.error.status, 404);
+    assert.equal(res.body.error.code, 'NOT_FOUND');
+    assert.equal(res.body.error.message, 'Route not found');
   });
 });

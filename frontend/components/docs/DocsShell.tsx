@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { DocsNav } from '@/components/docs/DocsNav';
 
@@ -8,11 +9,8 @@ export function DocsShell({ children }: { children: React.ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-border/60 bg-card/80 backdrop-blur-md">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-3">
           <div className="flex items-center gap-4">
-            <Link href="/" className="flex items-center gap-2">
-              <span className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
-                C
-              </span>
-              <span className="text-sm font-semibold text-foreground">Creator Toolkit</span>
+            <Link href="/">
+              <EarnioLogo iconClassName="h-7 w-7" />
             </Link>
             <span className="hidden text-muted sm:inline">/</span>
             <Link

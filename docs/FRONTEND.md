@@ -1,14 +1,14 @@
 # Frontend UI Guide
 
-This document explains the **landing pages**, auth flows, and **design system** for Creator Toolkit. Use it as the source of truth when changing marketing or auth UI.
+This document explains the **landing pages**, auth flows, and **design system** for **Earnio**. Use it as the source of truth when changing marketing or auth UI.
 
-**Alignment status:** Option A implemented — landing sky-blue aesthetic extends into auth; in-app dashboard keeps warm coral utility theme.
+**Brand:** Earnio — *Earn more, create more*. Logo, palette, and typography live in `frontend/lib/brand/earnio.ts` and `frontend/components/brand/EarnioLogo.tsx`.
 
 ---
 
 ## Product purpose
 
-**Creator Toolkit** serves two audiences:
+**Earnio** serves two audiences:
 
 | Audience | Landing | Auth | App shell |
 |----------|---------|------|-----------|

@@ -17,7 +17,7 @@ function setRefreshTokenCookie(res: Response, refreshToken: string): void {
 
 router.post('/signup', async (req: AuthRequest, res: Response) => {
   try {
-    const { email, password, name, username, phone, userType } = req.body;
+    const { email, password, name, username, phone, userType, acceptedTerms } = req.body;
 
     const resolvedType = userType === 'sponsor' ? 'sponsor' : 'creator';
 
@@ -28,6 +28,7 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
       username,
       phone,
       userType: resolvedType,
+      acceptedTerms: acceptedTerms === true,
     });
 
     setRefreshTokenCookie(res, result.refreshToken);

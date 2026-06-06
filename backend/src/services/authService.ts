@@ -8,6 +8,7 @@ export interface SignupPayload {
   username: string;
   phone?: string;
   userType: 'creator' | 'sponsor';
+  acceptedTerms?: boolean;
 }
 
 export interface LoginPayload {
@@ -134,10 +135,14 @@ class AuthService {
   }
 
   public async signup(payload: SignupPayload): Promise<AuthResponse> {
-    const { email, password, name, username, phone, userType } = payload;
+    const { email, password, name, username, phone, userType, acceptedTerms } = payload;
 
     if (!email || !password || !name || !username) {
       throw new Error('Missing required fields');
+    }
+
+    if (!acceptedTerms) {
+      throw new Error('You must accept the Terms and Conditions and Privacy Policy');
     }
 
     if (password.length < 8) {
@@ -161,6 +166,7 @@ class AuthService {
           username,
           phone,
           user_type: userType,
+          terms_accepted_at: new Date().toISOString(),
         },
       },
     });

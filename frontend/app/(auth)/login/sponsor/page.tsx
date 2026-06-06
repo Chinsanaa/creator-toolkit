@@ -16,6 +16,7 @@ export default function SponsorLoginPage() {
       alternatePrompt="New sponsor?"
       alternateLabel="Create account"
       beforeForm={<AuthTypeBackLink audience="sponsor" />}
+      legalConsentMode="login"
       fields={[
         { name: 'email', label: 'Email', type: 'email', placeholder: 'you@company.com' },
         { name: 'password', label: 'Password', type: 'password', placeholder: '••••••••' },

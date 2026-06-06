@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
+import { LegalConsent } from '@/components/auth/LegalConsent';
 import { ApiError } from '@/lib/api/client';
 
 interface Field {
@@ -22,6 +23,7 @@ interface AuthFormProps {
   alternateLabel: string;
   onSubmit: (values: Record<string, string>) => Promise<void>;
   beforeForm?: React.ReactNode;
+  legalConsentMode?: 'signup' | 'login';
 }
 
 function AuthLogoMark() {
@@ -50,9 +52,11 @@ export function AuthForm({
   alternateLabel,
   onSubmit,
   beforeForm,
+  legalConsentMode,
 }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -64,6 +68,16 @@ export function AuthForm({
     fields.forEach((field) => {
       values[field.name] = String(formData.get(field.name) ?? '');
     });
+
+    if (legalConsentMode === 'signup' && !acceptedTerms) {
+      setError('You must accept the Terms and Conditions and Privacy Policy');
+      setPending(false);
+      return;
+    }
+
+    if (legalConsentMode === 'signup') {
+      values.acceptedTerms = 'true';
+    }
 
     try {
       await onSubmit(values);
@@ -102,6 +116,14 @@ export function AuthForm({
               />
             </div>
           ))}
+
+          {legalConsentMode ? (
+            <LegalConsent
+              mode={legalConsentMode}
+              checked={acceptedTerms}
+              onCheckedChange={setAcceptedTerms}
+            />
+          ) : null}
 
           {error && (
             <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>

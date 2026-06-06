@@ -10,12 +10,13 @@ export default function SponsorSignupPage() {
   return (
     <AuthForm
       title="Create sponsor account"
-      subtitle="Post campaigns and review creator applications on Creator Toolkit."
+      subtitle="Post campaigns and review creator applications on Earnio."
       submitLabel="Create sponsor account"
       alternateHref="/login/sponsor"
       alternatePrompt="Already have an account?"
       alternateLabel="Sign in"
       beforeForm={<AuthTypeBackLink audience="sponsor" />}
+      legalConsentMode="signup"
       fields={[
         { name: 'name', label: 'Company or brand name', placeholder: 'Your brand' },
         { name: 'username', label: 'Username', placeholder: 'brand_handle' },
@@ -34,6 +35,7 @@ export default function SponsorSignupPage() {
           name: values.name,
           username: values.username,
           userType: 'sponsor',
+          acceptedTerms: values.acceptedTerms === 'true',
         });
       }}
     />

@@ -4,6 +4,7 @@ import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OfflineBanner } from "@/components/OfflineBanner";
+import { EARNIO_SLOGAN } from "@/lib/brand/earnio";
 import "./globals.css";
 
 const sora = Sora({
@@ -19,8 +20,8 @@ const figtree = Figtree({
 });
 
 export const metadata: Metadata = {
-  title: "Creator Toolkit",
-  description: "Monetization dashboard for Mongolian content creators",
+  title: "Earnio",
+  description: `${EARNIO_SLOGAN} — Monetization platform for Mongolian creators and brands`,
 };
 
 export default function RootLayout({

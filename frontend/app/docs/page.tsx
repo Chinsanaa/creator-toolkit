@@ -2,8 +2,8 @@ import Link from 'next/link';
 import { DOCS } from '@/lib/docs/catalog';
 
 export const metadata = {
-  title: 'Docs | Creator Toolkit',
-  description: 'Deployment, QA, and launch guides for Creator Toolkit.',
+  title: 'Docs | Earnio',
+  description: 'Deployment, QA, and launch guides for Earnio.',
 };
 
 export default function DocsIndexPage() {
@@ -11,7 +11,7 @@ export default function DocsIndexPage() {
     <div className="page-enter">
       <h1 className="text-3xl font-semibold text-foreground">Documentation</h1>
       <p className="mt-3 max-w-2xl text-muted">
-        Launch guides and checklists for deploying and shipping Creator Toolkit. Same content as
+        Launch guides and checklists for deploying and shipping Earnio. Same content as
         the repo markdown files, formatted for the web.
       </p>
 
