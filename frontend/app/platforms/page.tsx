@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useEffect, useState } from 'react';
+import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { ApiError } from '@/lib/api/client';
 import {
@@ -87,13 +88,17 @@ export default function PlatformsPage() {
     setMessage(null);
     try {
       await syncPlatform(accountId);
-      setMessage('Sync completed. Check your dashboard for updated earnings.');
+      setMessage('Sync completed. Check Home for updated earnings.');
       await load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : 'Sync failed');
     } finally {
       setSyncingId(null);
     }
+  }
+
+  function accountFor(platformId: string) {
+    return accounts.find((a) => a.platform.toLowerCase() === platformId);
   }
 
   return (
@@ -105,115 +110,102 @@ export default function PlatformsPage() {
         </p>
       </div>
 
-      {message && (
-        <p className="mb-4 rounded-lg bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
-          {message}
-        </p>
-      )}
-      {error && (
-        <p className="mb-4 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
-          {error}
-        </p>
-      )}
-
-      <section className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-        <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">Connect a platform</h2>
-        <p className="mt-1 text-sm text-zinc-500">
-          Uses a simulated Creator API in development. Production can swap in real OAuth tokens.
-        </p>
-        <form onSubmit={handleConnect} className="mt-4 flex flex-wrap items-end gap-4">
-          <div>
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Platform
-            </label>
-            <select
-              value={platform}
-              onChange={(e) => setPlatform(e.target.value)}
-              className="mt-1 rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-            >
-              {PLATFORMS.map((p) => (
-                <option key={p.id} value={p.id}>
-                  {p.label}
-                </option>
-              ))}
-            </select>
-          </div>
-          <div className="min-w-[200px] flex-1">
-            <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
-              Username
-            </label>
-            <input
-              required
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              placeholder="your_handle"
-              className="mt-1 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900"
-            />
-          </div>
-          <button
-            type="submit"
-            disabled={connecting}
-            className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-60"
-          >
-            {connecting ? 'Connecting…' : 'Connect'}
-          </button>
-        </form>
-      </section>
-
-      <section className="mt-8">
-        <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">Connected accounts</h2>
-        {loading && <p className="mt-4 text-sm text-zinc-500">Loading…</p>}
-        {!loading && accounts.length === 0 && (
-          <p className="mt-4 text-sm text-zinc-500">No platforms connected yet.</p>
+        {message && (
+          <p className="mb-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{message}</p>
         )}
-        <ul className="mt-4 space-y-3">
-          {accounts.map((a) => (
-            <li
-              key={a.id}
-              className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-zinc-200 bg-white px-4 py-4 dark:border-zinc-800 dark:bg-zinc-950"
-            >
-              <div>
-                <p className="font-medium text-zinc-900 dark:text-zinc-100">
-                  {platformLabel(a.platform)}
-                </p>
-                <p className="text-sm text-zinc-500">{a.platform_username}</p>
-                <p className="mt-1 text-xs text-zinc-400">
-                  {a.follower_count != null && `${a.follower_count.toLocaleString()} followers · `}
-                  Last sync: {formatDate(a.last_synced_at)}
-                </p>
-              </div>
-              <button
-                type="button"
-                disabled={syncingId === a.id}
-                onClick={() => handleSync(a.id)}
-                className="rounded-lg border border-zinc-300 px-4 py-2 text-sm font-medium text-zinc-700 hover:bg-zinc-50 dark:border-zinc-700 dark:text-zinc-300 disabled:opacity-60"
-              >
-                {syncingId === a.id ? 'Syncing…' : 'Sync now'}
-              </button>
-            </li>
-          ))}
-        </ul>
-      </section>
+        {error && (
+          <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+        )}
 
-      {history.length > 0 && (
-        <section className="mt-8">
-          <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">Sync history</h2>
-          <ul className="mt-4 space-y-2">
-            {history.slice(0, 8).map((h) => (
-              <li
-                key={h.id}
-                className="flex justify-between rounded-lg border border-zinc-100 px-3 py-2 text-sm dark:border-zinc-800"
-              >
-                <span>
-                  {platformLabel(h.platform)} · {h.status}
-                  {h.records_synced != null && h.records_synced > 0 && ` · ${h.records_synced} new`}
-                </span>
-                <span className="text-zinc-400">{formatDate(h.started_at)}</span>
-              </li>
-            ))}
-          </ul>
+        <section className="creator-panel-lg">
+          <h2 className="text-base font-semibold text-landing-fg">Social accounts</h2>
+          <p className="mt-1 text-sm text-landing-muted">Manage platform connections for earnings sync.</p>
+
+          {loading ? (
+            <p className="mt-6 text-sm text-landing-muted">Loading…</p>
+          ) : (
+            <ul className="mt-6 space-y-3">
+              {PLATFORMS.map((p) => {
+                const account = accountFor(p.id);
+                return (
+                  <li key={p.id} className="creator-platform-row">
+                    <div>
+                      <p className="font-medium text-landing-fg">{p.label}</p>
+                      <p className="text-sm text-landing-muted">
+                        {account ? `@${account.platform_username}` : 'Not connected'}
+                      </p>
+                    </div>
+                    {account ? (
+                      <button
+                        type="button"
+                        disabled={syncingId === account.id}
+                        onClick={() => handleSync(account.id)}
+                        className="landing-btn-light px-4 py-2 text-xs"
+                      >
+                        {syncingId === account.id ? 'Syncing…' : 'Sync'}
+                      </button>
+                    ) : (
+                      <span className="text-xs text-landing-muted">Use form below</span>
+                    )}
+                  </li>
+                );
+              })}
+            </ul>
+          )}
         </section>
-      )}
+
+        <section className="creator-panel mt-6">
+          <h2 className="text-base font-semibold text-landing-fg">Connect a platform</h2>
+          <form onSubmit={handleConnect} className="mt-4 space-y-4">
+            <div>
+              <label className="mb-2 block text-sm font-medium text-landing-fg">Platform</label>
+              <select
+                value={platform}
+                onChange={(e) => setPlatform(e.target.value)}
+                className="auth-input"
+              >
+                {PLATFORMS.map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label className="mb-2 block text-sm font-medium text-landing-fg">Username</label>
+              <input
+                required
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                placeholder="your_handle"
+                className="auth-input"
+              />
+            </div>
+            <button type="submit" disabled={connecting} className="landing-btn-dark px-6 py-2.5 text-sm">
+              {connecting ? 'Connecting…' : 'Connect'}
+            </button>
+          </form>
+        </section>
+
+        {history.length > 0 && (
+          <section className="creator-panel mt-6">
+            <h2 className="text-base font-semibold text-landing-fg">Sync history</h2>
+            <ul className="mt-4 space-y-2">
+              {history.slice(0, 6).map((h) => (
+                <li
+                  key={h.id}
+                  className="flex justify-between gap-2 rounded-xl border border-sky-50 px-3 py-2 text-sm"
+                >
+                  <span className="text-landing-fg">
+                    {platformLabel(h.platform)} · {h.status}
+                  </span>
+                  <span className="shrink-0 text-landing-muted">{formatDate(h.started_at)}</span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
+      </div>
     </DashboardShell>
   );
 }

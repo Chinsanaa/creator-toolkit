@@ -18,8 +18,8 @@ export function DocsNav() {
             href={`/docs/${doc.slug}`}
             className={`rounded-lg px-3 py-2.5 text-sm transition ${
               active
-                ? 'bg-violet-50 font-medium text-violet-800 dark:bg-violet-950/50 dark:text-violet-200'
-                : 'text-zinc-600 hover:bg-zinc-100 dark:text-zinc-400 dark:hover:bg-zinc-900'
+                ? 'bg-primary-subtle font-medium text-primary dark:bg-primary-subtle dark:text-primary'
+                : 'text-muted hover:bg-surface dark:text-muted-foreground dark:hover:bg-surface'
             }`}
           >
             {doc.title}

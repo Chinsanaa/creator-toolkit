@@ -15,7 +15,7 @@ export default function SponsorSignupPage() {
       alternateHref="/login/sponsor"
       alternatePrompt="Already have an account?"
       alternateLabel="Sign in"
-      beforeForm={<AuthTypeBackLink mode="signup" />}
+      beforeForm={<AuthTypeBackLink audience="sponsor" />}
       fields={[
         { name: 'name', label: 'Company or brand name', placeholder: 'Your brand' },
         { name: 'username', label: 'Username', placeholder: 'brand_handle' },

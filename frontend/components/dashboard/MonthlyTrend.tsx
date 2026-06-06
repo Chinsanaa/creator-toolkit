@@ -30,4 +30,3 @@ export function MonthlyTrend({ data }: { data: MonthlyEarnings[] }) {
     </div>
   );
 }
-

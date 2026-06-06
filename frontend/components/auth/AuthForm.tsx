@@ -24,6 +24,22 @@ interface AuthFormProps {
   beforeForm?: React.ReactNode;
 }
 
+function AuthLogoMark() {
+  return (
+    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-landing-fg text-white">
+      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d="M3 12L21 4L14 21L11 13L3 12Z"
+          fill="currentColor"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
 export function AuthForm({
   title,
   subtitle,
@@ -71,7 +87,7 @@ export function AuthForm({
 
         {beforeForm}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {fields.map((field) => (
             <div key={field.name}>
               <label
@@ -86,7 +102,7 @@ export function AuthForm({
                 type={field.type ?? 'text'}
                 required={field.required ?? true}
                 placeholder={field.placeholder}
-                className="input-touch"
+                className="auth-input"
               />
             </div>
           ))}

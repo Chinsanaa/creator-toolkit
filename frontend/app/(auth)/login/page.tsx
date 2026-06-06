@@ -1,5 +1,5 @@
-import { AccountTypeChooser } from '@/components/auth/AccountTypeChooser';
+import { redirect } from 'next/navigation';
 
-export default function LoginChooserPage() {
-  return <AccountTypeChooser mode="login" />;
+export default function LoginPage() {
+  redirect('/login/creator');
 }

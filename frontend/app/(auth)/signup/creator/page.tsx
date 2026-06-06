@@ -15,7 +15,7 @@ export default function CreatorSignupPage() {
       alternateHref="/login/creator"
       alternatePrompt="Already have an account?"
       alternateLabel="Sign in"
-      beforeForm={<AuthTypeBackLink mode="signup" />}
+      beforeForm={<AuthTypeBackLink audience="creator" />}
       fields={[
         { name: 'name', label: 'Full name', placeholder: 'Your name' },
         { name: 'username', label: 'Username', placeholder: 'creator_handle' },

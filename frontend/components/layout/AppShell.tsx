@@ -120,7 +120,7 @@ export function AppShell({
         )}
       </header>
 
-      <main className="page-enter mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-24 md:py-8 md:pb-8">
+      <main className="page-enter mx-auto w-full max-w-6xl flex-1 px-5 py-6 pb-24 md:py-8 md:pb-8">
         {children}
       </main>
 

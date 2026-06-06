@@ -40,22 +40,22 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
     <>
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-2xl font-semibold text-foreground">
             Hi, {user.name}
           </h1>
-          <p className="mt-1 text-zinc-600 dark:text-zinc-400">
+          <p className="mt-1 text-muted">
             Manage campaigns and review creator applications.
           </p>
         </div>
         <Link
           href="/sponsor/campaigns/new"
-          className="rounded-lg bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+          className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
         >
           New campaign
         </Link>
       </div>
 
-      {loading && <p className="text-sm text-zinc-500">Loading stats…</p>}
+      {loading && <p className="text-sm text-muted">Loading stats…</p>}
 
       {error && (
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
@@ -83,7 +83,7 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
       <div className="mt-8">
         <Link
           href="/sponsor/campaigns"
-          className="text-sm font-medium text-violet-600 hover:text-violet-700"
+          className="text-sm font-medium text-primary hover:text-primary"
         >
           View all campaigns →
         </Link>
@@ -128,10 +128,10 @@ function StatCard({
   hint?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
-      <p className="text-sm text-zinc-500">{label}</p>
-      <p className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{value}</p>
-      {hint && <p className="mt-1 text-xs text-zinc-500">{hint}</p>}
+    <div className="card p-5">
+      <p className="text-sm text-muted">{label}</p>
+      <p className="mt-2 text-2xl font-semibold text-foreground">{value}</p>
+      {hint && <p className="mt-1 text-xs text-muted">{hint}</p>}
     </div>
   );
 }

@@ -2,15 +2,8 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { AppShell } from '@/components/layout/AppShell';
+import { CreatorAppShell } from '@/components/layout/CreatorAppShell';
 import { useAuth } from '@/contexts/AuthContext';
-
-const CREATOR_NAV = [
-  { href: '/dashboard', label: 'Earnings' },
-  { href: '/sponsorships', label: 'Deals' },
-  { href: '/wallet', label: 'Wallet' },
-  { href: '/platforms', label: 'Platforms' },
-];
 
 export function CreatorShell({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -24,14 +17,12 @@ export function CreatorShell({ children }: { children: React.ReactNode }) {
   }, [user, loading, router]);
 
   return (
-    <AppShell
-      navItems={CREATOR_NAV}
-      homeHref="/dashboard"
-      userLabel={user ? `@${user.username}` : undefined}
+    <CreatorAppShell
+      userName={user?.name}
+      userHandle={user ? `@${user.username}` : undefined}
       onLogout={() => logout()}
-      showNotifications
     >
       {children}
-    </AppShell>
+    </CreatorAppShell>
   );
 }

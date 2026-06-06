@@ -27,12 +27,12 @@ export default async function DocPage({ params }: { params: Promise<{ slug: stri
 
   return (
     <>
-      <div className="mb-8 border-b border-zinc-200 pb-6 dark:border-zinc-800">
-        <p className="text-sm font-medium text-violet-600 dark:text-violet-400">Guide</p>
-        <h1 className="mt-1 text-2xl font-semibold text-zinc-900 dark:text-zinc-50 sm:text-3xl">
+      <div className="mb-8 border-b border-border pb-6 dark:border-border">
+        <p className="text-sm font-medium text-primary dark:text-primary">Guide</p>
+        <h1 className="mt-1 text-2xl font-semibold text-foreground sm:text-3xl">
           {doc.title}
         </h1>
-        <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{doc.description}</p>
+        <p className="mt-2 text-sm text-muted">{doc.description}</p>
       </div>
       <MarkdownView content={content} />
     </>

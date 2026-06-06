@@ -25,10 +25,10 @@ export class ErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <div className="flex min-h-full flex-col items-center justify-center px-4 py-16">
-          <h1 className="text-xl font-semibold text-zinc-900 dark:text-zinc-50">
+          <h1 className="text-xl font-semibold text-foreground">
             Something went wrong
           </h1>
-          <p className="mt-2 max-w-md text-center text-sm text-zinc-600 dark:text-zinc-400">
+          <p className="mt-2 max-w-md text-center text-sm text-muted">
             We hit an unexpected error. Try refreshing the page.
           </p>
           <button

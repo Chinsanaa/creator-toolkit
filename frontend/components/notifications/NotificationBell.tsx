@@ -18,7 +18,8 @@ function formatWhen(iso: string): string {
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
 }
 
-export function NotificationBell() {
+export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'creator' }) {
+  const isCreator = tone === 'creator';
   const [open, setOpen] = useState(false);
   const [items, setItems] = useState<Notification[]>([]);
   const [unread, setUnread] = useState(0);
@@ -103,7 +104,11 @@ export function NotificationBell() {
       <button
         type="button"
         onClick={handleOpen}
-        className="relative rounded-lg border border-zinc-300 p-2 text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-300 dark:hover:bg-zinc-900"
+        className={
+          isCreator
+            ? 'creator-icon-btn relative'
+            : 'relative rounded-lg border border-border p-2 text-foreground hover:bg-surface dark:border-border dark:text-muted dark:hover:bg-surface'
+        }
         aria-label="Notifications"
       >
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -114,21 +119,39 @@ export function NotificationBell() {
           />
         </svg>
         {unread > 0 && (
-          <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-violet-600 px-1 text-[10px] font-bold text-white">
+          <span
+            className={`absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white ${
+              isCreator ? 'bg-landing-fg' : 'bg-primary text-primary-foreground'
+            }`}
+          >
             {unread > 9 ? '9+' : unread}
           </span>
         )}
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-zinc-200 bg-white shadow-lg dark:border-zinc-800 dark:bg-zinc-950 sm:w-96">
-          <div className="flex items-center justify-between border-b border-zinc-100 px-4 py-3 dark:border-zinc-800">
-            <p className="text-sm font-semibold text-zinc-900 dark:text-zinc-50">Notifications</p>
+        <div
+          className={
+            isCreator
+              ? 'creator-notify-panel absolute right-0 z-50 mt-2 w-80 overflow-hidden sm:w-96'
+              : 'absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-border bg-card shadow-lg dark:border-border dark:bg-background sm:w-96'
+          }
+        >
+          <div
+            className={
+              isCreator
+                ? 'flex items-center justify-between border-b border-sky-100 px-4 py-3'
+                : 'flex items-center justify-between border-b border-border px-4 py-3 dark:border-border'
+            }
+          >
+            <p className={`text-sm font-semibold ${isCreator ? 'text-landing-fg' : 'text-foreground'}`}>
+              Notifications
+            </p>
             {unread > 0 && (
               <button
                 type="button"
                 onClick={handleReadAll}
-                className="text-xs font-medium text-violet-600 hover:text-violet-700"
+                className={`text-xs font-medium ${isCreator ? 'auth-link' : 'text-primary hover:text-primary'}`}
               >
                 Mark all read
               </button>
@@ -136,26 +159,50 @@ export function NotificationBell() {
           </div>
           <ul className="max-h-80 overflow-y-auto">
             {loading && items.length === 0 && (
-              <li className="px-4 py-6 text-center text-sm text-zinc-500">Loading…</li>
+              <li
+                className={`px-4 py-6 text-center text-sm ${isCreator ? 'text-landing-muted' : 'text-muted'}`}
+              >
+                Loading…
+              </li>
             )}
             {!loading && items.length === 0 && (
-              <li className="px-4 py-6 text-center text-sm text-zinc-500">No notifications yet</li>
+              <li
+                className={`px-4 py-6 text-center text-sm ${isCreator ? 'text-landing-muted' : 'text-muted'}`}
+              >
+                No notifications yet
+              </li>
             )}
             {items.map((n) => (
               <li
                 key={n.id}
-                className={`border-b border-zinc-50 px-4 py-3 last:border-0 dark:border-zinc-900 ${
-                  !n.read_at ? 'bg-violet-50/50 dark:bg-violet-950/20' : ''
-                }`}
+                className={
+                  isCreator
+                    ? `border-b border-sky-50 px-4 py-3 last:border-0 ${
+                        !n.read_at ? 'bg-sky-50/80' : ''
+                      }`
+                    : `border-b border-border/60 px-4 py-3 last:border-0 dark:border-border/60 ${
+                        !n.read_at ? 'bg-primary-subtle/50 dark:bg-primary-subtle' : ''
+                      }`
+                }
               >
                 <button
                   type="button"
                   className="w-full text-left"
                   onClick={() => !n.read_at && handleRead(n.id)}
                 >
-                  <p className="text-sm font-medium text-zinc-900 dark:text-zinc-100">{n.title}</p>
-                  <p className="mt-0.5 text-xs text-zinc-600 dark:text-zinc-400">{n.body}</p>
-                  <p className="mt-1 text-[10px] text-zinc-400">{formatWhen(n.created_at)}</p>
+                  <p
+                    className={`text-sm font-medium ${isCreator ? 'text-landing-fg' : 'text-foreground'}`}
+                  >
+                    {n.title}
+                  </p>
+                  <p className={`mt-0.5 text-xs ${isCreator ? 'text-landing-muted' : 'text-muted'}`}>
+                    {n.body}
+                  </p>
+                  <p
+                    className={`mt-1 text-[10px] ${isCreator ? 'text-landing-muted' : 'text-muted-foreground'}`}
+                  >
+                    {formatWhen(n.created_at)}
+                  </p>
                 </button>
               </li>
             ))}
