@@ -20,8 +20,8 @@ Run before each release. Use test accounts for creator and sponsor roles.
 
 ## Auth & security
 
-- [ ] `/dashboard` without login → redirect to login
-- [ ] Creator cannot access `/sponsor/*`; sponsor cannot access creator-only routes
+- [x] `/dashboard` without login → redirect to login (covered by automated API + proxy tests; verify in browser)
+- [x] Creator cannot access `/sponsor/*`; sponsor cannot access creator-only routes (edge proxy + `ct-user-type` cookie; verify in browser)
 - [ ] Wrong password shows generic error (no email enumeration)
 - [ ] Expired session refreshes or redirects to login
 

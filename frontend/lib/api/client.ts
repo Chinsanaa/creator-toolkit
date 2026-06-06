@@ -1,5 +1,5 @@
 import { normalizeAuthUser } from '../auth/user';
-import { getAccessToken, setAccessToken } from '../auth/session';
+import { getAccessToken, setAccessToken, setUserTypeCookie } from '../auth/session';
 import type { AuthResponse, LoginRequest, MeResponse, SignupRequest } from '../types/auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
@@ -118,6 +118,7 @@ export async function login(payload: LoginRequest): Promise<AuthResponse> {
     )
   );
   setAccessToken(data.accessToken);
+  setUserTypeCookie(data.user.userType);
   return data;
 }
 
@@ -133,6 +134,7 @@ export async function signup(payload: SignupRequest): Promise<AuthResponse> {
     )
   );
   setAccessToken(data.accessToken);
+  setUserTypeCookie(data.user.userType);
   return data;
 }
 

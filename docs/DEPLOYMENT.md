@@ -38,8 +38,11 @@ Production stack: **Vercel** (frontend), **Railway or Render** (backend), **Supa
    | `SUPABASE_SERVICE_ROLE_KEY` | Required for sponsor signup / admin writes |
    | `RESEND_API_KEY` | |
    | `EMAIL_FROM` | Verified sender |
-   | `ENABLE_SYNC_CRON` | `true` in production if using platform cron |
+   | `ENABLE_SYNC_CRON` | `true` when using platform sync |
+   | `ENABLE_IN_PROCESS_SYNC_CRON` | `false` in production (use external cron instead) |
    | `SYNC_CRON_SECRET` | Random secret for `/api/sync/cron` |
+
+   In production, call `POST /api/sync/cron` with header `x-cron-secret: <SYNC_CRON_SECRET>` on a schedule (e.g. every 6 hours). Do not rely on in-process `setInterval` unless `ENABLE_IN_PROCESS_SYNC_CRON=true`.
 
 5. Health check: `GET /api/health` should return `200` when the database is reachable.
 

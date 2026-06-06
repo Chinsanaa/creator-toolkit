@@ -25,7 +25,7 @@ export function ConnectedPlatforms({ platforms }: { platforms: PlatformAccount[]
   }
 
   return (
-    <div className="card p-6">
+    <div className="glass-card p-6">
       <div className="flex items-center justify-between gap-2">
         <h2 className="text-lg font-semibold text-foreground">Platforms</h2>
         <Link href="/platforms" className="link-primary text-sm">

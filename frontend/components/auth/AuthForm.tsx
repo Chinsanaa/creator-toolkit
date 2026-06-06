@@ -90,10 +90,14 @@ export function AuthForm({
 
   return (
     <div className="w-full max-w-md">
-      <div className="auth-card p-8 sm:p-10">
-        <AuthLogoMark />
-        <h1 className="text-2xl font-semibold text-landing-fg">{title}</h1>
-        <p className="mt-2 text-sm text-landing-muted">{subtitle}</p>
+      <div className="glass-panel p-8 shadow-[var(--shadow-glow)]">
+        <div className="mb-8">
+          <p className="badge-pill">Account</p>
+          <h1 className="font-display mt-3 text-2xl font-bold text-[color:var(--foreground)]">
+            {title}
+          </h1>
+          <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">{subtitle}</p>
+        </div>
 
         {beforeForm}
 
@@ -102,7 +106,7 @@ export function AuthForm({
             <div key={field.name}>
               <label
                 htmlFor={field.name}
-                className="mb-2 block text-sm font-medium text-landing-fg"
+                className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]"
               >
                 {field.label}
               </label>
@@ -117,6 +121,7 @@ export function AuthForm({
             </div>
           ))}
 
+<<<<<<< HEAD
           {legalConsentMode ? (
             <LegalConsent
               mode={legalConsentMode}
@@ -128,15 +133,18 @@ export function AuthForm({
           {error && (
             <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
           )}
+=======
+          {error && <p className="alert-error">{error}</p>}
+>>>>>>> refs/remotes/origin/cursor/2026-06-07-9o3t-79105
 
-          <button type="submit" disabled={pending} className="landing-btn-dark auth-submit">
+          <button type="submit" disabled={pending} className="btn-primary">
             {pending ? 'Please wait…' : submitLabel}
           </button>
         </form>
 
-        <p className="mt-8 text-center text-sm text-landing-muted">
+        <p className="mt-6 text-center text-sm text-[color:var(--muted-foreground)]">
           {alternatePrompt}{' '}
-          <Link href={alternateHref} className="auth-link">
+          <Link href={alternateHref} className="link-primary">
             {alternateLabel}
           </Link>
         </p>

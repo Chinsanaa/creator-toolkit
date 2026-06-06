@@ -12,7 +12,11 @@ import {
 import { useRouter } from 'next/navigation';
 import * as api from '@/lib/api/client';
 import { homePathForUserType } from '@/lib/auth/routes';
-import { clearAccessToken, getAccessToken } from '@/lib/auth/session';
+import {
+  clearSessionCookies,
+  getAccessToken,
+  setUserTypeCookie,
+} from '@/lib/auth/session';
 import type { AuthUser, LoginRequest, SignupRequest } from '@/lib/types/auth';
 
 interface AuthContextValue {
@@ -43,17 +47,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const { user: profile } = await api.getMe();
       if (seq !== refreshSeq.current) return null;
       setUser(profile);
+      setUserTypeCookie(profile.userType);
       return profile;
     } catch {
       if (seq !== refreshSeq.current) return null;
-      clearAccessToken();
+      clearSessionCookies();
       setUser(null);
       return null;
     }
   }, []);
 
   useEffect(() => {
-    refreshUser().finally(() => setLoading(false));
+    let cancelled = false;
+    void (async () => {
+      const token = getAccessToken();
+      if (!token) {
+        queueMicrotask(() => {
+          if (!cancelled) {
+            setUser(null);
+            setLoading(false);
+          }
+        });
+        return;
+      }
+      await refreshUser();
+      if (!cancelled) setLoading(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [refreshUser]);
 
   const login = useCallback(
@@ -87,7 +109,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     refreshSeq.current += 1;
     await api.logout();
-    clearAccessToken();
+    clearSessionCookies();
     setUser(null);
     router.push('/login');
     router.refresh();

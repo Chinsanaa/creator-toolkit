@@ -26,7 +26,7 @@ export function SponsorShell({ children }: { children: React.ReactNode }) {
       navItems={SPONSOR_NAV}
       homeHref="/sponsor/dashboard"
       badge={
-        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-medium text-amber-800 dark:bg-amber-950/50 dark:text-amber-300">
+        <span className="rounded-full border border-[color:var(--accent)]/30 bg-[color:var(--accent-soft)] px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-[color:var(--accent)]">
           Sponsor
         </span>
       }

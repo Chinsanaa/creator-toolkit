@@ -39,27 +39,31 @@ export function AccountTypeChooser({ mode }: { mode: ChooserMode }) {
 
   return (
     <div className="w-full max-w-md">
-      <div className="card-elevated p-8 sm:p-10">
-        <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
-          C
-        </div>
-        <h1 className="text-2xl font-semibold text-foreground">{c.title}</h1>
-        <p className="mt-6 text-center text-sm font-medium text-foreground">{c.question}</p>
+      <div className="glass-panel p-8 shadow-[var(--shadow-glow)]">
+        <p className="badge-pill">Creator Toolkit</p>
+        <h1 className="font-display mt-3 text-2xl font-bold text-[color:var(--foreground)]">
+          {c.title}
+        </h1>
+        <p className="mt-6 text-center text-sm font-semibold text-[color:var(--foreground)]">
+          {c.question}
+        </p>
 
         <div className="mt-6 space-y-3">
           <AccountTypeCard
             href={c.creatorHref}
             label="Creator"
             description="Track earnings, apply to brand deals, and manage payouts."
+            variant="creator"
           />
           <AccountTypeCard
             href={c.sponsorHref}
             label="Sponsor"
             description="Post campaigns and review creator applications."
+            variant="sponsor"
           />
         </div>
 
-        <p className="mt-8 text-center text-sm text-muted">
+        <p className="mt-8 text-center text-sm text-[color:var(--muted-foreground)]">
           {c.switchPrompt}{' '}
           <Link href={c.switchHref} className="link-primary">
             {c.switchLabel}
@@ -74,20 +78,26 @@ function AccountTypeCard({
   href,
   label,
   description,
+  variant,
 }: {
   href: string;
   label: string;
   description: string;
+  variant: 'creator' | 'sponsor';
 }) {
   return (
     <Link
       href={href}
-      className="group block rounded-xl border border-border bg-surface p-5 text-left transition hover:border-primary/40 hover:bg-primary-subtle"
+      className={`block cursor-pointer rounded-2xl border p-5 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${
+        variant === 'creator'
+          ? 'border-[color:var(--border)] bg-[color:var(--card-muted)] hover:border-[color:var(--primary)]/50'
+          : 'border-[color:var(--border)] bg-[color:var(--accent-soft)]/30 hover:border-[color:var(--accent)]/50'
+      }`}
     >
-      <span className="text-base font-semibold text-foreground group-hover:text-primary">
+      <span className="font-display text-base font-bold text-[color:var(--foreground)]">
         {label}
       </span>
-      <p className="mt-1.5 text-sm text-muted">{description}</p>
+      <p className="mt-1.5 text-sm text-[color:var(--muted-foreground)]">{description}</p>
     </Link>
   );
 }

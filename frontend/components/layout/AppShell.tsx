@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { Logo } from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export interface NavItem {
@@ -42,18 +43,16 @@ export function AppShell({
   const [menuOpen, setMenuOpen] = useState(false);
 
   const linkClass = (href: string) =>
-    `block cursor-pointer rounded-xl px-3 py-2.5 text-sm font-medium transition ${
-      isActive(pathname, href) ? 'nav-active' : 'nav-inactive'
-    }`;
+    `nav-link ${isActive(pathname, href) ? 'nav-link-active' : 'nav-link-inactive'}`;
 
   return (
-    <div className="flex min-h-full flex-col bg-background">
-      <header className="sticky top-0 z-40 border-b border-border/60 bg-card/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3">
+    <div className="flex min-h-full flex-col">
+      <header className="sticky top-0 z-40 border-b border-[color:var(--border)]/60 bg-[color:var(--card)]/85 backdrop-blur-xl">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
-              className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-border md:hidden"
+              className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--card-muted)] md:hidden"
               aria-label="Open menu"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((o) => !o)}
@@ -66,9 +65,13 @@ export function AppShell({
                 )}
               </svg>
             </button>
+<<<<<<< HEAD
             <Link href={homeHref} className="truncate">
               <EarnioLogo iconClassName="h-7 w-7" />
             </Link>
+=======
+            <Logo href={homeHref} size="sm" />
+>>>>>>> refs/remotes/origin/cursor/2026-06-07-9o3t-79105
             {badge}
           </div>
 
@@ -84,7 +87,7 @@ export function AppShell({
             <ThemeToggle />
             {showNotifications && <NotificationBell />}
             {userLabel && (
-              <span className="hidden max-w-[120px] truncate text-sm text-muted lg:inline">
+              <span className="hidden max-w-[120px] truncate rounded-lg bg-[color:var(--card-muted)] px-2.5 py-1 text-sm font-medium text-[color:var(--muted-foreground)] lg:inline">
                 {userLabel}
               </span>
             )}
@@ -99,12 +102,12 @@ export function AppShell({
         </div>
 
         {menuOpen && (
-          <nav className="border-t border-border px-5 py-3 md:hidden">
+          <nav className="border-t border-[color:var(--border)]/60 px-4 py-3 md:hidden">
             {navItems.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
-                className={linkClass(item.href)}
+                className={`${linkClass(item.href)} block`}
                 onClick={() => setMenuOpen(false)}
               >
                 {item.label}
@@ -116,7 +119,7 @@ export function AppShell({
                 setMenuOpen(false);
                 onLogout();
               }}
-              className="mt-2 w-full cursor-pointer rounded-xl border border-border px-3 py-2.5 text-left text-sm font-medium text-foreground"
+              className="btn-secondary mt-2 w-full"
             >
               Log out
             </button>
@@ -129,21 +132,31 @@ export function AppShell({
       </main>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/60 bg-card/90 backdrop-blur-md md:hidden"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-[color:var(--border)]/80 bg-[color:var(--card)]/90 backdrop-blur-xl md:hidden"
         aria-label="Mobile navigation"
       >
         <div className="mx-auto flex max-w-lg justify-around px-2 py-2">
-          {navItems.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`flex min-h-12 min-w-12 cursor-pointer flex-col items-center justify-center rounded-xl px-2 text-[10px] font-medium transition ${
-                isActive(pathname, item.href) ? 'text-primary' : 'text-muted'
-              }`}
-            >
-              <span className="text-xs">{item.label}</span>
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const active = isActive(pathname, item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex min-h-12 min-w-12 flex-col items-center justify-center rounded-xl px-2 text-[10px] font-semibold transition ${
+                  active
+                    ? 'text-[color:var(--primary)]'
+                    : 'text-[color:var(--muted)]'
+                }`}
+              >
+                <span
+                  className={`mb-0.5 h-1 w-6 rounded-full transition ${
+                    active ? 'bg-[color:var(--primary)]' : 'bg-transparent'
+                  }`}
+                />
+                {item.label}
+              </Link>
+            );
+          })}
         </div>
       </nav>
     </div>

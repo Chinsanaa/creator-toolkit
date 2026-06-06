@@ -80,8 +80,33 @@ export default function WalletPage() {
   }, []);
 
   useEffect(() => {
-    load();
-  }, [load]);
+    let cancelled = false;
+    void (async () => {
+      try {
+        const [s, tx, banks] = await Promise.all([
+          getWalletSummary(),
+          getWalletTransactions(),
+          getBankAccounts(),
+        ]);
+        if (!cancelled) {
+          setSummary(s);
+          setTransactions(tx);
+          setBankAccounts(banks);
+          const defaultBank = banks.find((b) => b.is_default) ?? banks[0];
+          if (defaultBank) setPayoutBankId(defaultBank.id);
+        }
+      } catch (err) {
+        if (!cancelled) {
+          setError(err instanceof ApiError ? err.message : 'Failed to load wallet');
+        }
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   async function handleAddBank(e: FormEvent) {
     e.preventDefault();

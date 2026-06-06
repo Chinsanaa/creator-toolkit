@@ -11,14 +11,22 @@ export function SponsorshipCard({ sponsorship }: { sponsorship: SponsorshipListi
   const brand = sponsorship.sponsor?.name ?? 'Brand partner';
 
   return (
-    <Link href={`/sponsorships/${sponsorship.id}`} className="creator-gig-card">
-      <div className="creator-gig-thumb">
-        <span className="creator-gig-price">{formatMnt(sponsorship.payment_amount_mnt)}</span>
-        <div className="flex h-full items-end p-4">
-          <span className="rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-landing-muted">
-            {contentTypeLabel(sponsorship.content_type)}
-          </span>
+    <Link
+      href={`/sponsorships/${sponsorship.id}`}
+      className="glass-card block cursor-pointer p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[color:var(--primary)]/40 hover:shadow-md"
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0 flex-1">
+          <p className="badge-pill !inline-flex !normal-case">
+            {sponsorship.sponsor?.name ?? 'Brand partner'}
+          </p>
+          <h3 className="font-display mt-2 text-lg font-bold text-[color:var(--foreground)]">
+            {sponsorship.title.replace(/^\[Demo\]\s*/, '')}
+          </h3>
         </div>
+        <p className="font-mono-stat shrink-0 text-lg font-semibold text-[color:var(--primary)]">
+          {formatMnt(sponsorship.payment_amount_mnt)}
+        </p>
       </div>
       <div className="p-4">
         <p className="text-xs font-medium text-landing-muted">{brand}</p>
