@@ -54,13 +54,10 @@ function StatCard({
   valueClassName?: string;
 }) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-950">
-      <p className="text-sm text-zinc-500">{label}</p>
-      <p className={`mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50 ${valueClassName}`}>
-        {value}
-      </p>
-      <p className="mt-1 text-xs text-zinc-500">{hint}</p>
+    <div className="card p-5">
+      <p className="text-sm text-muted">{label}</p>
+      <p className={`mt-2 text-2xl font-semibold text-foreground ${valueClassName}`}>{value}</p>
+      <p className="mt-1 text-xs text-muted-foreground">{hint}</p>
     </div>
   );
 }
-

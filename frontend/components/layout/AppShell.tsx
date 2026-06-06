@@ -41,20 +41,18 @@ export function AppShell({
   const [menuOpen, setMenuOpen] = useState(false);
 
   const linkClass = (href: string) =>
-    `block rounded-lg px-3 py-2.5 text-sm font-medium transition ${
-      isActive(pathname, href)
-        ? 'bg-violet-50 text-violet-700 dark:bg-violet-950/50 dark:text-violet-300'
-        : 'text-zinc-700 hover:bg-zinc-100 dark:text-zinc-300 dark:hover:bg-zinc-900'
+    `block cursor-pointer rounded-xl px-3 py-2.5 text-sm font-medium transition ${
+      isActive(pathname, href) ? 'nav-active' : 'nav-inactive'
     }`;
 
   return (
-    <div className="flex min-h-full flex-col bg-zinc-50 dark:bg-zinc-950">
-      <header className="sticky top-0 z-40 border-b border-zinc-200 bg-white/95 backdrop-blur dark:border-zinc-800 dark:bg-zinc-950/95">
-        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-3">
+    <div className="flex min-h-full flex-col bg-background">
+      <header className="sticky top-0 z-40 border-b border-border/60 bg-card/80 backdrop-blur-md">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-5 py-3">
           <div className="flex min-w-0 items-center gap-3">
             <button
               type="button"
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg border border-zinc-300 md:hidden dark:border-zinc-700"
+              className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-border md:hidden"
               aria-label="Open menu"
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((o) => !o)}
@@ -67,8 +65,11 @@ export function AppShell({
                 )}
               </svg>
             </button>
-            <Link href={homeHref} className="truncate text-sm font-semibold text-violet-600">
-              Creator Toolkit
+            <Link href={homeHref} className="flex items-center gap-2 truncate">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary text-xs font-bold text-primary-foreground">
+                C
+              </span>
+              <span className="text-sm font-semibold text-foreground">Creator Toolkit</span>
             </Link>
             {badge}
           </div>
@@ -85,14 +86,14 @@ export function AppShell({
             <ThemeToggle />
             {showNotifications && <NotificationBell />}
             {userLabel && (
-              <span className="hidden max-w-[120px] truncate text-sm text-zinc-600 lg:inline dark:text-zinc-400">
+              <span className="hidden max-w-[120px] truncate text-sm text-muted lg:inline">
                 {userLabel}
               </span>
             )}
             <button
               type="button"
               onClick={onLogout}
-              className="hidden min-h-11 rounded-lg border border-zinc-300 px-3 text-sm font-medium text-zinc-700 hover:bg-zinc-100 sm:inline-flex sm:items-center dark:border-zinc-700 dark:text-zinc-300"
+              className="btn-secondary hidden min-h-11 sm:inline-flex"
             >
               Log out
             </button>
@@ -100,7 +101,7 @@ export function AppShell({
         </div>
 
         {menuOpen && (
-          <nav className="border-t border-zinc-100 px-4 py-3 md:hidden dark:border-zinc-800">
+          <nav className="border-t border-border px-5 py-3 md:hidden">
             {navItems.map((item) => (
               <Link
                 key={item.href}
@@ -117,7 +118,7 @@ export function AppShell({
                 setMenuOpen(false);
                 onLogout();
               }}
-              className="mt-2 w-full rounded-lg border border-zinc-300 px-3 py-2.5 text-left text-sm font-medium text-zinc-700 dark:border-zinc-700 dark:text-zinc-300"
+              className="mt-2 w-full cursor-pointer rounded-xl border border-border px-3 py-2.5 text-left text-sm font-medium text-foreground"
             >
               Log out
             </button>
@@ -125,12 +126,12 @@ export function AppShell({
         )}
       </header>
 
-      <main className="page-enter mx-auto w-full max-w-6xl flex-1 px-4 py-6 pb-24 md:py-8 md:pb-8">
+      <main className="page-enter mx-auto w-full max-w-6xl flex-1 px-5 py-6 pb-24 md:py-8 md:pb-8">
         {children}
       </main>
 
       <nav
-        className="fixed bottom-0 left-0 right-0 z-40 border-t border-zinc-200 bg-white/95 backdrop-blur md:hidden dark:border-zinc-800 dark:bg-zinc-950/95"
+        className="fixed bottom-0 left-0 right-0 z-40 border-t border-border/60 bg-card/90 backdrop-blur-md md:hidden"
         aria-label="Mobile navigation"
       >
         <div className="mx-auto flex max-w-lg justify-around px-2 py-2">
@@ -138,10 +139,8 @@ export function AppShell({
             <Link
               key={item.href}
               href={item.href}
-              className={`flex min-h-12 min-w-12 flex-col items-center justify-center rounded-lg px-2 text-[10px] font-medium ${
-                isActive(pathname, item.href)
-                  ? 'text-violet-600'
-                  : 'text-zinc-500'
+              className={`flex min-h-12 min-w-12 cursor-pointer flex-col items-center justify-center rounded-xl px-2 text-[10px] font-medium transition ${
+                isActive(pathname, item.href) ? 'text-primary' : 'text-muted'
               }`}
             >
               <span className="text-xs">{item.label}</span>
@@ -152,4 +151,3 @@ export function AppShell({
     </div>
   );
 }
-

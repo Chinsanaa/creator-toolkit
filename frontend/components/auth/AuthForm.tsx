@@ -24,6 +24,22 @@ interface AuthFormProps {
   beforeForm?: React.ReactNode;
 }
 
+function AuthLogoMark() {
+  return (
+    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-landing-fg text-white">
+      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
+        <path
+          d="M3 12L21 4L14 21L11 13L3 12Z"
+          fill="currentColor"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinejoin="round"
+        />
+      </svg>
+    </div>
+  );
+}
+
 export function AuthForm({
   title,
   subtitle,
@@ -60,25 +76,19 @@ export function AuthForm({
 
   return (
     <div className="w-full max-w-md">
-      <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <div className="mb-8">
-          <p className="text-sm font-medium uppercase tracking-wide text-violet-600">
-            Creator Toolkit
-          </p>
-          <h1 className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">
-            {title}
-          </h1>
-          <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-400">{subtitle}</p>
-        </div>
+      <div className="auth-card p-8 sm:p-10">
+        <AuthLogoMark />
+        <h1 className="text-2xl font-semibold text-landing-fg">{title}</h1>
+        <p className="mt-2 text-sm text-landing-muted">{subtitle}</p>
 
         {beforeForm}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form onSubmit={handleSubmit} className="space-y-5">
           {fields.map((field) => (
             <div key={field.name}>
               <label
                 htmlFor={field.name}
-                className="mb-1.5 block text-sm font-medium text-zinc-700 dark:text-zinc-300"
+                className="mb-2 block text-sm font-medium text-landing-fg"
               >
                 {field.label}
               </label>
@@ -88,29 +98,23 @@ export function AuthForm({
                 type={field.type ?? 'text'}
                 required={field.required ?? true}
                 placeholder={field.placeholder}
-                className="input-touch"
+                className="auth-input"
               />
             </div>
           ))}
 
           {error && (
-            <p className="rounded-lg bg-red-50 px-3 py-2 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
-              {error}
-            </p>
+            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
           )}
 
-          <button
-            type="submit"
-            disabled={pending}
-            className="btn-primary"
-          >
+          <button type="submit" disabled={pending} className="landing-btn-dark auth-submit">
             {pending ? 'Please wait…' : submitLabel}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-8 text-center text-sm text-landing-muted">
           {alternatePrompt}{' '}
-          <Link href={alternateHref} className="font-medium text-violet-600 hover:text-violet-700">
+          <Link href={alternateHref} className="auth-link">
             {alternateLabel}
           </Link>
         </p>

@@ -62,13 +62,13 @@ export default function NewSponsorCampaignPage() {
     <SponsorShell>
       <Link
         href="/sponsor/campaigns"
-        className="text-sm font-medium text-violet-600 hover:text-violet-700"
+        className="text-sm font-medium text-primary hover:text-primary"
       >
         ← Back to campaigns
       </Link>
 
-      <h1 className="mt-6 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">New campaign</h1>
-      <p className="mt-1 text-sm text-zinc-600 dark:text-zinc-400">
+      <h1 className="mt-6 text-2xl font-semibold text-foreground">New campaign</h1>
+      <p className="mt-1 text-sm text-muted">
         Minimum payout ₮10,000. Campaigns go live immediately as active.
       </p>
 
@@ -179,7 +179,7 @@ export default function NewSponsorCampaignPage() {
         <button
           type="submit"
           disabled={submitting}
-          className="rounded-lg bg-violet-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-violet-700 disabled:opacity-60"
+          className="rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground hover:opacity-90 disabled:opacity-60"
         >
           {submitting ? 'Creating…' : 'Publish campaign'}
         </button>
@@ -189,7 +189,7 @@ export default function NewSponsorCampaignPage() {
 }
 
 const inputClass =
-  'mt-1.5 w-full rounded-lg border border-zinc-300 bg-white px-3 py-2 text-sm dark:border-zinc-700 dark:bg-zinc-900';
+  'mt-1.5 w-full rounded-lg border border-border bg-card px-3 py-2 text-sm dark:border-border dark:bg-surface';
 
 function Field({
   label,
@@ -202,7 +202,7 @@ function Field({
 }) {
   return (
     <div>
-      <label className="block text-sm font-medium text-zinc-700 dark:text-zinc-300">
+      <label className="block text-sm font-medium text-foreground">
         {label}
         {required && <span className="text-red-500"> *</span>}
       </label>

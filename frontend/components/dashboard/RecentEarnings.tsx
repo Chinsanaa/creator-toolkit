@@ -3,35 +3,32 @@ import type { EarningsEntry } from '@/lib/types/dashboard';
 
 export function RecentEarnings({ data }: { data: EarningsEntry[] }) {
   return (
-    <div className="rounded-2xl border border-zinc-200 bg-white p-6 dark:border-zinc-800 dark:bg-zinc-950">
-      <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">Recent earnings</h2>
+    <div className="card p-6">
+      <h2 className="text-lg font-semibold text-foreground">Recent earnings</h2>
       {data.length === 0 ? (
-        <p className="mt-4 text-sm text-zinc-500">
+        <p className="mt-4 text-sm text-muted">
           No earnings yet. Connect a platform or wait for your first sync.
         </p>
       ) : (
         <div className="mt-4 overflow-x-auto">
           <table className="w-full text-left text-sm">
             <thead>
-              <tr className="border-b border-zinc-200 text-zinc-500 dark:border-zinc-800">
+              <tr className="border-b border-border text-muted">
                 <th className="pb-3 pr-4 font-medium">Period</th>
                 <th className="pb-3 pr-4 font-medium">Platform</th>
                 <th className="pb-3 pr-4 font-medium">Source</th>
-                <th className="pb-3 font-medium text-right">Amount</th>
+                <th className="pb-3 text-right font-medium">Amount</th>
               </tr>
             </thead>
             <tbody>
               {data.map((row) => (
-                <tr
-                  key={row.id}
-                  className="border-b border-zinc-100 last:border-0 dark:border-zinc-900"
-                >
-                  <td className="py-3 pr-4 text-zinc-700 dark:text-zinc-300">
+                <tr key={row.id} className="border-b border-border/60 last:border-0">
+                  <td className="py-3 pr-4 text-foreground">
                     {formatPeriod(row.period_start, row.period_end)}
                   </td>
                   <td className="py-3 pr-4">{platformLabel(row.platform)}</td>
-                  <td className="py-3 pr-4 text-zinc-500">{sourceLabel(row.source_type)}</td>
-                  <td className="py-3 text-right font-medium text-zinc-900 dark:text-zinc-100">
+                  <td className="py-3 pr-4 text-muted">{sourceLabel(row.source_type)}</td>
+                  <td className="py-3 text-right font-medium text-foreground">
                     {formatMnt(row.amount_mnt)}
                   </td>
                 </tr>

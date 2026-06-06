@@ -39,14 +39,12 @@ export function AccountTypeChooser({ mode }: { mode: ChooserMode }) {
 
   return (
     <div className="w-full max-w-md">
-      <div className="rounded-2xl border border-zinc-200 bg-white p-8 shadow-sm dark:border-zinc-800 dark:bg-zinc-950">
-        <p className="text-sm font-medium uppercase tracking-wide text-violet-600">
-          Creator Toolkit
-        </p>
-        <h1 className="mt-2 text-2xl font-semibold text-zinc-900 dark:text-zinc-50">{c.title}</h1>
-        <p className="mt-6 text-center text-sm font-medium text-zinc-700 dark:text-zinc-300">
-          {c.question}
-        </p>
+      <div className="card-elevated p-8 sm:p-10">
+        <div className="mb-8 flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-sm font-bold text-primary-foreground">
+          C
+        </div>
+        <h1 className="text-2xl font-semibold text-foreground">{c.title}</h1>
+        <p className="mt-6 text-center text-sm font-medium text-foreground">{c.question}</p>
 
         <div className="mt-6 space-y-3">
           <AccountTypeCard
@@ -61,9 +59,9 @@ export function AccountTypeChooser({ mode }: { mode: ChooserMode }) {
           />
         </div>
 
-        <p className="mt-8 text-center text-sm text-zinc-600 dark:text-zinc-400">
+        <p className="mt-8 text-center text-sm text-muted">
           {c.switchPrompt}{' '}
-          <Link href={c.switchHref} className="font-medium text-violet-600 hover:text-violet-700">
+          <Link href={c.switchHref} className="link-primary">
             {c.switchLabel}
           </Link>
         </p>
@@ -84,10 +82,12 @@ function AccountTypeCard({
   return (
     <Link
       href={href}
-      className="block rounded-xl border border-zinc-200 bg-zinc-50 p-5 text-left transition hover:border-violet-400 hover:bg-violet-50/50 dark:border-zinc-700 dark:bg-zinc-900/50 dark:hover:border-violet-600 dark:hover:bg-violet-950/30"
+      className="group block rounded-xl border border-border bg-surface p-5 text-left transition hover:border-primary/40 hover:bg-primary-subtle"
     >
-      <span className="text-base font-semibold text-zinc-900 dark:text-zinc-50">{label}</span>
-      <p className="mt-1.5 text-sm text-zinc-600 dark:text-zinc-400">{description}</p>
+      <span className="text-base font-semibold text-foreground group-hover:text-primary">
+        {label}
+      </span>
+      <p className="mt-1.5 text-sm text-muted">{description}</p>
     </Link>
   );
 }
