@@ -68,6 +68,36 @@ router.post('/login', async (req: AuthRequest, res: Response) => {
   }
 });
 
+router.post('/oauth/session', async (req: AuthRequest, res: Response) => {
+  try {
+    const { accessToken, refreshToken, userType } = req.body as {
+      accessToken?: string;
+      refreshToken?: string;
+      userType?: string;
+    };
+
+    const resolvedType = userType === 'sponsor' ? 'sponsor' : userType === 'creator' ? 'creator' : undefined;
+
+    const result = await authService.finishOAuthSession(
+      accessToken ?? '',
+      refreshToken ?? '',
+      resolvedType
+    );
+
+    setRefreshTokenCookie(res, result.refreshToken);
+
+    res.json({
+      message: 'Signed in successfully',
+      user: result.user,
+      accessToken: result.accessToken,
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'OAuth sign-in failed';
+    console.error('OAuth session error:', error);
+    res.status(400).json({ error: message });
+  }
+});
+
 router.post('/logout', async (req: AuthRequest, res: Response) => {
   try {
     await authService.logout();
@@ -113,6 +143,23 @@ router.get('/me', verifyToken, async (req: AuthRequest, res: Response) => {
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Failed to fetch profile';
     res.status(500).json({ error: message });
+  }
+});
+
+router.delete('/account', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const { password } = req.body as { password?: string };
+    const profile = await authService.getProfile(req.userId!, req.token!);
+
+    await authService.deleteAccount(req.userId!, profile.email, password ?? '');
+
+    res.clearCookie('refreshToken');
+    res.json({ message: 'Account deleted successfully' });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to delete account';
+    const status = message.toLowerCase().includes('password') ? 401 : 400;
+    console.error('Delete account error:', error);
+    res.status(status).json({ error: message });
   }
 });
 

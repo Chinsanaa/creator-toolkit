@@ -92,7 +92,9 @@ export default function SponsorCampaignsPage() {
       {loading && (
         <p className="text-sm text-[color:var(--muted-foreground)]">Loading campaigns…</p>
       )}
-      {error && <p className="alert-error">{error}</p>}
+      {error ? (
+        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+      ) : null}
 
       {!loading && !error && filtered.length === 0 && (
         <p className="text-sm text-[color:var(--muted-foreground)]">
@@ -115,7 +117,7 @@ export default function SponsorCampaignsPage() {
           <Link
             key={c.id}
             href={`/sponsor/campaigns/${c.id}`}
-            className="glass-card block cursor-pointer p-5 transition duration-200 hover:-translate-y-0.5 hover:border-[color:var(--primary)]/40 hover:shadow-md"
+            className="creator-panel block cursor-pointer p-5 transition duration-200 hover:-translate-y-0.5 hover:shadow-md"
           >
             <div className="flex flex-wrap items-start justify-between gap-3">
               <div className="min-w-0 flex-1">
@@ -138,7 +140,7 @@ export default function SponsorCampaignsPage() {
                 )}
               </div>
               <div className="text-right">
-                <p className="font-mono-stat text-lg font-semibold text-[color:var(--primary)]">
+                <p className="text-lg font-semibold text-primary">
                   {formatMnt(c.payment_amount_mnt)}
                 </p>
                 <p className="mt-1 text-xs text-[color:var(--muted)]">

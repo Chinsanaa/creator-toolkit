@@ -1,6 +1,12 @@
 import { normalizeAuthUser } from '../auth/user';
 import { getAccessToken, setAccessToken, setUserTypeCookie } from '../auth/session';
-import type { AuthResponse, LoginRequest, MeResponse, SignupRequest } from '../types/auth';
+import type {
+  AuthResponse,
+  LoginRequest,
+  MeResponse,
+  OAuthSessionRequest,
+  SignupRequest,
+} from '../types/auth';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
@@ -149,4 +155,25 @@ export async function logout(): Promise<void> {
 export async function getMe(): Promise<MeResponse> {
   const data = await apiFetch<MeResponse>('/api/auth/me');
   return { ...data, user: normalizeAuthUser(data.user) };
+}
+
+export async function deleteAccount(password: string): Promise<void> {
+  await apiFetch('/api/auth/account', {
+    method: 'DELETE',
+    body: JSON.stringify({ password }),
+  });
+}
+
+export async function completeOAuthSession(payload: OAuthSessionRequest): Promise<AuthResponse> {
+  const data = normalizeAuthResponse(
+    await apiFetch<AuthResponse>(
+      '/api/auth/oauth/session',
+      {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      },
+      false
+    )
+  );
+  return data;
 }

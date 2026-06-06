@@ -7,10 +7,8 @@ const repoRoot = path.join(frontendDir, "..");
 
 const nextConfig: NextConfig = {
   output: "standalone",
+  // Monorepo: trace files from repo root for standalone Docker/Vercel output.
   outputFileTracingRoot: repoRoot,
-  turbopack: {
-    root: repoRoot,
-  },
 };
 
 export default nextConfig;

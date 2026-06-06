@@ -50,6 +50,8 @@ export const config = {
     '/sponsorships/:path*',
     '/wallet/:path*',
     '/platforms/:path*',
+    '/settings',
+    '/settings/:path*',
     '/sponsor/:path*',
     '/login',
     '/login/:path*',

@@ -39,33 +39,37 @@ export function AccountTypeChooser({ mode }: { mode: ChooserMode }) {
 
   return (
     <div className="w-full max-w-md">
-      <div className="glass-panel p-8 shadow-[var(--shadow-glow)]">
-        <p className="badge-pill">Creator Toolkit</p>
-        <h1 className="font-display mt-3 text-2xl font-bold text-[color:var(--foreground)]">
-          {c.title}
-        </h1>
-        <p className="mt-6 text-center text-sm font-semibold text-[color:var(--foreground)]">
-          {c.question}
-        </p>
+      <div className="auth-card p-8 sm:p-10">
+        <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-landing-fg text-white">
+          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M3 12L21 4L14 21L11 13L3 12Z"
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+          </svg>
+        </div>
+        <h1 className="text-2xl font-semibold text-landing-fg">{c.title}</h1>
+        <p className="mt-6 text-center text-sm font-medium text-landing-fg">{c.question}</p>
 
         <div className="mt-6 space-y-3">
           <AccountTypeCard
             href={c.creatorHref}
             label="Creator"
             description="Track earnings, apply to brand deals, and manage payouts."
-            variant="creator"
           />
           <AccountTypeCard
             href={c.sponsorHref}
             label="Sponsor"
             description="Post campaigns and review creator applications."
-            variant="sponsor"
           />
         </div>
 
-        <p className="mt-8 text-center text-sm text-[color:var(--muted-foreground)]">
+        <p className="mt-8 text-center text-sm text-landing-muted">
           {c.switchPrompt}{' '}
-          <Link href={c.switchHref} className="link-primary">
+          <Link href={c.switchHref} className="auth-link">
             {c.switchLabel}
           </Link>
         </p>
@@ -78,26 +82,20 @@ function AccountTypeCard({
   href,
   label,
   description,
-  variant,
 }: {
   href: string;
   label: string;
   description: string;
-  variant: 'creator' | 'sponsor';
 }) {
   return (
     <Link
       href={href}
-      className={`block cursor-pointer rounded-2xl border p-5 text-left transition duration-200 hover:-translate-y-0.5 hover:shadow-md ${
-        variant === 'creator'
-          ? 'border-[color:var(--border)] bg-[color:var(--card-muted)] hover:border-[color:var(--primary)]/50'
-          : 'border-[color:var(--border)] bg-[color:var(--accent-soft)]/30 hover:border-[color:var(--accent)]/50'
-      }`}
+      className="group block rounded-xl border border-sky-100 bg-white/80 p-5 text-left transition hover:border-landing-fg/20 hover:bg-white hover:shadow-sm"
     >
-      <span className="font-display text-base font-bold text-[color:var(--foreground)]">
+      <span className="text-base font-semibold text-landing-fg group-hover:text-landing-fg">
         {label}
       </span>
-      <p className="mt-1.5 text-sm text-[color:var(--muted-foreground)]">{description}</p>
+      <p className="mt-1.5 text-sm text-landing-muted">{description}</p>
     </Link>
   );
 }

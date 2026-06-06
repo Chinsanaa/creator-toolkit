@@ -210,7 +210,8 @@ h4 {
 }
 
 .btn-primary {
-  @apply inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold text-primary-foreground transition;
+  @apply inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-semibold transition;
+  color: var(--primary-foreground);
   background: var(--primary);
 }
 
@@ -259,11 +260,16 @@ h4 {
 }
 
 .nav-active {
-  @apply bg-primary-subtle text-primary;
+  background: var(--primary-subtle);
+  color: var(--primary);
 }
 
 .nav-inactive {
   @apply text-muted transition hover:bg-surface hover:text-foreground;
+}
+
+.auth-layout {
+  min-height: 100%;
 }
 
 /* SideShift-inspired landing page */
@@ -316,6 +322,49 @@ h4 {
 
 .auth-submit {
   @apply min-h-12 w-full text-[15px];
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--landing-muted);
+  font-size: 0.8125rem;
+}
+
+.auth-divider::before,
+.auth-divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: rgb(20 20 20 / 0.08);
+}
+
+.oauth-provider-btn {
+  display: flex;
+  min-height: 2.75rem;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  gap: 0.75rem;
+  border-radius: 0.75rem;
+  border: 1px solid rgb(20 20 20 / 0.1);
+  background: white;
+  padding: 0.625rem 1rem;
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--landing-fg);
+  transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.oauth-provider-btn:hover:not(:disabled) {
+  border-color: rgb(20 20 20 / 0.18);
+  background: rgb(248 250 252);
+}
+
+.oauth-provider-btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
 }
 
 .legal-consent-label {

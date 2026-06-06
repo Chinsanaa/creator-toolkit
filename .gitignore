@@ -141,3 +141,6 @@ dist
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
 .vite/
+
+# Nested duplicate checkout (accidental submodule gitlink)
+/creator-toolkit/

@@ -41,6 +41,18 @@ describe('Protected routes', () => {
     const res = await request(app()).get('/api/notifications');
     assert.equal(res.status, 401);
   });
+
+  it('rejects unauthenticated account deletion', async () => {
+    const res = await request(app())
+      .delete('/api/auth/account')
+      .send({ password: 'wrong-password' });
+    assert.equal(res.status, 401);
+  });
+
+  it('rejects OAuth session without tokens', async () => {
+    const res = await request(app()).post('/api/auth/oauth/session').send({});
+    assert.equal(res.status, 400);
+  });
 });
 
 describe('Sync cron', () => {

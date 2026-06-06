@@ -55,10 +55,12 @@ export default function NewSponsorCampaignPage() {
       </div>
 
       <form onSubmit={handleFormSubmit} className="mt-8 max-w-2xl">
-        <div className="glass-panel p-6 sm:p-8">
+        <div className="creator-panel-lg p-6 sm:p-8">
           <CampaignEditor values={values} onChange={setValues} disabled={busy} />
 
-          {error && <p className="alert-error mt-4">{error}</p>}
+          {error ? (
+            <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+          ) : null}
 
           <CampaignEditorToolbar variant="create" busy={busy} onPublish={() => void publish()} />
         </div>
