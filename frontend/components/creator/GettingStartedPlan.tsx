@@ -32,8 +32,8 @@ export function GettingStartedPlan({ tasks }: { tasks: PlanTask[] }) {
               <span
                 className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border-2 ${
                   task.done
-                    ? 'border-landing-fg bg-landing-fg text-white'
-                    : 'border-sky-200 bg-white text-transparent'
+                    ? 'border-primary bg-primary text-white'
+                    : 'border-violet-200 bg-white text-transparent'
                 }`}
                 aria-hidden
               >

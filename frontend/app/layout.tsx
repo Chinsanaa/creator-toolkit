@@ -1,10 +1,11 @@
-import type { Metadata } from 'next';
-import { DM_Sans, JetBrains_Mono, Outfit } from 'next/font/google';
-import { AuthProvider } from '@/contexts/AuthContext';
-import { ThemeProvider } from '@/lib/theme/ThemeProvider';
-import { ErrorBoundary } from '@/components/ErrorBoundary';
-import { OfflineBanner } from '@/components/OfflineBanner';
-import './globals.css';
+import type { Metadata } from "next";
+import { Figtree, Sora } from "next/font/google";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/lib/theme/ThemeProvider";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
+import { OfflineBanner } from "@/components/OfflineBanner";
+import { EARNIO_SLOGAN } from "@/lib/brand/earnio";
+import "./globals.css";
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -25,8 +26,8 @@ const jetbrains = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Creator Toolkit',
-  description: 'Monetization dashboard for Mongolian content creators',
+  title: "Earnio",
+  description: `${EARNIO_SLOGAN} — Monetization platform for Mongolian creators and brands`,
 };
 
 export default function RootLayout({

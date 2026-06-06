@@ -4,27 +4,38 @@ import type { AuthResponse, LoginRequest, MeResponse, SignupRequest } from '../t
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://localhost:3001';
 
+export const API_NOT_FOUND_CODE = 'NOT_FOUND';
+
 export class ApiError extends Error {
   constructor(
     message: string,
-    public status: number
+    public status: number,
+    public code?: string
   ) {
     super(message);
     this.name = 'ApiError';
   }
 }
 
-async function parseError(res: Response): Promise<string> {
+async function parseError(res: Response): Promise<{ message: string; code?: string }> {
   try {
     const data = await res.json();
-    if (data && typeof data.error === 'string') return data.error;
-    if (data?.error && typeof data.error.message === 'string') return data.error.message;
+    if (data && typeof data.error === 'string') {
+      return { message: data.error };
+    }
+    if (data?.error && typeof data.error.message === 'string') {
+      return {
+        message: data.error.message,
+        code: typeof data.error.code === 'string' ? data.error.code : undefined,
+      };
+    }
   } catch {
     // ignore
   }
-  if (res.status === 401) return 'Please sign in again.';
-  if (res.status >= 500) return 'Something went wrong. Please try again.';
-  return res.statusText || 'Request failed';
+  if (res.status === 401) return { message: 'Please sign in again.' };
+  if (res.status === 404) return { message: 'Resource not found.', code: API_NOT_FOUND_CODE };
+  if (res.status >= 500) return { message: 'Something went wrong. Please try again.' };
+  return { message: res.statusText || 'Request failed' };
 }
 
 const FETCH_TIMEOUT_MS = 30_000;
@@ -66,7 +77,8 @@ export async function apiFetch<T>(
   }
 
   if (!res.ok) {
-    throw new ApiError(await parseError(res), res.status);
+    const { message, code } = await parseError(res);
+    throw new ApiError(message, res.status, code);
   }
 
   return res.json() as Promise<T>;

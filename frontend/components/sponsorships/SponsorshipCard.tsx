@@ -1,9 +1,5 @@
 import Link from 'next/link';
-import {
-  applicationStatusLabel,
-  contentTypeLabel,
-  formatMnt,
-} from '@/lib/format';
+import { applicationStatusLabel, formatMnt } from '@/lib/format';
 import type { SponsorshipListing } from '@/lib/types/sponsorship';
 
 export function SponsorshipCard({ sponsorship }: { sponsorship: SponsorshipListing }) {

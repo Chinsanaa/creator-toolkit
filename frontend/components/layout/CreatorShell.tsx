@@ -19,7 +19,7 @@ export function CreatorShell({ children }: { children: React.ReactNode }) {
   return (
     <CreatorAppShell
       userName={user?.name}
-      userHandle={user ? `@${user.username}` : undefined}
+      userHandle={user?.username}
       onLogout={() => logout()}
     >
       {children}

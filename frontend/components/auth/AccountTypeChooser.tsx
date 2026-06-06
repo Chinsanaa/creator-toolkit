@@ -16,7 +16,7 @@ const copy: Record<
 > = {
   login: {
     title: 'Sign in',
-    question: 'How are you using Creator Toolkit?',
+    question: 'How are you using Earnio?',
     creatorHref: '/login/creator',
     sponsorHref: '/login/sponsor',
     switchHref: '/signup',
@@ -25,7 +25,7 @@ const copy: Record<
   },
   signup: {
     title: 'Get started',
-    question: 'How will you use Creator Toolkit?',
+    question: 'How will you use Earnio?',
     creatorHref: '/signup/creator',
     sponsorHref: '/signup/sponsor',
     switchHref: '/login',

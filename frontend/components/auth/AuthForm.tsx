@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { FormEvent, useState } from 'react';
+import { LegalConsent } from '@/components/auth/LegalConsent';
 import { ApiError } from '@/lib/api/client';
 
 interface Field {
@@ -22,22 +23,7 @@ interface AuthFormProps {
   alternateLabel: string;
   onSubmit: (values: Record<string, string>) => Promise<void>;
   beforeForm?: React.ReactNode;
-}
-
-function AuthLogoMark() {
-  return (
-    <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-landing-fg text-white">
-      <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
-        <path
-          d="M3 12L21 4L14 21L11 13L3 12Z"
-          fill="currentColor"
-          stroke="currentColor"
-          strokeWidth="1.5"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
-  );
+  legalConsentMode?: 'signup' | 'login';
 }
 
 export function AuthForm({
@@ -50,9 +36,11 @@ export function AuthForm({
   alternateLabel,
   onSubmit,
   beforeForm,
+  legalConsentMode,
 }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -65,6 +53,16 @@ export function AuthForm({
       values[field.name] = String(formData.get(field.name) ?? '');
     });
 
+    if (legalConsentMode === 'signup' && !acceptedTerms) {
+      setError('You must accept the Terms and Conditions and Privacy Policy');
+      setPending(false);
+      return;
+    }
+
+    if (legalConsentMode === 'signup') {
+      values.acceptedTerms = 'true';
+    }
+
     try {
       await onSubmit(values);
     } catch (err) {
@@ -76,14 +74,20 @@ export function AuthForm({
 
   return (
     <div className="w-full max-w-md">
-      <div className="glass-panel p-8 shadow-[var(--shadow-glow)]">
-        <div className="mb-8">
-          <p className="badge-pill">Account</p>
-          <h1 className="font-display mt-3 text-2xl font-bold text-[color:var(--foreground)]">
-            {title}
-          </h1>
-          <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">{subtitle}</p>
+      <div className="auth-card p-8 sm:p-10">
+        <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-landing-fg text-white">
+          <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
+            <path
+              d="M3 12L21 4L14 21L11 13L3 12Z"
+              fill="currentColor"
+              stroke="currentColor"
+              strokeWidth="1.5"
+              strokeLinejoin="round"
+            />
+          </svg>
         </div>
+        <h1 className="text-2xl font-semibold text-landing-fg">{title}</h1>
+        <p className="mt-2 text-sm text-landing-muted">{subtitle}</p>
 
         {beforeForm}
 
@@ -107,14 +111,24 @@ export function AuthForm({
             </div>
           ))}
 
-          {error && <p className="alert-error">{error}</p>}
+          {legalConsentMode ? (
+            <LegalConsent
+              mode={legalConsentMode}
+              checked={acceptedTerms}
+              onCheckedChange={setAcceptedTerms}
+            />
+          ) : null}
+
+          {error && (
+            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+          )}
 
           <button type="submit" disabled={pending} className="btn-primary">
             {pending ? 'Please wait…' : submitLabel}
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-[color:var(--muted-foreground)]">
+        <p className="mt-6 text-center text-sm text-landing-muted">
           {alternatePrompt}{' '}
           <Link href={alternateHref} className="link-primary">
             {alternateLabel}

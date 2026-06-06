@@ -16,6 +16,7 @@ export default function CreatorLoginPage() {
       alternatePrompt="New creator?"
       alternateLabel="Create account"
       beforeForm={<AuthTypeBackLink audience="creator" />}
+      legalConsentMode="login"
       fields={[
         { name: 'email', label: 'Email', type: 'email', placeholder: 'you@example.com' },
         { name: 'password', label: 'Password', type: 'password', placeholder: '••••••••' },

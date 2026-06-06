@@ -20,6 +20,7 @@ export interface SignupRequest {
   username: string;
   phone?: string;
   userType?: UserType;
+  acceptedTerms?: boolean;
 }
 
 export interface AuthResponse {

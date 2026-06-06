@@ -6,6 +6,7 @@
 
 const FRONTEND = process.env.FRONTEND_URL || 'http://localhost:3000';
 const BACKEND = process.env.BACKEND_URL || 'http://localhost:3001';
+const FETCH_TIMEOUT_MS = Number(process.env.SMOKE_TIMEOUT_MS || 20_000);
 
 const results = [];
 
@@ -16,7 +17,11 @@ function record(name, pass, detail = '') {
 }
 
 async function fetchStatus(url, options = {}) {
-  const res = await fetch(url, { redirect: 'manual', ...options });
+  const res = await fetch(url, {
+    redirect: 'manual',
+    signal: AbortSignal.timeout(FETCH_TIMEOUT_MS),
+    ...options,
+  });
   return res;
 }
 
@@ -59,6 +64,18 @@ async function testFrontend() {
     } catch (e) {
       record(`redirect ${path}`, false, String(e.message || e));
     }
+  }
+
+  try {
+    const res = await fetch(`${FRONTEND}/this-route-does-not-exist`, { redirect: 'manual' });
+    const html = await res.text();
+    record(
+      'unknown frontend route 404',
+      res.status === 404 && html.includes('Page not found'),
+      `status ${res.status}`
+    );
+  } catch (e) {
+    record('unknown frontend route 404', false, String(e.message || e));
   }
 
   const protectedPaths = ['/dashboard', '/platforms', '/sponsorships', '/wallet', '/sponsor/dashboard'];
@@ -107,7 +124,10 @@ async function testBackend() {
   try {
     const res = await fetch(`${BACKEND}/api/unknown`);
     const body = await res.json();
-    record('GET /api/unknown 404', res.status === 404 && body.error === 'Route not found');
+    record(
+      'GET /api/unknown 404',
+      res.status === 404 && body.error?.code === 'NOT_FOUND' && body.error?.message === 'Route not found'
+    );
   } catch (e) {
     record('GET /api/unknown 404', false, String(e.message || e));
   }

@@ -52,7 +52,7 @@ export const CREATOR_FEATURES = [
 export const CREATOR_TESTIMONIALS = [
   {
     quote:
-      'Creator Toolkit helped me track my TikTok earnings and land my first brand deal in Mongolia. Everything is in one place.',
+      'Earnio helped me track my TikTok earnings and land my first brand deal in Mongolia. Everything is in one place.',
     name: 'Bold-Erdene',
     role: 'TikTok creator',
   },
@@ -74,7 +74,7 @@ export const CREATOR_FAQ = [
   {
     question: 'How do I sign up as a creator?',
     answer:
-      'Create a free account, connect your TikTok or YouTube platforms, and complete your profile. You can browse sponsorships and apply directly from your dashboard.',
+      'Create a free Earnio account, connect your TikTok or YouTube platforms, and complete your profile. You can browse sponsorships and apply directly from your dashboard.',
   },
   {
     question: 'Who can join?',
@@ -84,7 +84,7 @@ export const CREATOR_FAQ = [
   {
     question: 'How do payments work?',
     answer:
-      'Earnings sync from connected platforms. Sponsorship payouts and wallet withdrawals are handled in MNT through your Creator Toolkit wallet.',
+      'Earnings sync from connected platforms. Sponsorship payouts and wallet withdrawals are handled in MNT through your Earnio wallet.',
   },
   {
     question: 'Can I work with multiple brands at once?',
@@ -110,12 +110,12 @@ export const LANDING_CONTENT: Record<LandingAudience, LandingContent> = {
     hero: {
       title: 'The platform for Mongolian creators',
       subtitle:
-        'Creator Toolkit connects you with local brands, handles sponsorships and payouts, and lets you focus on creating.',
+        'Earnio connects you with local brands, handles sponsorships and payouts, and lets you focus on creating.',
       secondaryCta: { label: 'Explore sponsorships', href: '#features' },
     },
     howItWorks: {
       id: 'how-it-works',
-      title: 'How Creator Toolkit works for creators',
+      title: 'How Earnio works for creators',
       subtitle: 'From connecting platforms to getting paid in MNT — four simple steps.',
       steps: [
         {
@@ -137,7 +137,7 @@ export const LANDING_CONTENT: Record<LandingAudience, LandingContent> = {
       ],
     },
     footer: {
-      tagline: '© Creator Toolkit — Built for Mongolian creators',
+      tagline: '© Earnio — Built for Mongolian creators',
     },
     illustrationMetrics: ['2.4M', '890K', '₮12M'],
   },
@@ -152,7 +152,6 @@ export const LANDING_CONTENT: Record<LandingAudience, LandingContent> = {
     navItems: [
       { type: 'link', label: 'Campaigns', href: '/sponsor/campaigns' },
       { type: 'link', label: 'Dashboard', href: '/sponsor/dashboard' },
-      { type: 'link', label: 'Resources', href: '/docs' },
     ],
     hero: {
       title: 'Reach Mongolian creators with sponsored campaigns',
@@ -183,7 +182,7 @@ export const LANDING_CONTENT: Record<LandingAudience, LandingContent> = {
       ],
     },
     footer: {
-      tagline: '© Creator Toolkit — Built for Mongolian brands',
+      tagline: '© Earnio — Built for Mongolian brands',
     },
     illustrationMetrics: ['120', '₮5M', '48h'],
   },

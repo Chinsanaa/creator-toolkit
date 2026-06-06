@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useState } from 'react';
+import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { Logo } from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -64,7 +65,9 @@ export function AppShell({
                 )}
               </svg>
             </button>
-            <Logo href={homeHref} size="sm" />
+            <Link href={homeHref} className="truncate">
+              <EarnioLogo iconClassName="h-7 w-7" />
+            </Link>
             {badge}
           </div>
 

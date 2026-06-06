@@ -6,7 +6,7 @@ export function CreatorTestimonials() {
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-landing-fg sm:text-4xl">
-            Creators love Creator Toolkit
+            Creators love Earnio
           </h2>
           <p className="mt-4 text-lg text-landing-muted">
             Join hundreds of Mongolian creators earning through brand partnerships.

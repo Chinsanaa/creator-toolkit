@@ -54,7 +54,7 @@ export const CREATOR_SIDEBAR_NAV: CreatorNavItem[] = [
     href: '/sponsorships',
     label: 'Explore',
     icon: <IconExplore />,
-    match: (p) => p === '/sponsorships' || (p.startsWith('/sponsorships/') && p !== '/sponsorships/applications'),
+    match: (p) => p === '/sponsorships' || p.startsWith('/sponsorships/'),
   },
   { href: '/platforms', label: 'Platforms', icon: <IconPlatforms /> },
   { href: '/wallet', label: 'Wallet', icon: <IconWallet /> },

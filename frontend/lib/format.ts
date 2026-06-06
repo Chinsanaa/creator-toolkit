@@ -19,6 +19,12 @@ export function formatPercent(value: number): string {
   return `${sign}${value.toFixed(1)}%`;
 }
 
+export function formatHandle(handle: string): string {
+  const trimmed = handle.trim();
+  if (!trimmed) return '';
+  return trimmed.startsWith('@') ? trimmed : `@${trimmed}`;
+}
+
 export function platformLabel(platform: string): string {
   const labels: Record<string, string> = {
     tiktok: 'TikTok',

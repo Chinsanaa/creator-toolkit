@@ -9,9 +9,11 @@ import sponsorRoutes from './routes/sponsor';
 import platformRoutes from './routes/platforms';
 import notificationRoutes from './routes/notifications';
 import syncRoutes from './routes/sync';
+import legalRoutes from './routes/legal';
 import { getHealthStatus } from './routes/health';
 import type { EnvConfig } from './config/env';
 import { AppError } from './utils/AppError';
+import { notFoundBody } from './utils/httpErrors';
 
 export function createApp(config: EnvConfig): express.Application {
   const app = express();
@@ -38,9 +40,10 @@ export function createApp(config: EnvConfig): express.Application {
   app.use('/api/platforms', platformRoutes);
   app.use('/api/notifications', notificationRoutes);
   app.use('/api/sync', syncRoutes);
+  app.use('/api/legal', legalRoutes);
 
   app.use((_req, res) => {
-    res.status(404).json({ error: 'Route not found' });
+    res.status(404).json(notFoundBody());
   });
 
   app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

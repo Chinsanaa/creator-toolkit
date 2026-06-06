@@ -29,7 +29,7 @@ export function buildNotificationEmail(params: {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:32px auto;background:#fff;border-radius:12px;border:1px solid #e4e4e7;">
     <tr>
       <td style="padding:28px 28px 8px;">
-        <p style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;">Creator Toolkit</p>
+        <p style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;">Earnio</p>
         <h1 style="margin:12px 0 0;font-size:20px;font-weight:600;color:#18181b;">${title}</h1>
       </td>
     </tr>
@@ -42,7 +42,7 @@ export function buildNotificationEmail(params: {
     </tr>
     <tr>
       <td style="padding:16px 28px;border-top:1px solid #f4f4f5;font-size:12px;color:#a1a1aa;">
-        You received this because you have an account on Creator Toolkit.
+        You received this because you have an account on Earnio.
       </td>
     </tr>
   </table>

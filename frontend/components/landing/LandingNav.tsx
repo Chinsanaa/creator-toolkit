@@ -1,4 +1,8 @@
+'use client';
+
 import Link from 'next/link';
+import { useEffect, useState } from 'react';
+import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import type { LandingContent, LandingNavItem } from '@/lib/landing/content';
 
 function ChevronDown() {
@@ -21,34 +25,27 @@ function ExternalIcon() {
   );
 }
 
-function LogoMark() {
-  return (
-    <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
-      <path
-        d="M3 12L21 4L14 21L11 13L3 12Z"
-        fill="currentColor"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
-
-function NavItemLink({ item, showChevron }: { item: LandingNavItem; showChevron: boolean }) {
-  const className =
-    'flex cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-[14px] font-medium text-landing-fg/80 transition hover:text-landing-fg';
-
+function NavItemLink({
+  item,
+  showChevron,
+  onNavigate,
+  className,
+}: {
+  item: LandingNavItem;
+  showChevron: boolean;
+  onNavigate?: () => void;
+  className: string;
+}) {
   if (item.type === 'scroll') {
     return (
-      <a href={item.href} className={className}>
+      <a href={item.href} className={className} onClick={onNavigate}>
         {item.label}
       </a>
     );
   }
 
   return (
-    <Link href={item.href} className={className}>
+    <Link href={item.href} className={className} onClick={onNavigate}>
       {item.label}
       {showChevron ? <ChevronDown /> : null}
     </Link>
@@ -56,37 +53,126 @@ function NavItemLink({ item, showChevron }: { item: LandingNavItem; showChevron:
 }
 
 export function LandingNav({ content }: { content: LandingContent }) {
+  const [mobileOpen, setMobileOpen] = useState(false);
+
+  useEffect(() => {
+    if (!mobileOpen) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') setMobileOpen(false);
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener('keydown', onKeyDown);
+    };
+  }, [mobileOpen]);
+
+  const navLinkClass =
+    'flex cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-[14px] font-medium text-landing-fg/80 transition-colors hover:text-landing-fg';
+  const mobileNavLinkClass =
+    'flex w-full items-center rounded-xl px-4 py-3 text-[15px] font-medium text-landing-fg transition-colors hover:bg-sky-50';
+
   return (
     <header className="landing-nav sticky top-0 z-50">
-      <div className="mx-auto flex max-w-7xl items-center justify-between gap-4 px-6 py-4 lg:px-10">
-        <Link href={content.homeHref} className="flex shrink-0 items-center gap-2.5 text-landing-fg">
-          <LogoMark />
-          <span className="text-[15px] font-semibold tracking-tight">Creator Toolkit</span>
+      <div className="mx-auto flex max-w-7xl items-center justify-between gap-3 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-10">
+        <Link href={content.homeHref} className="shrink-0">
+          <EarnioLogo iconClassName="h-7 w-7" />
         </Link>
 
-        <nav className="hidden items-center gap-1 lg:flex">
+        <nav className="hidden items-center gap-1 lg:flex" aria-label="Main navigation">
           {content.navItems.map((item) => (
-            <NavItemLink key={item.href} item={item} showChevron={content.showNavChevron} />
+            <NavItemLink
+              key={item.href}
+              item={item}
+              showChevron={content.showNavChevron}
+              className={navLinkClass}
+            />
           ))}
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-4">
           <Link
             href={content.switchAudience.href}
-            className="hidden items-center gap-1.5 text-[14px] font-medium text-landing-fg/80 transition hover:text-landing-fg sm:inline-flex"
+            className="hidden items-center gap-1.5 text-[14px] font-medium text-landing-fg/80 transition-colors hover:text-landing-fg md:inline-flex"
           >
             {content.switchAudience.label}
             <ExternalIcon />
           </Link>
           <Link
             href={content.loginHref}
-            className="hidden text-[14px] font-medium text-landing-fg/80 transition hover:text-landing-fg sm:inline"
+            className="hidden text-[14px] font-medium text-landing-fg/80 transition-colors hover:text-landing-fg md:inline"
           >
             Log in
           </Link>
-          <Link href={content.signupHref} className="landing-btn-dark px-5 py-2.5 text-[14px]">
+          <Link href={content.signupHref} className="landing-btn-dark px-4 py-2 text-[13px] sm:px-5 sm:py-2.5 sm:text-[14px]">
             {content.signupCta}
           </Link>
+          <button
+            type="button"
+            className="landing-menu-btn lg:hidden"
+            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={mobileOpen}
+            aria-controls="landing-mobile-menu"
+            onClick={() => setMobileOpen((open) => !open)}
+          >
+            {mobileOpen ? (
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            ) : (
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" d="M4 6h16M4 12h16M4 18h16" />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div
+        id="landing-mobile-menu"
+        className={`landing-mobile-menu lg:hidden ${mobileOpen ? 'landing-mobile-menu-open' : ''}`}
+        aria-hidden={!mobileOpen}
+      >
+        <button
+          type="button"
+          className="landing-mobile-menu-backdrop"
+          aria-label="Close menu"
+          onClick={() => setMobileOpen(false)}
+        />
+        <div className="landing-mobile-menu-panel">
+          <nav className="flex flex-col gap-1 p-4" aria-label="Mobile navigation">
+            {content.navItems.map((item) => (
+              <NavItemLink
+                key={item.href}
+                item={item}
+                showChevron={false}
+                onNavigate={() => setMobileOpen(false)}
+                className={mobileNavLinkClass}
+              />
+            ))}
+          </nav>
+          <div className="border-t border-sky-100 p-4">
+            <Link
+              href={content.switchAudience.href}
+              className={`${mobileNavLinkClass} gap-2`}
+              onClick={() => setMobileOpen(false)}
+            >
+              {content.switchAudience.label}
+              <ExternalIcon />
+            </Link>
+            <Link
+              href={content.loginHref}
+              className={mobileNavLinkClass}
+              onClick={() => setMobileOpen(false)}
+            >
+              Log in
+            </Link>
+          </div>
         </div>
       </div>
     </header>
