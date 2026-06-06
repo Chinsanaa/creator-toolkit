@@ -46,6 +46,82 @@ function toNumber(value: string | number | null | undefined): number {
   return typeof value === 'number' ? value : parseFloat(value);
 }
 
+export interface CampaignPayload {
+  title: string;
+  description: string;
+  paymentAmountMnt: number;
+  contentType?: string;
+  requiredFollowersMin?: number;
+  requiredFollowersMax?: number;
+  engagementRateMin?: number;
+  deadlineApply?: string;
+  deadlineComplete?: string;
+}
+
+type CampaignRow = {
+  id: string;
+  title: string;
+  description: string;
+  payment_amount_mnt: string | number;
+  content_type: string | null;
+  required_followers_min: number | null;
+  required_followers_max: number | null;
+  engagement_rate_min: string | number | null;
+  status: string;
+  deadline_apply: string | null;
+  deadline_complete: string | null;
+  created_at: string | null;
+};
+
+function mapCampaignRow(
+  row: CampaignRow,
+  counts: { total: number; pending: number } = { total: 0, pending: 0 }
+): SponsorCampaign {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    payment_amount_mnt: toNumber(row.payment_amount_mnt),
+    content_type: row.content_type,
+    required_followers_min: row.required_followers_min,
+    required_followers_max: row.required_followers_max,
+    engagement_rate_min:
+      row.engagement_rate_min != null ? toNumber(row.engagement_rate_min) : null,
+    status: row.status,
+    deadline_apply: row.deadline_apply,
+    deadline_complete: row.deadline_complete,
+    created_at: row.created_at,
+    applicationCount: counts.total,
+    pendingCount: counts.pending,
+  };
+}
+
+function validateCampaignPayload(payload: CampaignPayload): void {
+  const { title, description, paymentAmountMnt } = payload;
+  if (!title?.trim() || !description?.trim()) {
+    throw new Error('Title and description are required');
+  }
+  if (!paymentAmountMnt || paymentAmountMnt < 10000) {
+    throw new Error('Minimum payment is 10,000 MNT');
+  }
+}
+
+function campaignInsertFromPayload(userId: string, payload: CampaignPayload) {
+  return {
+    sponsor_user_id: userId,
+    title: payload.title.trim(),
+    description: payload.description.trim(),
+    payment_amount_mnt: payload.paymentAmountMnt,
+    content_type: payload.contentType ?? 'tiktok_video',
+    required_followers_min: payload.requiredFollowersMin ?? null,
+    required_followers_max: payload.requiredFollowersMax ?? null,
+    engagement_rate_min: payload.engagementRateMin ?? null,
+    status: 'active',
+    deadline_apply: payload.deadlineApply ?? null,
+    deadline_complete: payload.deadlineComplete ?? null,
+  };
+}
+
 class SponsorService {
   private async assertSponsor(userId: string, accessToken: string): Promise<void> {
     const profile = await authService.getProfile(userId, accessToken);
@@ -131,68 +207,23 @@ class SponsorService {
 
     return (campaigns ?? []).map((row) => {
       const counts = appCounts.get(row.id) ?? { total: 0, pending: 0 };
-      return {
-        id: row.id,
-        title: row.title,
-        description: row.description,
-        payment_amount_mnt: toNumber(row.payment_amount_mnt),
-        content_type: row.content_type,
-        required_followers_min: row.required_followers_min,
-        required_followers_max: row.required_followers_max,
-        engagement_rate_min:
-          row.engagement_rate_min != null ? toNumber(row.engagement_rate_min) : null,
-        status: row.status,
-        deadline_apply: row.deadline_apply,
-        deadline_complete: row.deadline_complete,
-        created_at: row.created_at,
-        applicationCount: counts.total,
-        pendingCount: counts.pending,
-      };
+      return mapCampaignRow(row, counts);
     });
   }
 
   public async createCampaign(
     userId: string,
     accessToken: string,
-    payload: {
-      title: string;
-      description: string;
-      paymentAmountMnt: number;
-      contentType?: string;
-      requiredFollowersMin?: number;
-      requiredFollowersMax?: number;
-      engagementRateMin?: number;
-      deadlineApply?: string;
-      deadlineComplete?: string;
-    }
+    payload: CampaignPayload
   ): Promise<SponsorCampaign> {
     await this.assertSponsor(userId, accessToken);
-
-    const { title, description, paymentAmountMnt } = payload;
-    if (!title?.trim() || !description?.trim()) {
-      throw new Error('Title and description are required');
-    }
-    if (!paymentAmountMnt || paymentAmountMnt < 10000) {
-      throw new Error('Minimum payment is 10,000 MNT');
-    }
+    validateCampaignPayload(payload);
 
     const client = getAuthenticatedClient(accessToken);
 
     const { data, error } = await client
       .from('sponsorships')
-      .insert({
-        sponsor_user_id: userId,
-        title: title.trim(),
-        description: description.trim(),
-        payment_amount_mnt: paymentAmountMnt,
-        content_type: payload.contentType ?? 'tiktok_video',
-        required_followers_min: payload.requiredFollowersMin ?? null,
-        required_followers_max: payload.requiredFollowersMax ?? null,
-        engagement_rate_min: payload.engagementRateMin ?? null,
-        status: 'active',
-        deadline_apply: payload.deadlineApply ?? null,
-        deadline_complete: payload.deadlineComplete ?? null,
-      })
+      .insert(campaignInsertFromPayload(userId, payload))
       .select(
         'id, title, description, payment_amount_mnt, content_type, required_followers_min, required_followers_max, engagement_rate_min, status, deadline_apply, deadline_complete, created_at'
       )
@@ -202,33 +233,90 @@ class SponsorService {
       throw new Error(`Failed to create campaign: ${error.message}`);
     }
 
-    return {
-      id: data.id,
-      title: data.title,
-      description: data.description,
-      payment_amount_mnt: toNumber(data.payment_amount_mnt),
-      content_type: data.content_type,
-      required_followers_min: data.required_followers_min,
-      required_followers_max: data.required_followers_max,
-      engagement_rate_min:
-        data.engagement_rate_min != null ? toNumber(data.engagement_rate_min) : null,
-      status: data.status,
-      deadline_apply: data.deadline_apply,
-      deadline_complete: data.deadline_complete,
-      created_at: data.created_at,
-      applicationCount: 0,
-      pendingCount: 0,
-    };
+    return mapCampaignRow(data);
+  }
+
+  public async deleteCampaign(
+    userId: string,
+    accessToken: string,
+    campaignId: string
+  ): Promise<void> {
+    await this.assertSponsor(userId, accessToken);
+    const client = getAuthenticatedClient(accessToken);
+
+    const { data: campaign, error: findError } = await client
+      .from('sponsorships')
+      .select('id, status')
+      .eq('id', campaignId)
+      .eq('sponsor_user_id', userId)
+      .single();
+
+    if (findError || !campaign) {
+      throw new Error('Campaign not found');
+    }
+
+    if (campaign.status === 'closed') {
+      throw new Error('Closed campaigns cannot be deleted');
+    }
+
+    const { count, error: countError } = await client
+      .from('sponsorship_applications')
+      .select('id', { count: 'exact', head: true })
+      .eq('sponsorship_id', campaignId);
+
+    if (countError) {
+      throw new Error(`Failed to check applications: ${countError.message}`);
+    }
+
+    if ((count ?? 0) > 0) {
+      throw new Error('Cannot delete a campaign that has applications');
+    }
+
+    const { error } = await client
+      .from('sponsorships')
+      .delete()
+      .eq('id', campaignId)
+      .eq('sponsor_user_id', userId);
+
+    if (error) {
+      throw new Error(`Failed to delete campaign: ${error.message}`);
+    }
   }
 
   public async updateCampaignStatus(
     userId: string,
     accessToken: string,
     campaignId: string,
-    status: 'active' | 'closed' | 'draft'
+    status: 'active' | 'closed'
   ): Promise<void> {
     await this.assertSponsor(userId, accessToken);
     const client = getAuthenticatedClient(accessToken);
+
+    const { data: existing, error: findError } = await client
+      .from('sponsorships')
+      .select('id, status, title, description, payment_amount_mnt')
+      .eq('id', campaignId)
+      .eq('sponsor_user_id', userId)
+      .single();
+
+    if (findError || !existing) {
+      throw new Error('Campaign not found');
+    }
+
+    if (status === 'active') {
+      if (existing.status !== 'draft') {
+        throw new Error('Only draft campaigns can be published');
+      }
+      validateCampaignPayload({
+        title: existing.title,
+        description: existing.description,
+        paymentAmountMnt: toNumber(existing.payment_amount_mnt),
+      });
+    }
+
+    if (status === 'closed' && existing.status !== 'active') {
+      throw new Error('Only active campaigns can be closed');
+    }
 
     const { error } = await client
       .from('sponsorships')
@@ -300,25 +388,10 @@ class SponsorService {
     const pendingCount = applications.filter((a) => a.status === 'pending').length;
 
     return {
-      campaign: {
-        id: campaign.id,
-        title: campaign.title,
-        description: campaign.description,
-        payment_amount_mnt: toNumber(campaign.payment_amount_mnt),
-        content_type: campaign.content_type,
-        required_followers_min: campaign.required_followers_min,
-        required_followers_max: campaign.required_followers_max,
-        engagement_rate_min:
-          campaign.engagement_rate_min != null
-            ? toNumber(campaign.engagement_rate_min)
-            : null,
-        status: campaign.status,
-        deadline_apply: campaign.deadline_apply,
-        deadline_complete: campaign.deadline_complete,
-        created_at: campaign.created_at,
-        applicationCount: applications.length,
-        pendingCount,
-      },
+      campaign: mapCampaignRow(campaign, {
+        total: applications.length,
+        pending: pendingCount,
+      }),
       applications,
     };
   }

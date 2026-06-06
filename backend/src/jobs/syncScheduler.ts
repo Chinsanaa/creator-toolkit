@@ -7,6 +7,17 @@ export function startSyncScheduler(): void {
     return;
   }
 
+  const inProcessAllowed =
+    process.env.ENABLE_IN_PROCESS_SYNC_CRON === 'true' ||
+    process.env.NODE_ENV !== 'production';
+
+  if (!inProcessAllowed) {
+    console.log(
+      '○ In-process sync scheduler disabled in production. Use POST /api/sync/cron with x-cron-secret.'
+    );
+    return;
+  }
+
   const run = () => {
     platformService.runScheduledSyncAll().then(({ synced, failed }) => {
       if (synced > 0 || failed > 0) {

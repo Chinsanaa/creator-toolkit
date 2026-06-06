@@ -3,8 +3,8 @@ import type { EarningsEntry } from '@/lib/types/dashboard';
 
 export function RecentEarnings({ data }: { data: EarningsEntry[] }) {
   return (
-    <div className="card p-6">
-      <h2 className="text-lg font-semibold text-foreground">Recent earnings</h2>
+    <div className="glass-card p-6">
+      <h2 className="text-lg font-medium text-zinc-900 dark:text-zinc-50">Recent earnings</h2>
       {data.length === 0 ? (
         <p className="mt-4 text-sm text-muted">
           No earnings yet. Connect a platform or wait for your first sync.

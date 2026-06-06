@@ -40,9 +40,25 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
   }, []);
 
   useEffect(() => {
-    load();
-    const interval = setInterval(load, 60_000);
-    return () => clearInterval(interval);
+    let cancelled = false;
+    void (async () => {
+      try {
+        const data = await getNotifications();
+        if (!cancelled) {
+          setItems(data.notifications);
+          setUnread(data.unreadCount);
+        }
+      } catch {
+        // ignore when unauthenticated
+      }
+    })();
+    const interval = setInterval(() => {
+      void load();
+    }, 60_000);
+    return () => {
+      cancelled = true;
+      clearInterval(interval);
+    };
   }, [load]);
 
   useEffect(() => {

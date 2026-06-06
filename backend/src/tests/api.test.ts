@@ -12,10 +12,40 @@ const testConfig: EnvConfig = {
   nodeEnv: 'test',
 };
 
+function app() {
+  return createApp(testConfig);
+}
+
 describe('Protected routes', () => {
   it('rejects unauthenticated dashboard access', async () => {
-    const app = createApp(testConfig);
-    const res = await request(app).get('/api/dashboard/summary');
+    const res = await request(app()).get('/api/dashboard/summary');
+    assert.equal(res.status, 401);
+  });
+
+  it('rejects unauthenticated wallet summary', async () => {
+    const res = await request(app()).get('/api/wallet/summary');
+    assert.equal(res.status, 401);
+  });
+
+  it('rejects unauthenticated sponsor dashboard', async () => {
+    const res = await request(app()).get('/api/sponsor/dashboard');
+    assert.equal(res.status, 401);
+  });
+
+  it('rejects unauthenticated sponsorships list', async () => {
+    const res = await request(app()).get('/api/sponsorships');
+    assert.equal(res.status, 401);
+  });
+
+  it('rejects unauthenticated notifications', async () => {
+    const res = await request(app()).get('/api/notifications');
+    assert.equal(res.status, 401);
+  });
+});
+
+describe('Sync cron', () => {
+  it('rejects cron without secret header', async () => {
+    const res = await request(app()).post('/api/sync/cron');
     assert.equal(res.status, 401);
   });
 });
