@@ -3,10 +3,13 @@
 import { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
-import { GettingStartedPlan, type PlanTask } from '@/components/creator/GettingStartedPlan';
-import { PlatformStatusCard } from '@/components/creator/PlatformStatusCard';
+import { GettingStartedPlan } from '@/components/creator/GettingStartedPlan';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { MonthlyTrend } from '@/components/dashboard/MonthlyTrend';
+import { StatsCards } from '@/components/dashboard/StatsCards';
+import { PlatformBreakdown } from '@/components/dashboard/PlatformBreakdown';
+import { ConnectedPlatforms } from '@/components/dashboard/ConnectedPlatforms';
+import { RecentEarnings } from '@/components/dashboard/RecentEarnings';
 import { useAuth } from '@/contexts/AuthContext';
 import { ApiError } from '@/lib/api/client';
 import { getDashboardSummary } from '@/lib/api/dashboard';
@@ -16,20 +19,16 @@ import type { DashboardSummary } from '@/lib/types/dashboard';
 
 function CreatorDashboardBody({ user }: { user: AuthUser }) {
   const [data, setData] = useState<DashboardSummary | null>(null);
-  const [applicationCount, setApplicationCount] = useState(0);
-  const [hasBankAccount, setHasBankAccount] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     let cancelled = false;
 
-    Promise.all([getDashboardSummary(), listMyApplications(), getBankAccounts()])
-      .then(([summary, applications, banks]) => {
+    Promise.all([getDashboardSummary()])
+      .then(([summary]) => {
         if (cancelled) return;
         setData(summary);
-        setApplicationCount(applications.length);
-        setHasBankAccount(banks.length > 0);
       })
       .catch((err) => {
         if (!cancelled) {
