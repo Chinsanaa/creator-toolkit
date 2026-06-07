@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useState } from 'react';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
-import { Logo } from '@/components/ui/Logo';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
 
 export interface NavItem {
