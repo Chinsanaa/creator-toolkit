@@ -40,19 +40,32 @@ function resolveContentDir(): string {
 
 const contentDir = resolveContentDir();
 
+const docCache = new Map<LegalDocumentSlug, { mtimeMs: number; doc: LegalDocument }>();
+
 class LegalService {
   private async readDocument(slug: LegalDocumentSlug): Promise<LegalDocument> {
     const meta = DOCUMENT_META[slug];
     const filePath = path.join(contentDir, meta.filename);
-    const content = await fs.readFile(filePath, 'utf-8');
-    const stat = await fs.stat(filePath);
 
-    return {
+    const [content, stat] = await Promise.all([
+      fs.readFile(filePath, 'utf-8'),
+      fs.stat(filePath),
+    ]);
+
+    const cached = docCache.get(slug);
+    if (cached && cached.mtimeMs === stat.mtimeMs) {
+      return cached.doc;
+    }
+
+    const doc: LegalDocument = {
       slug,
       title: meta.title,
       content,
       updatedAt: stat.mtime.toISOString(),
     };
+
+    docCache.set(slug, { mtimeMs: stat.mtimeMs, doc });
+    return doc;
   }
 
   public async getPrivacyPolicy(): Promise<LegalDocument> {

@@ -1,6 +1,7 @@
 'use client';
 
 import { DeleteAccountSection } from '@/components/settings/DeleteAccountSection';
+import { LegalLinksSection } from '@/components/settings/LegalLinksSection';
 import { formatHandle } from '@/lib/format';
 import type { AuthUser } from '@/lib/types/auth';
 
@@ -28,6 +29,8 @@ export function AccountSettingsContent({ user }: { user: AuthUser }) {
           </div>
         </dl>
       </section>
+
+      <LegalLinksSection />
 
       <DeleteAccountSection />
     </div>

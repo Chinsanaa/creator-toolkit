@@ -1,5 +1,6 @@
 import { getAuthenticatedClient } from '../database/supabase';
 import notificationService from './notificationService';
+import { toNumber } from '../utils/toNumber';
 
 const MIN_PAYOUT_MNT = 50_000;
 const PLATFORM_FEE_RATE = 0.2;
@@ -37,11 +38,6 @@ export interface WalletSummary {
   totalPaidOutMnt: number;
   platformFeeRate: number;
   minPayoutMnt: number;
-}
-
-function toNumber(value: string | number | null | undefined): number {
-  if (value === null || value === undefined) return 0;
-  return typeof value === 'number' ? value : parseFloat(value);
 }
 
 function maskAccountNumber(num: string): string {
@@ -289,6 +285,10 @@ class WalletService {
     }
 
     const summary = await this.getSummary(userId, accessToken);
+
+    if (summary.pendingPayoutMnt > 0) {
+      throw new Error('You already have a pending payout request');
+    }
 
     if (amountMnt > summary.availableBalanceMnt) {
       throw new Error('Insufficient wallet balance');

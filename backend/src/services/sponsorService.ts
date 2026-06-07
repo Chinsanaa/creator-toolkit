@@ -1,6 +1,7 @@
 import authService from './authService';
 import notificationService from './notificationService';
 import { getAuthenticatedClient, supabaseAdmin } from '../database/supabase';
+import { toNumber } from '../utils/toNumber';
 
 export interface SponsorDashboardStats {
   activeCampaigns: number;
@@ -39,11 +40,6 @@ export interface SponsorApplication {
     name: string;
     username: string;
   } | null;
-}
-
-function toNumber(value: string | number | null | undefined): number {
-  if (value === null || value === undefined) return 0;
-  return typeof value === 'number' ? value : parseFloat(value);
 }
 
 export interface CampaignPayload {
@@ -455,18 +451,19 @@ class SponsorService {
 
     let creator = null;
     if (supabaseAdmin) {
-      const { data: c } = await supabaseAdmin
-        .from('users')
-        .select('id, name, username')
-        .eq('id', data.creator_user_id)
-        .single();
+      const [{ data: c }, { data: camp }] = await Promise.all([
+        supabaseAdmin
+          .from('users')
+          .select('id, name, username')
+          .eq('id', data.creator_user_id)
+          .single(),
+        supabaseAdmin
+          .from('sponsorships')
+          .select('title')
+          .eq('id', data.sponsorship_id)
+          .single(),
+      ]);
       creator = c;
-
-      const { data: camp } = await supabaseAdmin
-        .from('sponsorships')
-        .select('title')
-        .eq('id', data.sponsorship_id)
-        .single();
 
       await notificationService.notifyApplicationStatus(
         data.creator_user_id,

@@ -44,7 +44,6 @@ export function CreatorLandingPage() {
           content={content.howItWorks}
           signupHref={content.signupHref}
           signupCta={content.signupCta}
-          showDocsLink={false}
         />
         <CreatorFeatures />
         <CreatorTestimonials />
@@ -55,9 +54,6 @@ export function CreatorLandingPage() {
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
           <p className="text-sm text-landing-muted">{content.footer.tagline}</p>
           <div className="flex gap-6 text-sm">
-            <Link href="/docs" className="text-landing-muted transition hover:text-landing-fg">
-              Docs
-            </Link>
             <Link href={content.loginHref} className="text-landing-muted transition hover:text-landing-fg">
               Log in
             </Link>

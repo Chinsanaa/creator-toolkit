@@ -1,4 +1,5 @@
 import { getAuthenticatedClient, supabaseAdmin } from '../database/supabase';
+import { toNumber } from '../utils/toNumber';
 
 export interface SponsorInfo {
   id: string;
@@ -37,11 +38,6 @@ export interface SponsorshipApplication {
     status: string;
     deadline_complete: string | null;
   } | null;
-}
-
-function toNumber(value: string | number | null | undefined): number {
-  if (value === null || value === undefined) return 0;
-  return typeof value === 'number' ? value : parseFloat(value);
 }
 
 class SponsorshipService {
@@ -85,6 +81,10 @@ class SponsorshipService {
 
     if (sponsorshipsResult.error) {
       throw new Error(`Failed to load sponsorships: ${sponsorshipsResult.error.message}`);
+    }
+
+    if (applicationsResult.error) {
+      throw new Error(`Failed to load applications: ${applicationsResult.error.message}`);
     }
 
     const applicationMap = new Map<string, string>();

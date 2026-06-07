@@ -37,7 +37,6 @@ export function BrandLandingPage() {
           content={content.howItWorks}
           signupHref={content.signupHref}
           signupCta={content.signupCta}
-          showDocsLink={false}
         />
       </main>
 

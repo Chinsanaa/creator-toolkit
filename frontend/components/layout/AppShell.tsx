@@ -130,6 +130,7 @@ export function AppShell({
       <nav
         className="fixed bottom-0 left-0 right-0 z-40 border-t border-[color:var(--border)]/80 bg-[color:var(--card)]/90 backdrop-blur-xl md:hidden"
         aria-label="Mobile navigation"
+        style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
       >
         <div className="mx-auto flex max-w-lg justify-around px-2 py-2">
           {navItems.map((item) => {

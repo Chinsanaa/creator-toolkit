@@ -9,6 +9,7 @@ Monorepo with three `package.json` files (root, `frontend/`, `backend/`). Each h
 | Service | Directory | Dev command | Port | Notes |
 |---------|-----------|-------------|------|-------|
 | Frontend (Next.js 16) | `frontend/` | `npm run dev` | 3000 | Turbopack-based dev server |
+| iOS app (Capacitor) | `ios/` | `npm run ios:open` | — | Requires macOS + Xcode; set `CAPACITOR_SERVER_URL` before `npm run cap:sync` |
 | Backend (Express 5) | `backend/` | `npm run dev` | 3001 | Uses nodemon + ts-node for hot reload |
 
 ### Key commands
