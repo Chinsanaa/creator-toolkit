@@ -7,6 +7,7 @@
   --foreground: #4c0519;
   --card: #ffffff;
   --card-muted: #fff5f6;
+  --surface: #fff5f6;
   --border: #fecdd3;
   --muted: #9f1239;
   --muted-foreground: #be123c;
@@ -23,6 +24,20 @@
   --mesh-3: #bfdbfe;
   --radius: 1rem;
   --shadow-glow: 0 20px 50px -20px rgba(225, 29, 72, 0.35);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+  --landing-fg: #141414;
+  --landing-muted: #626262;
+  --landing-bg-top: #f8f8f8;
+  --landing-bg-bottom: #ffffff;
+  --landing-sky-50: #f0f9ff;
+  --landing-sky-100: #e0f2fe;
+  --landing-card-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  --landing-btn-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  --landing-btn-light-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+  --font-dm-sans: 'DM Sans', system-ui, sans-serif;
+  --font-outfit: 'Outfit', system-ui, sans-serif;
+  --font-jetbrains: 'JetBrains Mono', ui-monospace, monospace;
 }
 
 .dark {
@@ -30,6 +45,7 @@
   --foreground: #fff1f2;
   --card: #161214;
   --card-muted: #1f1418;
+  --surface: #1f1418;
   --border: #3f2a32;
   --muted: #fda4af;
   --muted-foreground: #fb7185;
@@ -45,20 +61,6 @@
   --mesh-2: #881337;
   --mesh-3: #1e3a8a;
   --shadow-glow: 0 20px 60px -15px rgba(251, 113, 133, 0.25);
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --color-card: var(--card);
-  --color-card-muted: var(--card-muted);
-  --color-border: var(--border);
-  --color-muted: var(--muted);
-  --color-primary: var(--primary);
-  --color-accent: var(--accent);
-  --font-sans: var(--font-dm-sans);
-  --font-display: var(--font-outfit);
-  --font-mono: var(--font-jetbrains);
 }
 
 body {
@@ -277,7 +279,7 @@ html.apple-platform textarea {
 }
 
 .nav-active {
-  background: var(--primary-subtle);
+  background: var(--primary-soft);
   color: var(--primary);
 }
 
@@ -313,7 +315,7 @@ html.apple-platform textarea {
   background: var(--landing-fg);
 }
 
-/* Auth pages ??? landing visual continuity */
+/* Auth pages — landing visual continuity */
 .auth-card {
   border-radius: 1.25rem;
   border: 1px solid rgb(255 255 255 / 0.8);
@@ -651,7 +653,7 @@ html.apple-platform textarea {
   }
 }
 
-/* Creator app ? same palette as landing */
+/* Creator app — same palette as landing */
 .creator-app {
   color: var(--landing-fg);
   background: var(--landing-bg-bottom);
@@ -817,15 +819,15 @@ html.apple-platform textarea {
 
 /* Surfaces */
 .glass-card {
-  @apply rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] shadow-sm;
+  @apply rounded-2xl border border-border bg-card shadow-sm;
 }
 
 .glass-panel {
-  @apply rounded-2xl border border-[color:var(--border)]/80 bg-[color:var(--card)]/90 shadow-sm backdrop-blur-md;
+  @apply rounded-2xl border border-border/80 bg-card/90 shadow-sm backdrop-blur-md;
 }
 
 .stat-card {
-  @apply relative overflow-hidden rounded-2xl border border-[color:var(--border)] bg-[color:var(--card)] p-5 transition duration-200 hover:border-[color:var(--primary)]/40 hover:shadow-md;
+  @apply relative overflow-hidden rounded-2xl border border-border bg-card p-5 transition duration-200 hover:border-primary/40 hover:shadow-md;
 }
 
 /* iPad / Mac: prefer sidebar navigation over bottom tabs */
@@ -968,54 +970,34 @@ html.apple-platform textarea {
 }
 
 .text-gradient {
-  @apply bg-gradient-to-r from-[color:var(--primary)] to-[color:var(--accent)] bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent;
 }
 
 .badge-pill {
-  @apply inline-flex items-center rounded-full border border-[color:var(--border)] bg-[color:var(--primary-soft)] px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-[color:var(--primary)];
+  @apply inline-flex items-center rounded-full border border-border bg-primary-soft px-2.5 py-0.5 text-xs font-semibold uppercase tracking-wider text-primary;
 }
 
 .dark .badge-pill {
-  @apply text-[color:var(--muted-foreground)];
+  @apply text-muted-foreground;
 }
 
 /* Forms */
 .input-touch {
-  @apply min-h-11 w-full rounded-xl border border-[color:var(--border)] bg-[color:var(--card)] px-3.5 py-2.5 text-base text-[color:var(--foreground)] outline-none transition duration-200 placeholder:text-[color:var(--muted)]/60 focus:border-[color:var(--primary)] focus:ring-2 focus:ring-[color:var(--ring)]/25 sm:text-sm;
+  @apply min-h-11 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base text-foreground outline-none transition duration-200 placeholder:text-muted focus:border-primary focus:ring-2 focus:ring-primary/20;
 }
 
 .btn-primary {
-  @apply inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-[color:var(--primary)] px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-md transition duration-200 hover:bg-[color:var(--primary-hover)] hover:shadow-lg active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-md transition duration-200 hover:bg-primary-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .btn-secondary {
-  @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-[color:var(--border)] bg-[color:var(--card)] px-4 py-2.5 text-sm font-semibold text-[color:var(--foreground)] transition duration-200 hover:border-[color:var(--primary)]/50 hover:bg-[color:var(--card-muted)] active:scale-[0.98] disabled:opacity-60;
+  @apply inline-flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5 text-sm font-semibold text-foreground transition duration-200 hover:bg-surface hover:border-border/60 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .btn-accent {
-  @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-[color:var(--accent)] px-4 py-3 text-sm font-semibold text-white shadow-md transition duration-200 hover:opacity-90 active:scale-[0.98];
+  @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-md transition duration-200 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .link-primary {
-  @apply font-semibold text-[color:var(--primary)] transition hover:text-[color:var(--primary-hover)] hover:underline;
-}
-
-.nav-link {
-  @apply rounded-xl px-3 py-2.5 text-sm font-medium transition duration-200;
-}
-
-.nav-link-active {
-  @apply bg-[color:var(--primary-soft)] text-[color:var(--primary)];
-}
-
-.nav-link-inactive {
-  @apply text-[color:var(--muted-foreground)] hover:bg-[color:var(--card-muted)] hover:text-[color:var(--foreground)];
-}
-
-.alert-error {
-  @apply rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-200;
-}
-
-.alert-success {
-  @apply rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-200;
+  @apply font-semibold text-primary transition hover:text-primary-hover hover:underline;
 }
