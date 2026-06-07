@@ -120,7 +120,7 @@ export function AuthForm({
             <div key={field.name}>
               <label
                 htmlFor={field.name}
-                className="mb-2 block text-sm font-medium text-landing-fg"
+                className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]"
               >
                 {field.label}
               </label>
@@ -147,14 +147,14 @@ export function AuthForm({
             <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
           )}
 
-          <button type="submit" disabled={pending} className="landing-btn-dark auth-submit">
+          <button type="submit" disabled={pending} className="btn-primary">
             {pending ? 'Please wait…' : submitLabel}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-landing-muted">
           {alternatePrompt}{' '}
-          <Link href={alternateHref} className="auth-link">
+          <Link href={alternateHref} className="link-primary">
             {alternateLabel}
           </Link>
         </p>
