@@ -1,3 +1,4 @@
+import { randomInt } from 'node:crypto';
 import { User } from '@supabase/supabase-js';
 import { getAuthenticatedClient, supabase, supabaseAdmin } from '../database/supabase';
 
@@ -91,15 +92,23 @@ class AuthService {
         .replace(/[^a-z0-9_]/g, '')
         .slice(0, 20) || 'user';
 
-    let candidate = base;
-    for (let suffix = 0; suffix < 10_000; suffix += 1) {
+    if (!(await this.isUsernameTaken(base))) {
+      return base;
+    }
+
+    for (let attempt = 0; attempt < 12; attempt += 1) {
+      const candidate = `${base}${randomInt(1000, 10_000)}`.slice(0, 30);
       if (!(await this.isUsernameTaken(candidate))) {
         return candidate;
       }
-      candidate = `${base}${suffix + 1}`.slice(0, 30);
     }
 
-    return `user_${seed.replace(/[^a-z0-9]/gi, '').slice(0, 8) || 'acct'}`;
+    const fallback = `user_${randomInt(10_000_000, 99_999_999)}`;
+    if (!(await this.isUsernameTaken(fallback))) {
+      return fallback;
+    }
+
+    return `user_${Date.now().toString(36)}`;
   }
 
   private async ensureOAuthProfile(
@@ -158,14 +167,28 @@ class AuthService {
       profile.name = profile.username;
     }
 
+    const profileWrites: Promise<void>[] = [];
+
     if (Object.keys(updates).length > 0) {
-      await supabaseAdmin.from('users').update(updates).eq('id', user.id);
+      profileWrites.push(
+        (async () => {
+          await supabaseAdmin.from('users').update(updates).eq('id', user.id);
+        })()
+      );
     }
 
     if (Object.keys(metaUpdates).length > 0) {
-      await supabaseAdmin.auth.admin.updateUserById(user.id, {
-        user_metadata: { ...meta, ...metaUpdates },
-      });
+      profileWrites.push(
+        (async () => {
+          await supabaseAdmin.auth.admin.updateUserById(user.id, {
+            user_metadata: { ...meta, ...metaUpdates },
+          });
+        })()
+      );
+    }
+
+    if (profileWrites.length > 0) {
+      await Promise.all(profileWrites);
     }
 
     if (Object.keys(updates).length > 0 || Object.keys(metaUpdates).length > 0) {
@@ -351,8 +374,24 @@ class AuthService {
     };
   }
 
-  public async logout(): Promise<void> {
-    await supabase.auth.signOut();
+  public async logout(refreshToken?: string): Promise<void> {
+    if (!refreshToken) {
+      return;
+    }
+
+    const { data, error } = await supabase.auth.refreshSession({
+      refresh_token: refreshToken,
+    });
+
+    if (error || !data.session) {
+      return;
+    }
+
+    await supabase.auth.setSession({
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+    });
+    await supabase.auth.signOut({ scope: 'global' });
   }
 
   public async finishOAuthSession(

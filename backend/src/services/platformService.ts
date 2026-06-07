@@ -208,7 +208,7 @@ class PlatformService {
     client: ReturnType<typeof getAuthenticatedClient>
   ): Promise<{ recordsSynced: number; earningsMnt: number }> {
     const startedAt = new Date().toISOString();
-    const logPlatform = platform === 'instagram' ? 'tiktok' : platform;
+    const logPlatform = platform;
 
     try {
       const payload = fetchPlatformData(platform, platformUserId);

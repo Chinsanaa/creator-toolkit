@@ -99,10 +99,12 @@ export function CreatorAppShell({
 
   return (
     <div className="creator-app flex min-h-full">
-      <aside className="creator-sidebar hidden w-56 shrink-0 flex-col lg:flex">{desktopSidebar}</aside>
+      <aside className="creator-sidebar creator-sidebar-tablet hidden w-56 shrink-0 flex-col md:flex">
+        {desktopSidebar}
+      </aside>
 
       <div
-        className={`creator-account-menu lg:hidden ${accountOpen ? 'creator-account-menu-open' : ''}`}
+        className={`creator-account-menu creator-account-menu-tablet-hide md:hidden ${accountOpen ? 'creator-account-menu-open' : ''}`}
         aria-hidden={!accountOpen}
       >
         <button
@@ -163,7 +165,7 @@ export function CreatorAppShell({
           <div className="creator-topbar-actions flex items-center gap-3">
             <NotificationBell tone="creator" />
             {(userName || userHandle) && (
-              <Link href="/settings" className="hidden text-right lg:block">
+              <Link href="/settings" className="hidden text-right md:block">
                 {userName ? <p className="text-sm font-medium text-landing-fg">{userName}</p> : null}
                 {userHandle ? (
                   <p className="text-xs text-landing-muted">{formatHandle(userHandle)}</p>
@@ -172,7 +174,7 @@ export function CreatorAppShell({
             )}
             <button
               type="button"
-              className="creator-avatar lg:hidden"
+              className="creator-avatar md:hidden"
               aria-label="Open account menu"
               aria-expanded={accountOpen}
               onClick={() => setAccountOpen(true)}
@@ -182,9 +184,12 @@ export function CreatorAppShell({
           </div>
         </header>
 
-        <main className="creator-main flex-1">{children}</main>
+        <main className="creator-main creator-app-shell-content flex-1">{children}</main>
 
-        <nav className="creator-bottom-nav lg:hidden" aria-label="Mobile navigation">
+        <nav
+          className="creator-bottom-nav creator-bottom-nav-tablet-hide md:hidden"
+          aria-label="Mobile navigation"
+        >
           {CREATOR_SIDEBAR_NAV.map((item) => {
             const active = navActive(item.href, item.match);
             return (

@@ -1,0 +1,23 @@
+{
+  "name": "Earnio",
+  "short_name": "Earnio",
+  "description": "Earn more, create more. Monetization platform for Mongolian creators and brands.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#eef6ff",
+  "theme_color": "#eef6ff",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png"
+    }
+  ]
+}

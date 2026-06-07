@@ -1,4 +1,5 @@
 import { getAuthenticatedClient } from '../database/supabase';
+import { toNumber } from '../utils/toNumber';
 
 export interface EarningsRow {
   id: string;
@@ -29,11 +30,6 @@ export interface DashboardSummary {
   byPlatform: { platform: string; totalMnt: number; share: number }[];
   monthlyTrend: { month: string; label: string; amountMnt: number }[];
   recentEarnings: EarningsRow[];
-}
-
-function toNumber(value: string | number | null | undefined): number {
-  if (value === null || value === undefined) return 0;
-  return typeof value === 'number' ? value : parseFloat(value);
 }
 
 function monthKey(dateStr: string): string {

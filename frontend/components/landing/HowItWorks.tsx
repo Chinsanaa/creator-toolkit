@@ -5,12 +5,10 @@ export function HowItWorks({
   content,
   signupHref,
   signupCta,
-  showDocsLink = true,
 }: {
   content: LandingContent['howItWorks'];
   signupHref: string;
   signupCta: string;
-  showDocsLink?: boolean;
 }) {
   return (
     <section id={content.id} className="landing-section px-6 py-24 lg:px-10">
@@ -38,11 +36,6 @@ export function HowItWorks({
           <Link href={signupHref} className="landing-btn-dark px-8 py-3.5 text-[15px]">
             {signupCta}
           </Link>
-          {showDocsLink ? (
-            <Link href="/docs" className="landing-btn-light px-8 py-3.5 text-[15px]">
-              Read the docs
-            </Link>
-          ) : null}
         </div>
       </div>
     </section>

@@ -1,6 +1,7 @@
 import express, { Response } from 'express';
 import authService from '../services/authService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
+import { logServerError } from '../utils/serverLog';
 
 const router = express.Router();
 
@@ -40,7 +41,6 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Signup failed';
-    console.error('Signup error:', error);
     res.status(400).json({ error: message });
   }
 });
@@ -63,7 +63,6 @@ router.post('/login', async (req: AuthRequest, res: Response) => {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Login failed';
-    console.error('Login error:', error);
     res.status(401).json({ error: message });
   }
 });
@@ -93,16 +92,15 @@ router.post('/oauth/session', async (req: AuthRequest, res: Response) => {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'OAuth sign-in failed';
-    console.error('OAuth session error:', error);
     res.status(400).json({ error: message });
   }
 });
 
 router.post('/logout', async (req: AuthRequest, res: Response) => {
   try {
-    await authService.logout();
+    await authService.logout(req.cookies.refreshToken);
   } catch (error) {
-    console.error('Logout error:', error);
+    logServerError('Logout error', error);
   }
   res.clearCookie('refreshToken');
   res.json({ message: 'Logged out successfully' });
@@ -127,7 +125,6 @@ router.post('/refresh', async (req: AuthRequest, res: Response) => {
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Refresh failed';
-    console.error('Refresh error:', error);
     res.status(401).json({ error: message });
   }
 });
@@ -158,7 +155,9 @@ router.delete('/account', verifyToken, async (req: AuthRequest, res: Response) =
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Failed to delete account';
     const status = message.toLowerCase().includes('password') ? 401 : 400;
-    console.error('Delete account error:', error);
+    if (status >= 500) {
+      logServerError('Delete account error', error);
+    }
     res.status(status).json({ error: message });
   }
 });
