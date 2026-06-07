@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Figtree, Sora, Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
@@ -70,7 +70,7 @@ export default function RootLayout({
       <head>
         <script
           dangerouslySetInnerHTML={{
-            __html: `(function(){try{var k='ct-theme',t=localStorage.getItem(k),d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.clas[...]
+            __html: `(function(){try{var k='ct-theme',t=localStorage.getItem(k),d=t==='dark'||(t!=='light'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.className=d?'dark':'light'}catch(e){}})();`,
           }}
         />
       </head>
