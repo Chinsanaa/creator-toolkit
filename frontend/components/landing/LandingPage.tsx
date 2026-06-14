@@ -9,8 +9,18 @@ import { useLanguage } from '@/contexts/LanguageContext';
 
 /** Brand landing — original hero + sections layout */
 export function BrandLandingPage() {
-  const content = LANDING_CONTENT.brand;
+  const baseContent = LANDING_CONTENT.brand;
   const { t } = useLanguage();
+
+  const content = {
+    ...baseContent,
+    switchAudience: { label: t('for_creators'), href: '/' },
+    signupCta: t('get_started'),
+    navItems: [
+      { type: 'link' as const, label: t('campaigns'), href: '/sponsor/campaigns' },
+      { type: 'link' as const, label: t('home'), href: '/sponsor/dashboard' },
+    ],
+  };
 
   return (
     <div className="landing-page flex min-h-full flex-col">

@@ -11,8 +11,19 @@ import { LandingNav } from '@/components/landing/LandingNav';
 import { useLanguage } from '@/contexts/LanguageContext';
 
 export function CreatorLandingPage() {
-  const content = LANDING_CONTENT.creator;
+  const baseContent = LANDING_CONTENT.creator;
   const { t } = useLanguage();
+
+  const content = {
+    ...baseContent,
+    switchAudience: { label: t('for_brands'), href: '/brands' },
+    signupCta: t('get_started'),
+    navItems: [
+      { type: 'scroll' as const, label: t('how_it_works'), href: '#how-it-works' },
+      { type: 'scroll' as const, label: t('features'), href: '#features' },
+      { type: 'scroll' as const, label: t('faq'), href: '#faq' },
+    ],
+  };
 
   return (
     <div className="landing-page flex min-h-full flex-col scroll-smooth">
