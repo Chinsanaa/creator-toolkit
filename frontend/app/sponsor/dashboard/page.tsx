@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { SponsorShell } from '@/components/sponsor/SponsorShell';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { getSponsorDashboard } from '@/lib/api/sponsor';
 import { formatMnt } from '@/lib/format';
@@ -14,6 +15,7 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
   const [stats, setStats] = useState<SponsorDashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let cancelled = false;
@@ -41,21 +43,21 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">
-            Hi, {user.name}
+            {t('greeting').replace('{name}', user.name)}
           </h1>
           <p className="mt-1 text-muted">
-            Manage campaigns and review creator applications.
+            {t('sponsor_dashboard_subtitle')}
           </p>
         </div>
         <Link
           href="/sponsor/campaigns/new"
           className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-primary-foreground hover:opacity-90"
         >
-          New campaign
+          {t('new_campaign')}
         </Link>
       </div>
 
-      {loading && <p className="text-sm text-muted">Loading stats…</p>}
+      {loading && <p className="text-sm text-muted">{t('loading_stats')}</p>}
 
       {error && (
         <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
@@ -65,17 +67,17 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
 
       {stats && !loading && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label="Active campaigns" value={String(stats.activeCampaigns)} />
-          <StatCard label="Total campaigns" value={String(stats.totalCampaigns)} />
+          <StatCard label={t('active_campaigns')} value={String(stats.activeCampaigns)} />
+          <StatCard label={t('total_campaigns')} value={String(stats.totalCampaigns)} />
           <StatCard
-            label="Pending applications"
+            label={t('pending_applications')}
             value={String(stats.pendingApplications)}
             hint={`${stats.totalApplications} total`}
           />
           <StatCard
-            label="Active campaign budget"
+            label={t('active_campaign_budget')}
             value={formatMnt(stats.totalBudgetMnt)}
-            hint="Sum of active campaign payouts"
+            hint={t('sum_of_active_payouts')}
           />
         </div>
       )}
@@ -85,7 +87,7 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
           href="/sponsor/campaigns"
           className="text-sm font-medium text-primary hover:text-primary"
         >
-          View all campaigns →
+          {t('view_all_campaigns')}
         </Link>
       </div>
     </>
@@ -94,11 +96,12 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
 
 export default function SponsorDashboardPage() {
   const { user, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
 
   if (authLoading || !user) {
     return (
       <SponsorShell>
-        <p className="text-sm text-zinc-500">Loading…</p>
+        <p className="text-sm text-zinc-500">{t('loading')}</p>
       </SponsorShell>
     );
   }
@@ -106,7 +109,7 @@ export default function SponsorDashboardPage() {
   if (user.userType !== 'sponsor') {
     return (
       <SponsorShell>
-        <p className="text-sm text-zinc-500">Sponsor account required.</p>
+        <p className="text-sm text-zinc-500">{t('sponsor_account_required')}</p>
       </SponsorShell>
     );
   }

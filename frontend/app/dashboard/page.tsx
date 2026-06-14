@@ -11,6 +11,7 @@ import { PlatformBreakdown } from '@/components/dashboard/PlatformBreakdown';
 import { ConnectedPlatforms } from '@/components/dashboard/ConnectedPlatforms';
 import { RecentEarnings } from '@/components/dashboard/RecentEarnings';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { getDashboardSummary } from '@/lib/api/dashboard';
 import { PageHeader } from '@/components/ui/PageHeader';
@@ -21,6 +22,7 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
   const [data, setData] = useState<DashboardSummary | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     let cancelled = false;
@@ -47,14 +49,14 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
   return (
     <>
       <PageHeader
-        eyebrow="Creator dashboard"
-        title={`Hi, ${user.name}`}
-        description="Your earnings overview across connected platforms."
+        eyebrow={t('creator_dashboard')}
+        title={t('greeting').replace('{name}', user.name)}
+        description={t('creator_dashboard_subtitle')}
       />
 
       {loading && (
         <p className="text-sm font-medium text-[color:var(--muted-foreground)]">
-          Loading analytics…
+          {t('loading_analytics')}
         </p>
       )}
 
@@ -77,11 +79,12 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
+  const { t } = useLanguage();
 
   if (authLoading || !user) {
     return (
       <DashboardShell>
-        <p className="text-sm text-zinc-500">Loading…</p>
+        <p className="text-sm text-zinc-500">{t('loading')}</p>
       </DashboardShell>
     );
   }

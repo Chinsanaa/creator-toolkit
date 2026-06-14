@@ -1,5 +1,8 @@
+'use client';
+
 import Link from 'next/link';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 function NotFoundIllustration() {
   return (
@@ -43,14 +46,19 @@ function NotFoundIllustration() {
 }
 
 export function NotFoundScreen({
-  title = 'Page not found',
-  description = "We couldn't find that page. The link may be broken, or the address might be misspelled.",
+  title,
+  description,
   showNav = true,
 }: {
   title?: string;
   description?: string;
   showNav?: boolean;
 }) {
+  const { t } = useLanguage();
+
+  const resolvedTitle = title ?? t('not_found_title');
+  const resolvedDescription = description ?? t('not_found_subtitle');
+
   return (
     <div className="landing-page not-found-page flex min-h-full flex-col">
       {showNav ? (
@@ -60,7 +68,7 @@ export function NotFoundScreen({
               <EarnioLogo iconClassName="h-7 w-7" />
             </Link>
             <Link href="/login/creator" className="text-[14px] font-medium text-landing-fg/80 transition hover:text-landing-fg">
-              Log in
+              {t('log_in')}
             </Link>
           </div>
         </header>
@@ -74,17 +82,17 @@ export function NotFoundScreen({
 
           <NotFoundIllustration />
 
-          <h1 className="mt-8 text-3xl font-semibold tracking-tight text-landing-fg sm:text-4xl">{title}</h1>
+          <h1 className="mt-8 text-3xl font-semibold tracking-tight text-landing-fg sm:text-4xl">{resolvedTitle}</h1>
           <p className="mx-auto mt-4 max-w-md text-base leading-relaxed text-landing-muted sm:text-lg">
-            {description}
+            {resolvedDescription}
           </p>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
             <Link href="/" className="landing-btn-dark px-7 py-3 text-[15px]">
-              Back to home
+              {t('back_to_home')}
             </Link>
             <Link href="/brands" className="landing-btn-light px-7 py-3 text-[15px]">
-              For brands
+              {t('for_brands')}
             </Link>
           </div>
         </div>

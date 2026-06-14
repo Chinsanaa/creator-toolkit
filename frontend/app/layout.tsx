@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
 import { ErrorBoundary } from "@/components/ErrorBoundary";
 import { OfflineBanner } from "@/components/OfflineBanner";
@@ -75,14 +76,16 @@ export default function RootLayout({
         />
       </head>
       <body className="mesh-bg flex min-h-full flex-col">
-        <ThemeProvider>
-          <ErrorBoundary>
-            <AuthProvider>
-              <OfflineBanner />
-              {children}
-            </AuthProvider>
-          </ErrorBoundary>
-        </ThemeProvider>
+        <LanguageProvider>
+          <ThemeProvider>
+            <ErrorBoundary>
+              <AuthProvider>
+                <OfflineBanner />
+                {children}
+              </AuthProvider>
+            </ErrorBoundary>
+          </ThemeProvider>
+        </LanguageProvider>
       </body>
     </html>
   );

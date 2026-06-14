@@ -1,6 +1,7 @@
 'use client';
 
 import { useTheme } from '@/lib/theme/ThemeProvider';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const buttonClass =
   'flex h-11 w-11 cursor-pointer items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--card-muted)] text-[color:var(--foreground)] transition duration-200 hover:border-[color:var(--primary)]/40';
@@ -35,6 +36,7 @@ function ThemeTogglePlaceholder() {
 
 export function ThemeToggle() {
   const { theme, ready, toggleTheme } = useTheme();
+  const { t } = useLanguage();
 
   if (!ready) {
     return <ThemeTogglePlaceholder />;
@@ -45,7 +47,7 @@ export function ThemeToggle() {
       type="button"
       onClick={toggleTheme}
       className={buttonClass}
-      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
+      aria-label={theme === 'dark' ? t('switch_to_light') : t('switch_to_dark')}
     >
       {theme === 'dark' ? (
         <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden>
