@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { LegalConsent } from '@/components/auth/LegalConsent';
 import { OAuthProviderButtons } from '@/components/auth/OAuthProviderButtons';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import type { UserType } from '@/lib/types/auth';
 
@@ -45,6 +46,7 @@ export function AuthForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const { t } = useLanguage();
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -58,7 +60,7 @@ export function AuthForm({
     });
 
     if (legalConsentMode === 'signup' && !acceptedTerms) {
-      setError('You must accept the Terms and Conditions and Privacy Policy');
+      setError(t('must_accept_terms'));
       setPending(false);
       return;
     }
@@ -70,7 +72,7 @@ export function AuthForm({
     try {
       await onSubmit(values);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Something went wrong');
+      setError(err instanceof ApiError ? err.message : t('something_went_wrong'));
     } finally {
       setPending(false);
     }
@@ -111,7 +113,7 @@ export function AuthForm({
                 disabled={legalConsentMode === 'signup' && !acceptedTerms}
               />
               <div className="auth-divider">
-                <span>or continue with email</span>
+                <span>{t('or_continue_with_email')}</span>
               </div>
             </div>
           ) : null}
@@ -148,7 +150,7 @@ export function AuthForm({
           )}
 
           <button type="submit" disabled={pending} className="btn-primary">
-            {pending ? 'Please wait…' : submitLabel}
+            {pending ? t('please_wait') : submitLabel}
           </button>
         </form>
 

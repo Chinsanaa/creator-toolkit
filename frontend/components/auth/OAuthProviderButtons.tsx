@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { startOAuthSignIn, type OAuthProvider } from '@/lib/auth/oauth';
 import type { UserType } from '@/lib/types/auth';
 
@@ -43,6 +44,7 @@ function AppleIcon() {
 export function OAuthProviderButtons({ userType, disabled = false }: OAuthProviderButtonsProps) {
   const [error, setError] = useState<string | null>(null);
   const [pendingProvider, setPendingProvider] = useState<OAuthProvider | null>(null);
+  const { t } = useLanguage();
 
   async function handleProvider(provider: OAuthProvider) {
     if (disabled || pendingProvider) return;
@@ -71,7 +73,7 @@ export function OAuthProviderButtons({ userType, disabled = false }: OAuthProvid
         className="oauth-provider-btn"
       >
         <GoogleIcon />
-        <span>{pendingProvider === 'google' ? 'Redirecting…' : 'Continue with Google'}</span>
+        <span>{pendingProvider === 'google' ? t('redirecting') : t('continue_with_google')}</span>
       </button>
 
       <button
@@ -81,7 +83,7 @@ export function OAuthProviderButtons({ userType, disabled = false }: OAuthProvid
         className="oauth-provider-btn"
       >
         <AppleIcon />
-        <span>{pendingProvider === 'apple' ? 'Redirecting…' : 'Continue with Apple'}</span>
+        <span>{pendingProvider === 'apple' ? t('redirecting') : t('continue_with_apple')}</span>
       </button>
 
       {error ? (

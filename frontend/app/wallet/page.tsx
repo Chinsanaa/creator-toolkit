@@ -3,6 +3,7 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import {
   addBankAccount,
@@ -46,6 +47,7 @@ export default function WalletPage() {
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   const [bankName, setBankName] = useState(MONGOLIAN_BANKS[0]);
   const [accountNumber, setAccountNumber] = useState('');
@@ -150,11 +152,11 @@ export default function WalletPage() {
     <DashboardShell>
       <div className="mx-auto max-w-6xl">
         <CreatorPageHeader
-          title="Wallet"
-          subtitle="Withdraw earnings to your Mongolian bank account. Platform fee: 20% on sponsorships."
+          title={t('wallet')}
+          subtitle={t('wallet_subtitle')}
         />
 
-        {loading && <p className="text-sm text-landing-muted">Loading wallet…</p>}
+        {loading && <p className="text-sm text-landing-muted">{t('loading_wallet')}</p>}
         {error && (
           <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         )}
@@ -163,40 +165,40 @@ export default function WalletPage() {
           <div className="space-y-8">
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
               <BalanceCard
-                label="Available to withdraw"
+                label={t('available_to_withdraw')}
                 value={formatMnt(summary.availableBalanceMnt)}
                 highlight
               />
               <BalanceCard
-                label="Pending payouts"
+                label={t('pending_payouts')}
                 value={formatMnt(summary.pendingPayoutMnt)}
-                hint="Processing transfers"
+                hint={t('processing_transfers')}
               />
-              <BalanceCard label="Total earned" value={formatMnt(summary.totalEarnedMnt)} />
+              <BalanceCard label={t('total_earned')} value={formatMnt(summary.totalEarnedMnt)} />
               <BalanceCard
-                label="Fees paid"
+                label={t('fees_paid')}
                 value={formatMnt(summary.totalFeesMnt)}
-                hint={`${(summary.platformFeeRate * 100).toFixed(0)}% on sponsorships`}
+                hint={`${(summary.platformFeeRate * 100).toFixed(0)}${t('pct_on_sponsorships')}`}
               />
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
               <section className="creator-panel-lg">
                 <h2 className="text-base font-semibold tracking-tight text-landing-fg">
-                  Request payout
+                  {t('request_payout')}
                 </h2>
                 <p className="mt-1 text-sm text-landing-muted">
                   Minimum {formatMnt(summary.minPayoutMnt)}. Transfers in 1–3 business days.
                 </p>
                 {bankAccounts.length === 0 ? (
                   <p className="mt-4 text-sm text-amber-700">
-                    Add a bank account below before requesting a payout.
+                    {t('add_bank_account_first')}
                   </p>
                 ) : (
                   <form onSubmit={handlePayout} className="mt-5 space-y-4">
                     <div>
                       <label className="mb-2 block text-sm font-medium text-landing-fg">
-                        Amount (MNT)
+                        {t('amount_mnt')}
                       </label>
                       <input
                         type="text"
@@ -210,7 +212,7 @@ export default function WalletPage() {
                     </div>
                     <div>
                       <label className="mb-2 block text-sm font-medium text-landing-fg">
-                        Bank account
+                        {t('bank_account')}
                       </label>
                       <select
                         value={payoutBankId}
@@ -220,7 +222,7 @@ export default function WalletPage() {
                         {bankAccounts.map((b) => (
                           <option key={b.id} value={b.id}>
                             {b.bank_name} {b.account_number}
-                            {b.is_default ? ' (default)' : ''}
+                            {b.is_default ? ` ${t('default_label')}` : ''}
                           </option>
                         ))}
                       </select>
@@ -234,7 +236,7 @@ export default function WalletPage() {
                       disabled={payoutPending}
                       className="landing-btn-dark px-6 py-2.5 text-sm disabled:opacity-60"
                     >
-                      {payoutPending ? 'Submitting…' : 'Request payout'}
+                      {payoutPending ? t('submitting') : t('request_payout')}
                     </button>
                   </form>
                 )}
@@ -242,7 +244,7 @@ export default function WalletPage() {
 
               <section className="creator-panel-lg">
                 <h2 className="text-base font-semibold tracking-tight text-landing-fg">
-                  Bank accounts
+                  {t('bank_accounts')}
                 </h2>
                 {bankAccounts.length > 0 && (
                   <ul className="mt-4 space-y-2">
@@ -255,14 +257,14 @@ export default function WalletPage() {
                           </p>
                         </div>
                         {b.is_default ? (
-                          <span className="text-xs font-medium text-landing-fg">Default</span>
+                          <span className="text-xs font-medium text-landing-fg">{t('default_label')}</span>
                         ) : (
                           <button
                             type="button"
                             onClick={() => setDefaultBankAccount(b.id).then(load)}
                             className="auth-link text-xs"
                           >
-                            Set default
+                            {t('set_default')}
                           </button>
                         )}
                       </li>
@@ -273,7 +275,7 @@ export default function WalletPage() {
                   onSubmit={handleAddBank}
                   className="mt-5 space-y-3 border-t border-sky-100 pt-5"
                 >
-                  <p className="text-sm font-medium text-landing-fg">Add account</p>
+                  <p className="text-sm font-medium text-landing-fg">{t('add_account')}</p>
                   <select
                     value={bankName}
                     onChange={(e) => setBankName(e.target.value)}
@@ -287,14 +289,14 @@ export default function WalletPage() {
                   </select>
                   <input
                     required
-                    placeholder="Account number"
+                    placeholder={t('account_number')}
                     value={accountNumber}
                     onChange={(e) => setAccountNumber(e.target.value)}
                     className="auth-input"
                   />
                   <input
                     required
-                    placeholder="Account holder name"
+                    placeholder={t('account_holder_name')}
                     value={accountHolderName}
                     onChange={(e) => setAccountHolderName(e.target.value)}
                     className="auth-input"
@@ -305,7 +307,7 @@ export default function WalletPage() {
                     disabled={bankPending}
                     className="landing-btn-light px-5 py-2.5 text-sm disabled:opacity-60"
                   >
-                    {bankPending ? 'Adding…' : 'Add bank account'}
+                    {bankPending ? t('adding') : t('add_bank_account')}
                   </button>
                 </form>
               </section>
@@ -313,17 +315,17 @@ export default function WalletPage() {
 
             <section className="creator-panel-lg">
               <h2 className="text-base font-semibold tracking-tight text-landing-fg">
-                Transaction history
+                {t('transaction_history')}
               </h2>
               <div className="creator-table-wrap mt-5">
                 <table className="creator-table">
                   <thead>
                     <tr>
-                      <th>Date</th>
-                      <th>Type</th>
-                      <th>Status</th>
-                      <th>Description</th>
-                      <th className="text-right">Amount</th>
+                      <th>{t('date')}</th>
+                      <th>{t('type')}</th>
+                      <th>{t('status')}</th>
+                      <th>{t('description')}</th>
+                      <th className="text-right">{t('amount')}</th>
                     </tr>
                   </thead>
                   <tbody>

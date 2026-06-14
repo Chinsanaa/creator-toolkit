@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { SponsorShell } from '@/components/sponsor/SponsorShell';
 import { CampaignStatusBadge } from '@/components/sponsor/CampaignStatusBadge';
 import { PageHeader } from '@/components/ui/PageHeader';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { listSponsorCampaigns } from '@/lib/api/sponsor';
 import { contentTypeLabel, formatDate, formatMnt } from '@/lib/format';
@@ -24,6 +25,7 @@ export default function SponsorCampaignsPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [tab, setTab] = useState<FilterTab>('all');
+  const { t } = useLanguage();
 
   useEffect(() => {
     listSponsorCampaigns()
@@ -49,20 +51,20 @@ export default function SponsorCampaignsPage() {
   );
 
   const tabLabels: Record<FilterTab, string> = {
-    all: 'All',
-    published: 'Published',
-    closed: 'Closed',
+    all: t('all'),
+    published: t('published'),
+    closed: t('closed'),
   };
 
   return (
     <SponsorShell>
       <PageHeader
         eyebrow="Sponsor"
-        title="Campaigns"
-        description="Published campaigns appear in the creator marketplace. Close a campaign when you are done accepting applications."
+        title={t('campaigns')}
+        description={t('campaigns_subtitle')}
         actions={
           <Link href="/sponsor/campaigns/new" className="btn-primary w-auto px-5">
-            New campaign
+            {t('new_campaign')}
           </Link>
         }
       />
@@ -90,7 +92,7 @@ export default function SponsorCampaignsPage() {
       </div>
 
       {loading && (
-        <p className="text-sm text-[color:var(--muted-foreground)]">Loading campaigns…</p>
+        <p className="text-sm text-[color:var(--muted-foreground)]">{t('loading_campaigns')}</p>
       )}
       {error ? (
         <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
@@ -100,11 +102,10 @@ export default function SponsorCampaignsPage() {
         <p className="text-sm text-[color:var(--muted-foreground)]">
           {tab === 'all' ? (
             <>
-              No campaigns yet.{' '}
+              {t('no_campaigns_yet')}{' '}
               <Link href="/sponsor/campaigns/new" className="link-primary">
-                Create your first
+                {t('no_campaigns_yet')}
               </Link>
-              .
             </>
           ) : (
             `No ${tabLabels[tab].toLowerCase()} campaigns.`
@@ -135,7 +136,7 @@ export default function SponsorCampaignsPage() {
                 </p>
                 {isLegacyUnpublished(c.status) && (
                   <p className="mt-2 text-xs font-semibold text-[color:var(--primary)]">
-                    Publish to go live →
+                    {t('publish_to_go_live')}
                   </p>
                 )}
               </div>
@@ -144,10 +145,10 @@ export default function SponsorCampaignsPage() {
                   {formatMnt(c.payment_amount_mnt)}
                 </p>
                 <p className="mt-1 text-xs text-[color:var(--muted)]">
-                  {c.applicationCount} applications
+                  {c.applicationCount} {t('applications')}
                   {c.pendingCount > 0 && (
                     <span className="ml-1 font-semibold text-amber-600 dark:text-amber-400">
-                      · {c.pendingCount} pending
+                      · {c.pendingCount} {t('pending_applications').toLowerCase()}
                     </span>
                   )}
                 </p>

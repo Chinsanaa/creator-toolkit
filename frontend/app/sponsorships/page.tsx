@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { SponsorshipCard } from '@/components/sponsorships/SponsorshipCard';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { listSponsorships } from '@/lib/api/sponsorships';
 import type { SponsorshipListing } from '@/lib/types/sponsorship';
@@ -14,6 +15,7 @@ export default function SponsorshipsPage() {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     listSponsorships()
@@ -39,11 +41,11 @@ export default function SponsorshipsPage() {
     <DashboardShell>
       <div className="mx-auto max-w-6xl">
         <CreatorPageHeader
-          title="Explore"
-          subtitle="Browse sponsorship opportunities from Mongolian brands."
+          title={t('explore')}
+          subtitle={t('sponsorships_subtitle')}
           action={
             <Link href="/sponsorships/applications" className="landing-btn-light px-5 py-2.5 text-sm">
-              My applications
+              {t('my_applications')}
             </Link>
           }
         />
@@ -63,19 +65,19 @@ export default function SponsorshipsPage() {
               type="search"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search sponsorships…"
+              placeholder={t('search_sponsorships')}
               className="creator-search"
-              aria-label="Search sponsorships"
+              aria-label={t('search_sponsorships')}
             />
           </div>
           {!loading && !error ? (
             <p className="mt-3 text-sm text-landing-muted">
-              {filtered.length} opportunity{filtered.length === 1 ? '' : 'ies'} available
+              {filtered.length} {filtered.length === 1 ? t('opportunity_available') : t('opportunities_available')}
             </p>
           ) : null}
         </div>
 
-        {loading && <p className="text-sm text-landing-muted">Loading opportunities…</p>}
+        {loading && <p className="text-sm text-landing-muted">{t('loading_opportunities')}</p>}
         {error && (
           <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         )}
@@ -83,7 +85,7 @@ export default function SponsorshipsPage() {
         {!loading && !error && filtered.length === 0 && (
           <div className="creator-panel text-center">
             <p className="text-sm text-landing-muted">
-              {query ? 'No sponsorships match your search.' : 'No active sponsorships right now.'}
+              {query ? t('no_sponsorships_match') : t('no_active_sponsorships')}
             </p>
           </div>
         )}
@@ -91,7 +93,7 @@ export default function SponsorshipsPage() {
         {filtered.length > 0 && (
           <>
             <h2 className="mb-4 text-sm font-semibold uppercase tracking-wider text-landing-muted">
-              {query ? 'Results' : 'For you'}
+              {query ? t('results') : t('for_you')}
             </h2>
             <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
               {filtered.map((s) => (

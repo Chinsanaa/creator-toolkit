@@ -6,6 +6,8 @@ import { useEffect, useState } from 'react';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { CREATOR_SIDEBAR_NAV, isCreatorNavActive } from '@/components/layout/creator-nav';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { formatHandle } from '@/lib/format';
 
 interface CreatorAppShellProps {
@@ -25,6 +27,7 @@ export function CreatorAppShell({
 }: CreatorAppShellProps) {
   const pathname = usePathname();
   const [accountOpen, setAccountOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     setAccountOpen(false);
@@ -69,7 +72,7 @@ export function CreatorAppShell({
               aria-current={active ? 'page' : undefined}
             >
               {item.icon}
-              <span>{item.label}</span>
+              <span>{t(item.labelKey)}</span>
             </Link>
           );
         })}
@@ -85,13 +88,13 @@ export function CreatorAppShell({
             />
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
           </svg>
-          <span>Account settings</span>
+          <span>{t('account_settings')}</span>
         </Link>
         <button type="button" onClick={onLogout} className="creator-sidebar-logout">
           <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
             <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
           </svg>
-          <span>Log out</span>
+          <span>{t('log_out')}</span>
         </button>
       </div>
     </>
@@ -110,7 +113,7 @@ export function CreatorAppShell({
         <button
           type="button"
           className="creator-account-menu-backdrop"
-          aria-label="Close account menu"
+          aria-label={t('close_menu')}
           onClick={() => setAccountOpen(false)}
         />
         <aside className="creator-account-menu-panel">
@@ -139,7 +142,7 @@ export function CreatorAppShell({
                 />
                 <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
               </svg>
-              <span>Account settings</span>
+              <span>{t('account_settings')}</span>
             </Link>
             <button
               type="button"
@@ -152,7 +155,7 @@ export function CreatorAppShell({
               <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
               </svg>
-              <span>Log out</span>
+              <span>{t('log_out')}</span>
             </button>
           </div>
         </aside>
@@ -163,6 +166,7 @@ export function CreatorAppShell({
           <div className="flex-1" />
 
           <div className="creator-topbar-actions flex items-center gap-3">
+            <LanguageSwitcher />
             <NotificationBell tone="creator" />
             {(userName || userHandle) && (
               <Link href="/settings" className="hidden text-right md:block">
@@ -175,7 +179,7 @@ export function CreatorAppShell({
             <button
               type="button"
               className="creator-avatar md:hidden"
-              aria-label="Open account menu"
+              aria-label={t('open_menu')}
               aria-expanded={accountOpen}
               onClick={() => setAccountOpen(true)}
             >
@@ -200,7 +204,7 @@ export function CreatorAppShell({
                 aria-current={active ? 'page' : undefined}
               >
                 <span className="creator-bottom-link-icon">{item.icon}</span>
-                <span className="creator-bottom-link-label">{item.label}</span>
+                <span className="creator-bottom-link-label">{t(item.labelKey)}</span>
               </Link>
             );
           })}

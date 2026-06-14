@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 export interface CreatorNavItem {
   href: string;
   label: string;
+  labelKey: string;
   icon: ReactNode;
   match?: (pathname: string) => boolean;
 }
@@ -49,13 +50,14 @@ function IconWallet() {
 }
 
 export const CREATOR_SIDEBAR_NAV: CreatorNavItem[] = [
-  { href: '/dashboard', label: 'Home', icon: <IconHome /> },
+  { href: '/dashboard', label: 'Home', labelKey: 'home', icon: <IconHome /> },
   {
     href: '/sponsorships',
     label: 'Explore',
+    labelKey: 'explore',
     icon: <IconExplore />,
     match: (p) => p === '/sponsorships' || p.startsWith('/sponsorships/'),
   },
-  { href: '/platforms', label: 'Platforms', icon: <IconPlatforms /> },
-  { href: '/wallet', label: 'Wallet', icon: <IconWallet /> },
+  { href: '/platforms', label: 'Platforms', labelKey: 'platforms', icon: <IconPlatforms /> },
+  { href: '/wallet', label: 'Wallet', labelKey: 'wallet', icon: <IconWallet /> },
 ];

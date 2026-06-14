@@ -1,41 +1,45 @@
+'use client';
+
 import Link from 'next/link';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 type ChooserMode = 'login' | 'signup';
 
 const copy: Record<
   ChooserMode,
   {
-    title: string;
-    question: string;
+    titleKey: string;
+    questionKey: string;
     creatorHref: string;
     sponsorHref: string;
     switchHref: string;
-    switchPrompt: string;
-    switchLabel: string;
+    switchPromptKey: string;
+    switchLabelKey: string;
   }
 > = {
   login: {
-    title: 'Sign in',
-    question: 'How are you using Earnio?',
+    titleKey: 'sign_in',
+    questionKey: 'how_are_you_using',
     creatorHref: '/login/creator',
     sponsorHref: '/login/sponsor',
     switchHref: '/signup',
-    switchPrompt: 'New here?',
-    switchLabel: 'Create an account',
+    switchPromptKey: 'new_here',
+    switchLabelKey: 'create_account',
   },
   signup: {
-    title: 'Get started',
-    question: 'How will you use Earnio?',
+    titleKey: 'get_started',
+    questionKey: 'how_will_you_use',
     creatorHref: '/signup/creator',
     sponsorHref: '/signup/sponsor',
     switchHref: '/login',
-    switchPrompt: 'Already have an account?',
-    switchLabel: 'Sign in',
+    switchPromptKey: 'already_have_account',
+    switchLabelKey: 'sign_in',
   },
 };
 
 export function AccountTypeChooser({ mode }: { mode: ChooserMode }) {
   const c = copy[mode];
+  const { t } = useLanguage();
 
   return (
     <div className="w-full max-w-md">
@@ -51,26 +55,26 @@ export function AccountTypeChooser({ mode }: { mode: ChooserMode }) {
             />
           </svg>
         </div>
-        <h1 className="text-2xl font-semibold text-landing-fg">{c.title}</h1>
-        <p className="mt-6 text-center text-sm font-medium text-landing-fg">{c.question}</p>
+        <h1 className="text-2xl font-semibold text-landing-fg">{t(c.titleKey)}</h1>
+        <p className="mt-6 text-center text-sm font-medium text-landing-fg">{t(c.questionKey)}</p>
 
         <div className="mt-6 space-y-3">
           <AccountTypeCard
             href={c.creatorHref}
-            label="Creator"
-            description="Track earnings, apply to brand deals, and manage payouts."
+            label={t('creator')}
+            description={t('creator_description')}
           />
           <AccountTypeCard
             href={c.sponsorHref}
-            label="Sponsor"
-            description="Post campaigns and review creator applications."
+            label={t('sponsor')}
+            description={t('sponsor_description')}
           />
         </div>
 
         <p className="mt-8 text-center text-sm text-landing-muted">
-          {c.switchPrompt}{' '}
+          {t(c.switchPromptKey)}{' '}
           <Link href={c.switchHref} className="auth-link">
-            {c.switchLabel}
+            {t(c.switchLabelKey)}
           </Link>
         </p>
       </div>

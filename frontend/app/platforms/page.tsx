@@ -3,6 +3,7 @@
 import { FormEvent, useEffect, useState } from 'react';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import {
   connectPlatform,
@@ -29,6 +30,7 @@ export default function PlatformsPage() {
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   async function load() {
     setError(null);
@@ -37,7 +39,7 @@ export default function PlatformsPage() {
       setAccounts(accs);
       setHistory(hist);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to load platforms');
+      setError(err instanceof ApiError ? err.message : t('failed_to_load_platforms'));
     } finally {
       setLoading(false);
     }
@@ -54,7 +56,7 @@ export default function PlatformsPage() {
         }
       } catch (err) {
         if (!cancelled) {
-          setError(err instanceof ApiError ? err.message : 'Failed to load platforms');
+          setError(err instanceof ApiError ? err.message : t('failed_to_load_platforms'));
         }
       } finally {
         if (!cancelled) setLoading(false);
@@ -76,7 +78,7 @@ export default function PlatformsPage() {
       setMessage(`${platformLabel(platform)} connected. Run sync to pull earnings.`);
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to connect');
+      setError(err instanceof ApiError ? err.message : t('failed_to_connect'));
     } finally {
       setConnecting(false);
     }
@@ -88,10 +90,10 @@ export default function PlatformsPage() {
     setMessage(null);
     try {
       await syncPlatform(accountId);
-      setMessage('Sync completed. Check Home for updated earnings.');
+      setMessage(t('sync_completed'));
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Sync failed');
+      setError(err instanceof ApiError ? err.message : t('sync_failed'));
     } finally {
       setSyncingId(null);
     }
@@ -105,8 +107,8 @@ export default function PlatformsPage() {
     <DashboardShell>
       <div className="mx-auto max-w-3xl">
         <CreatorPageHeader
-          title="Platforms"
-          subtitle="Connect TikTok, YouTube, or Instagram and sync earnings into your dashboard."
+          title={t('platforms')}
+          subtitle={t('connect_platforms_subtitle')}
         />
 
         {message && (
@@ -117,11 +119,11 @@ export default function PlatformsPage() {
         )}
 
         <section className="creator-panel-lg">
-          <h2 className="text-base font-semibold text-landing-fg">Social accounts</h2>
-          <p className="mt-1 text-sm text-landing-muted">Manage platform connections for earnings sync.</p>
+          <h2 className="text-base font-semibold text-landing-fg">{t('social_accounts')}</h2>
+          <p className="mt-1 text-sm text-landing-muted">{t('manage_platform_connections')}</p>
 
           {loading ? (
-            <p className="mt-6 text-sm text-landing-muted">Loading…</p>
+            <p className="mt-6 text-sm text-landing-muted">{t('loading')}</p>
           ) : (
             <ul className="mt-6 space-y-3">
               {PLATFORMS.map((p) => {
@@ -131,7 +133,7 @@ export default function PlatformsPage() {
                     <div>
                       <p className="font-medium text-landing-fg">{p.label}</p>
                       <p className="text-sm text-landing-muted">
-                        {account ? formatHandle(account.platform_username) : 'Not connected'}
+                        {account ? formatHandle(account.platform_username) : t('not_connected')}
                       </p>
                     </div>
                     {account ? (
@@ -141,10 +143,10 @@ export default function PlatformsPage() {
                         onClick={() => handleSync(account.id)}
                         className="landing-btn-light px-4 py-2 text-xs"
                       >
-                        {syncingId === account.id ? 'Syncing…' : 'Sync'}
+                        {syncingId === account.id ? 'Syncing…' : t('sync')}
                       </button>
                     ) : (
-                      <span className="text-xs text-landing-muted">Use form below</span>
+                      <span className="text-xs text-landing-muted">{t('use_form_below')}</span>
                     )}
                   </li>
                 );
@@ -154,10 +156,10 @@ export default function PlatformsPage() {
         </section>
 
         <section className="creator-panel mt-6">
-          <h2 className="text-base font-semibold text-landing-fg">Connect a platform</h2>
+          <h2 className="text-base font-semibold text-landing-fg">{t('connect_a_platform')}</h2>
           <form onSubmit={handleConnect} className="mt-4 space-y-4">
             <div>
-              <label className="mb-2 block text-sm font-medium text-landing-fg">Platform</label>
+              <label className="mb-2 block text-sm font-medium text-landing-fg">{t('platform')}</label>
               <select
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
@@ -171,24 +173,24 @@ export default function PlatformsPage() {
               </select>
             </div>
             <div>
-              <label className="mb-2 block text-sm font-medium text-landing-fg">Username</label>
+              <label className="mb-2 block text-sm font-medium text-landing-fg">{t('username')}</label>
               <input
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="your_handle"
+                placeholder={t('your_handle')}
                 className="auth-input"
               />
             </div>
             <button type="submit" disabled={connecting} className="landing-btn-dark px-6 py-2.5 text-sm">
-              {connecting ? 'Connecting…' : 'Connect'}
+              {connecting ? t('connecting') : t('connect')}
             </button>
           </form>
         </section>
 
         {history.length > 0 && (
           <section className="creator-panel mt-6">
-            <h2 className="text-base font-semibold text-landing-fg">Sync history</h2>
+            <h2 className="text-base font-semibold text-landing-fg">{t('sync_history')}</h2>
             <ul className="mt-4 space-y-2">
               {history.slice(0, 6).map((h) => (
                 <li

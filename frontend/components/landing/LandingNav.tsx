@@ -3,6 +3,8 @@
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { LandingContent, LandingNavItem } from '@/lib/landing/content';
 
 function ChevronDown() {
@@ -54,6 +56,7 @@ function NavItemLink({
 
 export function LandingNav({ content }: { content: LandingContent }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const { t } = useLanguage();
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -96,6 +99,7 @@ export function LandingNav({ content }: { content: LandingContent }) {
         </nav>
 
         <div className="flex items-center gap-2 sm:gap-4">
+          <LanguageSwitcher />
           <Link
             href={content.switchAudience.href}
             className="hidden items-center gap-1.5 text-[14px] font-medium text-landing-fg/80 transition-colors hover:text-landing-fg md:inline-flex"
@@ -107,7 +111,7 @@ export function LandingNav({ content }: { content: LandingContent }) {
             href={content.loginHref}
             className="hidden text-[14px] font-medium text-landing-fg/80 transition-colors hover:text-landing-fg md:inline"
           >
-            Log in
+            {t('log_in')}
           </Link>
           <Link href={content.signupHref} className="landing-btn-dark px-4 py-2 text-[13px] sm:px-5 sm:py-2.5 sm:text-[14px]">
             {content.signupCta}
@@ -115,7 +119,7 @@ export function LandingNav({ content }: { content: LandingContent }) {
           <button
             type="button"
             className="landing-menu-btn lg:hidden"
-            aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
+            aria-label={mobileOpen ? t('close_menu') : t('open_menu')}
             aria-expanded={mobileOpen}
             aria-controls="landing-mobile-menu"
             onClick={() => setMobileOpen((open) => !open)}
@@ -141,7 +145,7 @@ export function LandingNav({ content }: { content: LandingContent }) {
         <button
           type="button"
           className="landing-mobile-menu-backdrop"
-          aria-label="Close menu"
+          aria-label={t('close_menu')}
           onClick={() => setMobileOpen(false)}
         />
         <div className="landing-mobile-menu-panel">
@@ -170,7 +174,7 @@ export function LandingNav({ content }: { content: LandingContent }) {
               className={mobileNavLinkClass}
               onClick={() => setMobileOpen(false)}
             >
-              Log in
+              {t('log_in')}
             </Link>
           </div>
         </div>

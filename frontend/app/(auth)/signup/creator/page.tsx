@@ -3,30 +3,32 @@
 import { AuthForm } from '@/components/auth/AuthForm';
 import { AuthTypeBackLink } from '@/components/auth/AuthTypeBackLink';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function CreatorSignupPage() {
   const { signup } = useAuth();
+  const { t } = useLanguage();
 
   return (
     <AuthForm
-      title="Create creator account"
-      subtitle="Track earnings, apply to sponsorships, and manage payouts."
-      submitLabel="Create account"
+      title={t('create_creator_account')}
+      subtitle={t('create_creator_account_subtitle')}
+      submitLabel={t('create_account')}
       alternateHref="/login/creator"
-      alternatePrompt="Already have an account?"
-      alternateLabel="Sign in"
+      alternatePrompt={t('already_have_account')}
+      alternateLabel={t('sign_in')}
       beforeForm={<AuthTypeBackLink audience="creator" />}
       legalConsentMode="signup"
       oauthUserType="creator"
       fields={[
-        { name: 'name', label: 'Full name', placeholder: 'Your name' },
-        { name: 'username', label: 'Username', placeholder: 'creator_handle' },
-        { name: 'email', label: 'Email', type: 'email', placeholder: 'you@example.com' },
+        { name: 'name', label: t('full_name'), placeholder: 'Your name' },
+        { name: 'username', label: t('username'), placeholder: 'creator_handle' },
+        { name: 'email', label: t('email'), type: 'email', placeholder: 'you@example.com' },
         {
           name: 'password',
-          label: 'Password',
+          label: t('password'),
           type: 'password',
-          placeholder: 'At least 8 characters',
+          placeholder: t('at_least_8_chars'),
         },
       ]}
       onSubmit={async (values) => {

@@ -6,6 +6,8 @@ import { useState } from 'react';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
+import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export interface NavItem {
   href: string;
@@ -40,6 +42,7 @@ export function AppShell({
 }: AppShellProps) {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
+  const { t } = useLanguage();
 
   const linkClass = (href: string) =>
     `nav-link ${isActive(pathname, href) ? 'nav-link-active' : 'nav-link-inactive'}`;
@@ -52,7 +55,7 @@ export function AppShell({
             <button
               type="button"
               className="flex h-11 w-11 shrink-0 cursor-pointer items-center justify-center rounded-xl border border-[color:var(--border)] bg-[color:var(--card-muted)] md:hidden"
-              aria-label="Open menu"
+              aria-label={t('open_menu')}
               aria-expanded={menuOpen}
               onClick={() => setMenuOpen((o) => !o)}
             >
@@ -79,6 +82,7 @@ export function AppShell({
           </nav>
 
           <div className="flex items-center gap-2">
+            <LanguageSwitcher />
             <ThemeToggle />
             {showNotifications && <NotificationBell />}
             {userLabel && (
@@ -91,7 +95,7 @@ export function AppShell({
               onClick={onLogout}
               className="btn-secondary hidden min-h-11 sm:inline-flex"
             >
-              Log out
+              {t('log_out')}
             </button>
           </div>
         </div>
@@ -116,7 +120,7 @@ export function AppShell({
               }}
               className="btn-secondary mt-2 w-full"
             >
-              Log out
+              {t('log_out')}
             </button>
           </nav>
         )}
