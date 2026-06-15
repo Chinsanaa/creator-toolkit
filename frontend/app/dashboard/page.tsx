@@ -1,9 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
-import Link from 'next/link';
-import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
-import { GettingStartedPlan } from '@/components/creator/GettingStartedPlan';
+import { useEffect, useState } from 'react';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { MonthlyTrend } from '@/components/dashboard/MonthlyTrend';
 import { StatsCards } from '@/components/dashboard/StatsCards';

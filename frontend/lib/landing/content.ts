@@ -41,7 +41,7 @@ export const CREATOR_FEATURES = [
   },
   {
     title: 'Track performance.',
-    description: 'See views, revenue, and engagement from TikTok and YouTube.',
+    description: 'See views, revenue, and engagement from TikTok, YouTube, and Instagram.',
   },
   {
     title: 'Easy delivery.',
@@ -74,12 +74,12 @@ export const CREATOR_FAQ = [
   {
     question: 'How do I sign up as a creator?',
     answer:
-      'Create a free Earnio account, connect your TikTok or YouTube platforms, and complete your profile. You can browse sponsorships and apply directly from your dashboard.',
+      'Create a free Earnio account, connect your TikTok, YouTube, or Instagram platforms, and complete your profile. You can browse sponsorships and apply directly from your dashboard.',
   },
   {
     question: 'Who can join?',
     answer:
-      'Mongolian content creators on TikTok and YouTube who want to track earnings, find brand deals, and manage payouts in MNT.',
+      'Mongolian content creators on TikTok, YouTube, and Instagram who want to track earnings, find brand deals, and manage payouts in MNT.',
   },
   {
     question: 'How do payments work?',
@@ -120,7 +120,7 @@ export const LANDING_CONTENT: Record<LandingAudience, LandingContent> = {
       steps: [
         {
           title: 'Connect platforms.',
-          description: 'Link TikTok and YouTube to sync earnings automatically.',
+          description: 'Link TikTok, YouTube, and Instagram to sync earnings automatically.',
         },
         {
           title: 'Track performance.',
@@ -156,7 +156,7 @@ export const LANDING_CONTENT: Record<LandingAudience, LandingContent> = {
     hero: {
       title: 'Reach Mongolian creators with sponsored campaigns',
       subtitle:
-        'Post brand deals, review creator applications, and manage partnerships with TikTok and YouTube talent — from one dashboard.',
+        'Post brand deals, review creator applications, and manage partnerships with TikTok, YouTube, and Instagram talent — from one dashboard.',
     },
     howItWorks: {
       id: 'how-it-works',

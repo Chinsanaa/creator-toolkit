@@ -37,7 +37,7 @@ export function ConnectedPlatforms({ platforms }: { platforms: PlatformAccount[]
         <p className="mt-4 text-sm text-muted">
           No platforms connected.{' '}
           <Link href="/platforms" className="link-primary">
-            Connect TikTok or YouTube
+            Connect TikTok, YouTube, or Instagram
           </Link>
         </p>
       ) : (
