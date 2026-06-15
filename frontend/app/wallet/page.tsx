@@ -188,7 +188,7 @@ export default function WalletPage() {
                   {t('request_payout')}
                 </h2>
                 <p className="mt-1 text-sm text-landing-muted">
-                  Minimum {formatMnt(summary.minPayoutMnt)}. Transfers in 1–3 business days.
+                  {t('minimum_payout_note').replace('{min}', formatMnt(summary.minPayoutMnt))}
                 </p>
                 {bankAccounts.length === 0 ? (
                   <p className="mt-4 text-sm text-amber-700">
@@ -206,7 +206,7 @@ export default function WalletPage() {
                         required
                         value={payoutAmount}
                         onChange={(e) => setPayoutAmount(e.target.value)}
-                        placeholder="e.g. 500000"
+                        placeholder={t('payout_amount_placeholder')}
                         className="auth-input"
                       />
                     </div>

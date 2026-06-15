@@ -1,5 +1,7 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
+
 type ToolbarVariant = 'create' | 'published' | 'legacy-unpublished';
 
 interface CampaignEditorToolbarProps {
@@ -17,22 +19,23 @@ export function CampaignEditorToolbar({
   onClose,
   onDelete,
 }: CampaignEditorToolbarProps) {
+  const { t } = useLanguage();
+
   return (
     <div className="flex flex-wrap items-center gap-2 border-t border-[color:var(--border)] pt-6">
       {variant === 'create' && onPublish && (
         <button type="button" disabled={busy} onClick={onPublish} className="btn-primary w-auto px-6">
-          {busy ? 'Publishing…' : 'Publish'}
+          {busy ? t('publishing') : t('publish')}
         </button>
       )}
 
       {variant === 'legacy-unpublished' && onPublish && (
         <>
           <button type="button" disabled={busy} onClick={onPublish} className="btn-primary w-auto px-6">
-            {busy ? 'Publishing…' : 'Publish'}
+            {busy ? t('publishing') : t('publish')}
           </button>
           <p className="w-full text-sm text-[color:var(--muted-foreground)]">
-            This campaign was saved before publishing was required. Publish to make it visible to
-            creators.
+            {t('legacy_campaign_publish_note')}
           </p>
         </>
       )}
@@ -40,10 +43,10 @@ export function CampaignEditorToolbar({
       {variant === 'published' && onClose && (
         <>
           <button type="button" disabled={busy} onClick={onClose} className="btn-secondary">
-            {busy ? 'Closing…' : 'Close campaign'}
+            {busy ? t('closing') : t('close_campaign')}
           </button>
           <p className="w-full text-sm text-[color:var(--muted-foreground)]">
-            Closing stops new applications. Published campaigns cannot be edited.
+            {t('closing_campaign_note')}
           </p>
         </>
       )}
@@ -57,7 +60,7 @@ export function CampaignEditorToolbar({
             variant === 'published' ? '' : 'ml-auto'
           }`}
         >
-          Delete
+          {t('delete')}
         </button>
       )}
     </div>

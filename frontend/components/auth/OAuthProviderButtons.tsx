@@ -58,7 +58,7 @@ export function OAuthProviderButtons({ userType, disabled = false }: OAuthProvid
       const message =
         err instanceof Error
           ? err.message
-          : 'Social sign-in is unavailable. Check Supabase OAuth configuration.';
+          : t('oauth_error');
       setError(message);
       setPendingProvider(null);
     }

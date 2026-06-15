@@ -251,6 +251,65 @@ export const translations: Record<string, string> = {
   closed: 'Closed',
   loading_campaigns: 'Loading campaigns…',
 
+  // Campaign editor
+  campaign_title_label: 'Title',
+  campaign_description_label: 'Description',
+  campaign_payment_label: 'Payment (MNT)',
+  campaign_content_type_label: 'Content type',
+  campaign_min_followers_label: 'Min followers',
+  campaign_max_followers_label: 'Max followers',
+  campaign_engagement_label: 'Min engagement rate (%)',
+  apply_by_label: 'Apply by',
+  complete_by_label: 'Complete by',
+  campaign_description_placeholder: 'Brief, deliverables, brand guidelines…',
+  publish: 'Publish',
+  publishing: 'Publishing…',
+  legacy_campaign_publish_note: 'This campaign was saved before publishing was required. Publish to make it visible to creators.',
+  closing: 'Closing…',
+  close_campaign: 'Close campaign',
+  closing_campaign_note: 'Closing stops new applications. Published campaigns cannot be edited.',
+  delete: 'Delete',
+
+  // Sponsorship detail
+  back_to_explore: '← Back to Explore',
+  content_label: 'Content',
+  min_engagement_label: 'Min engagement',
+  brief_label: 'Brief',
+  you_applied_status: 'You applied — status:',
+  your_pitch: 'Your pitch',
+  sponsorship_pitch_placeholder: "Why you're a fit, your audience, and relevant past work…",
+  submit_application: 'Submit application',
+
+  // Wallet
+  payout_amount_placeholder: 'e.g. 500000',
+  minimum_payout_note: 'Minimum {min}. Transfers in 1–3 business days.',
+
+  // Sponsor campaign detail
+  back_to_campaigns: '← Back to campaigns',
+  applications_heading: 'Applications',
+  no_applications_campaign: 'No applications yet.',
+  publish_campaign_note: 'Publish this campaign to make it visible to creators and receive applications.',
+  approve: 'Approve',
+  reject: 'Reject',
+  delete_campaign_confirm: 'Delete this campaign? This cannot be undone.',
+  sponsor_notes_placeholder: 'Optional note to creator…',
+  applied_label: 'Applied',
+  your_note_label: 'Your note:',
+
+  // Notifications
+  notifications: 'Notifications',
+  mark_all_read: 'Mark all read',
+  no_notifications_yet: 'No notifications yet',
+  just_now: 'Just now',
+
+  // Platforms
+  platform_connected: '{platform} connected. Run sync to pull earnings.',
+  syncing: 'Syncing…',
+
+  // OAuth / Auth errors
+  oauth_error: 'Social sign-in is unavailable. Please try again.',
+  error_refresh_message: 'We hit an unexpected error. Try refreshing the page.',
+
   // Errors / UI
   not_found_title: 'Page not found',
   not_found_subtitle: "We couldn't find that page. The link may be broken, or the address might be misspelled.",
