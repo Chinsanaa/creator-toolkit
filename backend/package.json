@@ -17,6 +17,7 @@
     "@supabase/supabase-js": "^2.105.4",
     "@types/express": "^5.0.6",
     "@types/node": "^25.8.0",
+    "@types/ws": "^8.18.1",
     "axios": "^1.16.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -24,7 +25,8 @@
     "express": "^5.2.1",
     "resend": "^6.12.3",
     "ts-node": "^10.9.2",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "ws": "^8.21.0"
   },
   "devDependencies": {
     "@types/cookie-parser": "^1.4.10",
