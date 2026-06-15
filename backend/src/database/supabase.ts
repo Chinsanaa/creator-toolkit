@@ -1,5 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
-import WebSocket from 'ws';
+import ws from 'ws';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -18,10 +18,9 @@ const clientOptions = {
     autoRefreshToken: false,
     persistSession: false,
   },
-  global: {
+  realtime: {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    fetch: fetch as any,
-    WebSocket: WebSocket as unknown as typeof globalThis.WebSocket,
+    transport: ws as any,
   },
 };
 
@@ -50,7 +49,6 @@ export function getAuthenticatedClient(accessToken: string): SupabaseClient {
   return createClient(supabaseUrl, supabaseAnonKey, {
     ...clientOptions,
     global: {
-      ...clientOptions.global,
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
