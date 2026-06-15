@@ -2,7 +2,7 @@
 
 **Earn more, create more.**
 
-Earnio is a monetization platform for **Mongolian content creators** and the **brands** that want to sponsor them. Creators connect TikTok and YouTube, track earnings in one place, apply to brand deals, and withdraw money in MNT. Brands post sponsorship campaigns, review applications, and manage partnerships from a separate dashboard.
+Earnio is a monetization platform for **Mongolian content creators** and the **brands** that want to sponsor them. Creators connect TikTok, YouTube, and Instagram, track earnings in one place, apply to brand deals, and withdraw money in MNT. Brands post sponsorship campaigns, review applications, and manage partnerships from a separate dashboard.
 
 This repository is a **monorepo** with a Next.js website (frontend) and an Express API (backend), backed by **Supabase** (PostgreSQL + authentication).
 
@@ -31,7 +31,7 @@ This repository is a **monorepo** with a Next.js website (frontend) and an Expre
 
 Most creators juggle multiple apps: one for analytics, another for brand DMs, spreadsheets for income, and a bank app for payouts. Earnio brings the workflow into a **single product**:
 
-1. **Connect** social platforms (TikTok, YouTube).
+1. **Connect** social platforms (TikTok, YouTube, Instagram).
 2. **See** earnings and trends on a dashboard.
 3. **Explore** sponsorship opportunities from local brands.
 4. **Apply** to campaigns and track application status.
@@ -78,7 +78,7 @@ Each audience has its own landing page, login/signup flow, and logged-in experie
 1. **Discover** — Visit the creator landing page. Learn how Earnio works, read FAQs, and click **Get Started**.
 2. **Sign up** — Create an account at `/signup/creator`. You must accept the Terms and Privacy Policy (legal text is served from the API and can be replaced later).
 3. **Onboard** — The dashboard shows a getting-started checklist:
-   - Connect TikTok or YouTube
+   - Connect TikTok, YouTube, or Instagram
    - Apply to a sponsorship
    - Add a bank account for payouts
 4. **Connect platforms** — On **Platforms**, link accounts by username. **Sync** pulls earnings into the dashboard (demo/mock provider in development).
@@ -191,7 +191,7 @@ The frontend is a **Next.js App Router** application in `frontend/`. It serves b
 | `/sponsorships` | Explore and search sponsorship listings |
 | `/sponsorships/[id]` | Campaign detail + apply with a pitch |
 | `/sponsorships/applications` | Track your applications |
-| `/platforms` | Connect TikTok/YouTube and sync earnings |
+| `/platforms` | Connect TikTok, YouTube, and Instagram and sync earnings |
 | `/wallet` | Balances, payouts, bank accounts, transaction history |
 
 Uses `CreatorShell` → sidebar (desktop) + bottom tab bar (mobile), shared Earnio purple theme.
@@ -263,7 +263,7 @@ backend/src/
 
 ### Platform sync
 
-A background scheduler (`syncScheduler`) can periodically sync creator platform earnings. In production, an external cron can also hit `POST /api/sync/cron` with `SYNC_CRON_SECRET`. The current platform provider is a **mock** suitable for demos; real TikTok/YouTube integrations would plug in at `platforms/mockPlatformProvider.ts`.
+A background scheduler (`syncScheduler`) can periodically sync creator platform earnings. In production, an external cron can also hit `POST /api/sync/cron` with `SYNC_CRON_SECRET`. The current platform provider is a **mock** suitable for demos; real TikTok/YouTube/Instagram integrations would plug in at `platforms/mockPlatformProvider.ts`.
 
 ---
 
