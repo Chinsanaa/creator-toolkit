@@ -98,26 +98,6 @@ export function AuthForm({
         {beforeForm}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {legalConsentMode === 'signup' ? (
-            <LegalConsent
-              mode={legalConsentMode}
-              checked={acceptedTerms}
-              onCheckedChange={setAcceptedTerms}
-            />
-          ) : null}
-
-          {oauthUserType ? (
-            <div className="space-y-5">
-              <OAuthProviderButtons
-                userType={oauthUserType}
-                disabled={legalConsentMode === 'signup' && !acceptedTerms}
-              />
-              <div className="auth-divider">
-                <span>{t('or_continue_with_email')}</span>
-              </div>
-            </div>
-          ) : null}
-
           {fields.map((field) => (
             <div key={field.name}>
               <label
@@ -137,7 +117,19 @@ export function AuthForm({
             </div>
           ))}
 
-          {legalConsentMode === 'login' ? (
+          {oauthUserType ? (
+            <div className="space-y-5">
+              <div className="auth-divider">
+                <span>{t('or_continue_with_email')}</span>
+              </div>
+              <OAuthProviderButtons
+                userType={oauthUserType}
+                disabled={legalConsentMode === 'signup' && !acceptedTerms}
+              />
+            </div>
+          ) : null}
+
+          {legalConsentMode ? (
             <LegalConsent
               mode={legalConsentMode}
               checked={acceptedTerms}

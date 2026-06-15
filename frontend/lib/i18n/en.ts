@@ -9,7 +9,7 @@ export const translations: Record<string, string> = {
   password: 'Password',
   full_name: 'Full name',
   username: 'Username',
-  or_continue_with_email: 'or continue with email',
+  or_continue_with_email: 'or continue with',
   continue_with_google: 'Continue with Google',
   continue_with_apple: 'Continue with Apple',
   redirecting: 'Redirecting…',

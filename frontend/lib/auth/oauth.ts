@@ -8,7 +8,7 @@ export async function startOAuthSignIn(provider: OAuthProvider, userType: UserTy
   const supabase = getSupabaseBrowserClient();
   const params = new URLSearchParams({ user_type: userType });
   const origin = await getOAuthRedirectOrigin();
-  const redirectTo = `${origin}/callback?${params.toString()}`;
+  const redirectTo = `${origin}/auth/callback?${params.toString()}`;
 
   const { data, error } = await supabase.auth.signInWithOAuth({
     provider,
