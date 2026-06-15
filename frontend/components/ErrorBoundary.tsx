@@ -1,6 +1,7 @@
 'use client';
 
 import { Component, type ReactNode } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 interface Props {
   children: ReactNode;
@@ -8,6 +9,23 @@ interface Props {
 
 interface State {
   hasError: boolean;
+}
+
+function ErrorFallback() {
+  const { t } = useLanguage();
+  return (
+    <div className="flex min-h-full flex-col items-center justify-center px-4 py-16">
+      <h1 className="text-xl font-semibold text-foreground">{t('something_went_wrong')}</h1>
+      <p className="mt-2 max-w-md text-center text-sm text-muted">{t('error_refresh_message')}</p>
+      <button
+        type="button"
+        onClick={() => window.location.reload()}
+        className="btn-primary mt-6 w-auto px-8"
+      >
+        {t('try_again')}
+      </button>
+    </div>
+  );
 }
 
 export class ErrorBoundary extends Component<Props, State> {
@@ -23,23 +41,7 @@ export class ErrorBoundary extends Component<Props, State> {
 
   render() {
     if (this.state.hasError) {
-      return (
-        <div className="flex min-h-full flex-col items-center justify-center px-4 py-16">
-          <h1 className="text-xl font-semibold text-foreground">
-            Something went wrong
-          </h1>
-          <p className="mt-2 max-w-md text-center text-sm text-muted">
-            We hit an unexpected error. Try refreshing the page.
-          </p>
-          <button
-            type="button"
-            onClick={() => window.location.reload()}
-            className="btn-primary mt-6 w-auto px-8"
-          >
-            Try again
-          </button>
-        </div>
-      );
+      return <ErrorFallback />;
     }
 
     return this.props.children;

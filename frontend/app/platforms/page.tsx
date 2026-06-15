@@ -75,7 +75,7 @@ export default function PlatformsPage() {
     try {
       await connectPlatform(platform, username);
       setUsername('');
-      setMessage(`${platformLabel(platform)} connected. Run sync to pull earnings.`);
+      setMessage(t('platform_connected').replace('{platform}', platformLabel(platform)));
       await load();
     } catch (err) {
       setError(err instanceof ApiError ? err.message : t('failed_to_connect'));
@@ -143,7 +143,7 @@ export default function PlatformsPage() {
                         onClick={() => handleSync(account.id)}
                         className="landing-btn-light px-4 py-2 text-xs"
                       >
-                        {syncingId === account.id ? 'Syncing…' : t('sync')}
+                        {syncingId === account.id ? t('syncing') : t('sync')}
                       </button>
                     ) : (
                       <span className="text-xs text-landing-muted">{t('use_form_below')}</span>

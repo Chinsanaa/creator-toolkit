@@ -7,12 +7,13 @@ import {
   markNotificationRead,
 } from '@/lib/api/notifications';
 import { ApiError } from '@/lib/api/client';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { Notification } from '@/lib/types/notifications';
 
-function formatWhen(iso: string): string {
+function formatWhen(iso: string, justNow: string): string {
   const d = new Date(iso);
   const diff = Date.now() - d.getTime();
-  if (diff < 60_000) return 'Just now';
+  if (diff < 60_000) return justNow;
   if (diff < 3_600_000) return `${Math.floor(diff / 60_000)}m ago`;
   if (diff < 86_400_000) return `${Math.floor(diff / 3_600_000)}h ago`;
   return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
@@ -25,6 +26,7 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
   const [unread, setUnread] = useState(0);
   const [loading, setLoading] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
+  const { t } = useLanguage();
 
   const load = useCallback(async () => {
     setLoading(true);
@@ -123,7 +125,7 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
             ? 'creator-icon-btn relative'
             : 'relative rounded-lg border border-border p-2 text-foreground hover:bg-surface dark:border-border dark:text-muted dark:hover:bg-surface'
         }
-        aria-label="Notifications"
+        aria-label={t('notifications')}
         aria-expanded={open}
         aria-haspopup="dialog"
       >
@@ -161,7 +163,7 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
             }
           >
             <p className={`text-sm font-semibold ${isCreator ? 'text-landing-fg' : 'text-foreground'}`}>
-              Notifications
+              {t('notifications')}
             </p>
             {unread > 0 && (
               <button
@@ -169,7 +171,7 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
                 onClick={handleReadAll}
                 className={`text-xs font-medium ${isCreator ? 'auth-link' : 'text-primary hover:text-primary'}`}
               >
-                Mark all read
+                {t('mark_all_read')}
               </button>
             )}
           </div>
@@ -178,14 +180,14 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
               <li
                 className={`px-4 py-6 text-center text-sm ${isCreator ? 'text-landing-muted' : 'text-muted'}`}
               >
-                Loading…
+                {t('loading')}
               </li>
             )}
             {!loading && items.length === 0 && (
               <li
                 className={`px-4 py-6 text-center text-sm ${isCreator ? 'text-landing-muted' : 'text-muted'}`}
               >
-                No notifications yet
+                {t('no_notifications_yet')}
               </li>
             )}
             {items.map((n) => (
@@ -217,7 +219,7 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
                   <p
                     className={`mt-1 text-[10px] ${isCreator ? 'text-landing-muted' : 'text-muted-foreground'}`}
                   >
-                    {formatWhen(n.created_at)}
+                    {formatWhen(n.created_at, t('just_now'))}
                   </p>
                 </button>
               </li>
