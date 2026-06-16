@@ -19,7 +19,7 @@ All specs are in `Earnio_6_Documents.pdf`. Don't invent anything. Always referen
 1. **PRD** — Problem, users, features, success metrics
 2. **TRD** — Tech stack (Next.js, Express, Supabase, Resend test, mock platforms)
 3. **App Flow** — Creator + Sponsor journeys, all routes
-4. **UI/UX Brief** — Dark mode, #6336F1 purple, Poppins/Montserrat, 8px radius
+4. **UI/UX Brief** — Dark mode, Earnio Blue #2E5BFF, Space Grotesk/Plus Jakarta Sans, 8px base radius — see `frontend/design-system/MASTER.md` for full spec
 5. **Database Schema** — 8 tables, platform enums (tiktok|youtube|instagram), RLS
 6. **Implementation Plan** — 12 phases, week-by-week
 **Done:** Creator signup → apply → approval → payout works end-to-end. Sponsor campaign creation → review → approval works. Both live on Vercel + Railway.

@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Outfit, DM_Sans, JetBrains_Mono } from "next/font/google";
+import { Space_Grotesk, Plus_Jakarta_Sans, JetBrains_Mono } from "next/font/google";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { LanguageProvider } from "@/contexts/LanguageContext";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
@@ -9,20 +9,20 @@ import { ApplePlatformBootstrap } from "@/components/native/ApplePlatformBootstr
 import { EARNIO_SLOGAN } from "@/lib/brand/earnio";
 import "./globals.css";
 
-const outfit = Outfit({
-  variable: '--font-outfit',
-  subsets: ['latin'],
-  weight: ['500', '600', '700', '800'],
-});
-
-const dmSans = DM_Sans({
-  variable: '--font-dm-sans',
+const spaceGrotesk = Space_Grotesk({
+  variable: '--font-display',
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
 });
 
+const plusJakarta = Plus_Jakarta_Sans({
+  variable: '--font-sans',
+  subsets: ['latin'],
+  weight: ['400', '500', '600', '700', '800'],
+});
+
 const jetbrains = JetBrains_Mono({
-  variable: '--font-jetbrains',
+  variable: '--font-mono',
   subsets: ['latin'],
   weight: ['400', '500', '600'],
 });
@@ -52,8 +52,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   viewportFit: "cover",
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#eef6ff" },
-    { media: "(prefers-color-scheme: dark)", color: "#141414" },
+    { media: "(prefers-color-scheme: light)", color: "#EEF3FF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0B1220" },
   ],
 };
 
@@ -66,7 +66,7 @@ export default function RootLayout({
     <html
       lang="en"
       suppressHydrationWarning
-      className={`${outfit.variable} ${dmSans.variable} ${jetbrains.variable} h-full antialiased`}
+      className={`${spaceGrotesk.variable} ${plusJakarta.variable} ${jetbrains.variable} h-full antialiased`}
     >
       <head>
         <script

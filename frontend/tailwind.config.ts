@@ -32,9 +32,9 @@ export default {
         '2xl': '1rem',
       },
       fontFamily: {
-        sans: 'var(--font-dm-sans), system-ui, sans-serif',
-        display: 'var(--font-outfit), system-ui, sans-serif',
-        mono: 'var(--font-jetbrains), ui-monospace, monospace',
+        sans: 'var(--font-sans), system-ui, sans-serif',
+        display: 'var(--font-display), system-ui, sans-serif',
+        mono: 'var(--font-mono), ui-monospace, monospace',
       },
       boxShadow: {
         sm: 'var(--shadow-sm, 0 1px 2px 0 rgb(0 0 0 / 0.05))',
