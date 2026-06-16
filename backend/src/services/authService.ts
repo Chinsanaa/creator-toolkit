@@ -1,6 +1,7 @@
 import { randomInt } from 'node:crypto';
 import { User } from '@supabase/supabase-js';
 import { getAuthenticatedClient, supabase, supabaseAdmin } from '../database/supabase';
+import notificationService from './notificationService';
 
 export interface SignupPayload {
   email: string;
@@ -315,6 +316,14 @@ class AuthService {
     } catch {
       user = this.mapUserFromMetadata(data.user);
     }
+
+    await notificationService.create(
+      user.id,
+      'welcome_signup',
+      'Welcome to Earnio',
+      `Your ${user.userType} account is ready. Start by exploring your dashboard and completing your profile.`,
+      { userType: user.userType }
+    );
 
     return {
       user,

@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { AccountSettingsContent } from '@/components/settings/AccountSettingsContent';
@@ -9,6 +11,13 @@ import { useLanguage } from '@/contexts/LanguageContext';
 export default function SettingsPage() {
   const { user, loading } = useAuth();
   const { t } = useLanguage();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/login?next=/settings');
+    }
+  }, [loading, user, router]);
 
   if (loading || !user) {
     return (

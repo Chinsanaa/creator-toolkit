@@ -4,17 +4,21 @@ import { AuthForm } from '@/components/auth/AuthForm';
 import { AuthTypeBackLink } from '@/components/auth/AuthTypeBackLink';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
+import { useSearchParams } from 'next/navigation';
+import { appendNextParam } from '@/lib/auth/navigation';
 
 export default function CreatorLoginPage() {
   const { login } = useAuth();
   const { t } = useLanguage();
+  const searchParams = useSearchParams();
+  const nextPath = searchParams.get('next');
 
   return (
     <AuthForm
       title={t('creator_sign_in')}
       subtitle={t('creator_sign_in_subtitle')}
       submitLabel={t('sign_in')}
-      alternateHref="/signup/creator"
+      alternateHref={appendNextParam('/signup/creator', nextPath)}
       alternatePrompt={t('new_creator')}
       alternateLabel={t('create_account')}
       beforeForm={<AuthTypeBackLink audience="creator" />}

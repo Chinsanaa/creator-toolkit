@@ -37,6 +37,13 @@ describe('Protected routes', () => {
     assert.equal(res.status, 401);
   });
 
+  it('rejects unauthenticated sponsorship application alias route', async () => {
+    const res = await request(app())
+      .post('/api/sponsorships/apply')
+      .send({ sponsorshipId: 'demo', responseText: 'Interested' });
+    assert.equal(res.status, 401);
+  });
+
   it('rejects unauthenticated notifications', async () => {
     const res = await request(app()).get('/api/notifications');
     assert.equal(res.status, 401);
