@@ -53,6 +53,19 @@ describe('Protected routes', () => {
     const res = await request(app()).post('/api/auth/oauth/session').send({});
     assert.equal(res.status, 400);
   });
+
+  it('rate limits repeated refresh attempts', async () => {
+    const testApp = app();
+
+    for (let i = 0; i < 5; i += 1) {
+      const res = await request(testApp).post('/api/auth/refresh').send({});
+      assert.equal(res.status, 401);
+    }
+
+    const limited = await request(testApp).post('/api/auth/refresh').send({});
+    assert.equal(limited.status, 429);
+    assert.equal(limited.body.error, 'Too many auth attempts. Please try again later.');
+  });
 });
 
 describe('Sync cron', () => {
