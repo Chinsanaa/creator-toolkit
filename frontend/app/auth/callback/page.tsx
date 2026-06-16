@@ -6,7 +6,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { completeOAuthSession } from '@/lib/api/client';
 import { homePathForUserType } from '@/lib/auth/routes';
 import { setAccessToken, setUserTypeCookie } from '@/lib/auth/session';
-import { clearSupabaseBrowserSession, getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { getSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { UserType } from '@/lib/types/auth';
 
 function parseUserType(value: string | null): UserType | undefined {
@@ -58,26 +58,40 @@ function AuthCallbackContent() {
       }
     }
 
-    // With implicit flow, Supabase parses tokens from the URL hash automatically.
-    // Listen for the SIGNED_IN event which fires once the session is ready.
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
-      if (cancelled) return;
-      if (event === 'SIGNED_IN' && session) {
-        void handleSession(session.access_token, session.refresh_token);
-      }
-    });
+    async function completeOAuth() {
+      const code = searchParams.get('code');
+      if (code) {
+        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        if (cancelled) return;
 
-    // Also check if session already exists (page may have loaded after hash was consumed).
-    supabase.auth.getSession().then(({ data }) => {
-      if (cancelled) return;
-      if (data.session) {
-        void handleSession(data.session.access_token, data.session.refresh_token);
+        if (exchangeError) {
+          setError(exchangeError.message);
+          return;
+        }
+
+        if (data.session) {
+          await handleSession(data.session.access_token, data.session.refresh_token);
+          return;
+        }
       }
-    });
+
+      const { data, error: sessionError } = await supabase.auth.getSession();
+      if (cancelled) return;
+
+      if (sessionError) {
+        setError(sessionError.message);
+        return;
+      }
+
+      if (data.session) {
+        await handleSession(data.session.access_token, data.session.refresh_token);
+      }
+    }
+
+    void completeOAuth();
 
     return () => {
       cancelled = true;
-      subscription.unsubscribe();
     };
   }, [router, searchParams]);
 

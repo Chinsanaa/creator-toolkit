@@ -2,6 +2,8 @@ export function sanitizeNextPath(nextValue: string | null | undefined): string |
   if (!nextValue) return null;
   if (!nextValue.startsWith('/')) return null;
   if (nextValue.startsWith('//')) return null;
+  if (nextValue.includes('\\')) return null;
+  if (nextValue.includes('%5c') || nextValue.includes('%2f%2f')) return null;
   return nextValue;
 }
 

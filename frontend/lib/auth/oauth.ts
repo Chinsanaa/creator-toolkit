@@ -15,6 +15,9 @@ export async function startOAuthSignIn(provider: OAuthProvider, userType: UserTy
     options: {
       redirectTo,
       skipBrowserRedirect: true,
+      queryParams: {
+        user_type: userType,
+      },
     },
   });
 

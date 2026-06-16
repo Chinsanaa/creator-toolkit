@@ -10,40 +10,67 @@ import platformRoutes from './routes/platforms';
 import notificationRoutes from './routes/notifications';
 import syncRoutes from './routes/sync';
 import legalRoutes from './routes/legal';
-import { getHealthStatus } from './routes/health';
+import { getHealthStatus, getPublicHealthStatus } from './routes/health';
 import type { EnvConfig } from './config/env';
 import { AppError } from './utils/AppError';
 import { notFoundBody } from './utils/httpErrors';
+import {
+  globalRateLimiter,
+  jsonBodyParser,
+  mutationRateLimiter,
+  securityHeaders,
+} from './middleware/security';
 
 export function createApp(config: EnvConfig): express.Application {
   const app = express();
 
+  app.set('trust proxy', 1);
+  app.use(securityHeaders);
   app.use(
     cors({
       origin: config.frontendUrl,
       credentials: true,
     })
   );
-  app.use(express.json());
+  app.use(jsonBodyParser);
   app.use(cookieParser());
+  app.use('/api', globalRateLimiter);
 
   app.get('/api/health', async (_req, res) => {
+    const health = await getPublicHealthStatus();
+    res.status(health.status === 'ok' ? 200 : 503).json(health);
+  });
+
+  app.get('/api/health/detailed', async (_req, res) => {
     const health = await getHealthStatus(config.port);
     res.status(health.status === 'ok' ? 200 : 503).json(health);
   });
 
   app.use('/api/auth', authRoutes);
   app.use('/api/dashboard', dashboardRoutes);
-  app.use('/api/sponsorships', sponsorshipRoutes);
-  app.use('/api/wallet', walletRoutes);
-  app.use('/api/sponsor', sponsorRoutes);
-  app.use('/api/platforms', platformRoutes);
+  app.use('/api/sponsorships', mutationRateLimiter, sponsorshipRoutes);
+  app.use('/api/wallet', mutationRateLimiter, walletRoutes);
+  app.use('/api/sponsor', mutationRateLimiter, sponsorRoutes);
+  app.use('/api/platforms', mutationRateLimiter, platformRoutes);
   app.use('/api/notifications', notificationRoutes);
   app.use('/api/sync', syncRoutes);
   app.use('/api/legal', legalRoutes);
 
   app.use((_req, res) => {
     res.status(404).json(notFoundBody());
+  });
+
+  app.use((err: unknown, _req: express.Request, res: express.Response, next: express.NextFunction) => {
+    if (
+      err &&
+      typeof err === 'object' &&
+      'type' in err &&
+      (err as { type?: string }).type === 'entity.too.large'
+    ) {
+      res.status(413).json({ error: 'Request payload too large' });
+      return;
+    }
+    next(err);
   });
 
   app.use((err: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
