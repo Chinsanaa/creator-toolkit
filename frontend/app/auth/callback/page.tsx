@@ -21,36 +21,19 @@ function AuthCallbackContent() {
 
   useEffect(() => {
     let cancelled = false;
+    const supabase = getSupabaseBrowserClient();
 
-    async function finish() {
-      const oauthError = searchParams.get('error_description') ?? searchParams.get('error');
-      if (oauthError) {
-        if (!cancelled) setError(oauthError);
-        return;
-      }
+    const oauthError = searchParams.get('error_description') ?? searchParams.get('error');
+    if (oauthError) {
+      setError(oauthError);
+      return;
+    }
 
-      const code = searchParams.get('code');
-      if (!code) {
-        if (!cancelled) setError('Missing sign-in code. Please try again.');
-        return;
-      }
+    const userType = parseUserType(searchParams.get('user_type'));
 
-      const userType = parseUserType(searchParams.get('user_type'));
-
+    async function handleSession(accessToken: string, refreshToken: string) {
       try {
-        const supabase = getSupabaseBrowserClient();
-        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-
-        if (exchangeError || !data.session) {
-          throw new Error(exchangeError?.message ?? 'Could not complete social sign-in');
-        }
-
-        const result = await completeOAuthSession({
-          accessToken: data.session.access_token,
-          refreshToken: data.session.refresh_token,
-          userType,
-        });
-        await clearSupabaseBrowserSession();
+        const result = await completeOAuthSession({ accessToken, refreshToken, userType });
 
         try {
           const { Capacitor } = await import('@capacitor/core');
@@ -75,10 +58,26 @@ function AuthCallbackContent() {
       }
     }
 
-    void finish();
+    // With implicit flow, Supabase parses tokens from the URL hash automatically.
+    // Listen for the SIGNED_IN event which fires once the session is ready.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (cancelled) return;
+      if (event === 'SIGNED_IN' && session) {
+        void handleSession(session.access_token, session.refresh_token);
+      }
+    });
+
+    // Also check if session already exists (page may have loaded after hash was consumed).
+    supabase.auth.getSession().then(({ data }) => {
+      if (cancelled) return;
+      if (data.session) {
+        void handleSession(data.session.access_token, data.session.refresh_token);
+      }
+    });
 
     return () => {
       cancelled = true;
+      subscription.unsubscribe();
     };
   }, [router, searchParams]);
 
