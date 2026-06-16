@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type { LandingContent, LandingNavItem } from '@/lib/landing/content';
 
@@ -100,6 +101,7 @@ export function LandingNav({ content }: { content: LandingContent }) {
 
         <div className="flex items-center gap-2 sm:gap-4">
           <LanguageSwitcher />
+          <ThemeToggle />
           <Link
             href={content.switchAudience.href}
             className="hidden items-center gap-1.5 text-[14px] font-medium text-landing-fg/80 transition-colors hover:text-landing-fg md:inline-flex"
