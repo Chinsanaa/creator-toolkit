@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!-- @dsCard Components: Card Surface -->
+<html lang="en"><head><meta charset="UTF-8"><title>Card Surface</title>
+<link rel="stylesheet" href="../../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
+<div id="root"></div>
+<script type="text/babel">
+function App() {
+  return (
+    <div style={{display:'flex',gap:'16px',flexWrap:'wrap'}}>
+      <div style={{background:'var(--surface)',border:'1.5px solid var(--border)',borderRadius:'var(--radius-lg)',padding:'24px',width:'200px',boxShadow:'var(--shadow-sm)'}}>
+        <div style={{fontFamily:'var(--font-display)',fontSize:'15px',fontWeight:700,marginBottom:'4px'}}>Default</div>
+        <div style={{fontSize:'13px',color:'var(--text-muted)'}}>Standard surface, md padding, sm shadow.</div>
+      </div>
+      <div style={{background:'rgba(255,255,255,0.7)',border:'1.5px solid var(--border)',borderRadius:'var(--radius-lg)',padding:'24px',width:'200px',backdropFilter:'blur(16px)',boxShadow:'var(--shadow-md)'}}>
+        <div style={{fontFamily:'var(--font-display)',fontSize:'15px',fontWeight:700,marginBottom:'4px'}}>Glass</div>
+        <div style={{fontSize:'13px',color:'var(--text-muted)'}}>Frosted glass, backdrop-blur, nav/sidebar.</div>
+      </div>
+      <div style={{background:'var(--surface)',border:'1.5px solid var(--border)',borderRadius:'var(--radius-lg)',padding:'24px',width:'200px',cursor:'pointer',transition:'transform 220ms,box-shadow 220ms'}}
+        onMouseEnter={e=>{e.currentTarget.style.transform='translateY(-2px)';e.currentTarget.style.boxShadow='var(--shadow-lg)'}}
+        onMouseLeave={e=>{e.currentTarget.style.transform='';e.currentTarget.style.boxShadow=''}}>
+        <div style={{fontFamily:'var(--font-display)',fontSize:'15px',fontWeight:700,marginBottom:'4px'}}>Interactive</div>
+        <div style={{fontSize:'13px',color:'var(--text-muted)'}}>Hover to see lift effect.</div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body></html>

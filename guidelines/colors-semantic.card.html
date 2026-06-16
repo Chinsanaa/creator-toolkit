@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<!-- @dsCard Colors: Semantic -->
+<html lang="en"><head><meta charset="UTF-8"><title>Semantic Colors</title>
+<link rel="stylesheet" href="../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
+<div id="root"></div>
+<script type="text/babel">
+const groups = [
+  {label:'Success',color:'#10B981',soft:'#D1FAE5'},
+  {label:'Warning',color:'#F5A524',soft:'#FEF3C7'},
+  {label:'Danger',color:'#F0455A',soft:'#FEE2E5'},
+  {label:'Spark',color:'#12C2F3',soft:'#E0F9FF'},
+];
+function App() {
+  return (
+    <div>
+      <h2 style={{fontFamily:'var(--font-display)',fontSize:'20px',fontWeight:700,color:'var(--text-primary)',marginBottom:'16px'}}>Semantic + Spark</h2>
+      <div style={{display:'flex',gap:'16px',flexWrap:'wrap'}}>
+        {groups.map(g=>(
+          <div key={g.label}>
+            <div style={{display:'flex',gap:'8px',marginBottom:'6px'}}>
+              <div style={{width:'56px',height:'56px',borderRadius:'var(--radius-md)',background:g.color}}/>
+              <div style={{width:'56px',height:'56px',borderRadius:'var(--radius-md)',background:g.soft,border:'1.5px solid rgba(0,0,0,0.06)'}}/>
+            </div>
+            <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-primary)'}}>{g.label}</div>
+            <div style={{fontSize:'11px',color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>{g.color}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body></html>

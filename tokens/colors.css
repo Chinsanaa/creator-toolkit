@@ -1,0 +1,69 @@
+:root {
+  /* Earnio Blue scale */
+  --blue-50: #EEF3FF;
+  --blue-100: #D9E5FF;
+  --blue-200: #B3CBFF;
+  --blue-300: #8DAFFF;
+  --blue-400: #6693FF;
+  --blue-500: #2E5BFF;
+  --blue-600: #2449CC;
+  --blue-700: #1A3799;
+  --blue-800: #112566;
+  --blue-900: #14266B;
+
+  /* Ink (Slate) scale */
+  --ink-50: #F4F7FC;
+  --ink-100: #E8EDF6;
+  --ink-200: #CDD6E8;
+  --ink-300: #A8B8D0;
+  --ink-400: #7F96B5;
+  --ink-500: #5B7498;
+  --ink-600: #3F577A;
+  --ink-700: #2A3D5C;
+  --ink-800: #1A2840;
+  --ink-900: #0B1220;
+
+  /* Semantic */
+  --success: #10B981;
+  --success-soft: #D1FAE5;
+  --warning: #F5A524;
+  --warning-soft: #FEF3C7;
+  --danger: #F0455A;
+  --danger-soft: #FEE2E5;
+  --spark: #12C2F3;
+  --spark-soft: #E0F9FF;
+
+  /* Primary aliases */
+  --primary: var(--blue-500);
+  --primary-dark: var(--blue-700);
+  --primary-light: var(--blue-400);
+  --primary-soft: #EEF3FF;
+  --primary-border: #B3CBFF;
+
+  /* Surface tokens */
+  --surface: #FFFFFF;
+  --surface-muted: #F4F7FC;
+  --surface-card: #FFFFFF;
+  --surface-overlay: rgba(255,255,255,0.85);
+
+  /* Text tokens */
+  --text-primary: var(--ink-900);
+  --text-secondary: var(--ink-600);
+  --text-muted: var(--ink-400);
+  --text-inverse: #FFFFFF;
+  --text-brand: var(--blue-500);
+
+  /* Border tokens */
+  --border: var(--ink-200);
+  --border-strong: var(--ink-300);
+
+  /* Gradients */
+  --gradient-brand: linear-gradient(135deg, #4D74FF 0%, #2E5BFF 50%, #1736B8 100%);
+  --gradient-spark: linear-gradient(115deg, #2E5BFF 0%, #12C2F3 100%);
+  --gradient-ink: linear-gradient(160deg, #0B1220 0%, #1A2840 100%);
+
+  /* Mesh backgrounds */
+  --mesh-1: radial-gradient(ellipse at 20% 20%, rgba(78,116,255,0.18) 0%, transparent 60%);
+  --mesh-2: radial-gradient(ellipse at 80% 70%, rgba(18,194,243,0.12) 0%, transparent 55%);
+  --mesh-3: radial-gradient(ellipse at 50% 100%, rgba(46,91,255,0.10) 0%, transparent 50%);
+}
