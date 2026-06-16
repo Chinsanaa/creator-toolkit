@@ -29,7 +29,7 @@ export function buildNotificationEmail(params: {
   <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;margin:32px auto;background:#fff;border-radius:12px;border:1px solid #e4e4e7;">
     <tr>
       <td style="padding:28px 28px 8px;">
-        <p style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#7c3aed;">Earnio</p>
+        <p style="margin:0;font-size:12px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;color:#2E5BFF;">Earnio</p>
         <h1 style="margin:12px 0 0;font-size:20px;font-weight:600;color:#18181b;">${title}</h1>
       </td>
     </tr>
@@ -37,7 +37,7 @@ export function buildNotificationEmail(params: {
       <td style="padding:8px 28px 24px;">
         <p style="margin:0 0 16px;font-size:15px;line-height:1.6;color:#52525b;">Hi ${name},</p>
         <p style="margin:0 0 24px;font-size:15px;line-height:1.6;color:#3f3f46;">${body}</p>
-        <a href="${dashboardUrl}${ctaPath}" style="display:inline-block;background:#7c3aed;color:#fff;text-decoration:none;font-size:14px;font-weight:500;padding:10px 18px;border-radius:8px;">Open dashboard</a>
+        <a href="${dashboardUrl}${ctaPath}" style="display:inline-block;background:#2E5BFF;color:#fff;text-decoration:none;font-size:14px;font-weight:500;padding:10px 18px;border-radius:8px;">Open dashboard</a>
       </td>
     </tr>
     <tr>
