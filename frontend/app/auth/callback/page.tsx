@@ -6,7 +6,7 @@ import { Suspense, useEffect, useState } from 'react';
 import { completeOAuthSession } from '@/lib/api/client';
 import { homePathForUserType } from '@/lib/auth/routes';
 import { setAccessToken, setUserTypeCookie } from '@/lib/auth/session';
-import { getSupabaseBrowserClient } from '@/lib/supabase/client';
+import { clearSupabaseBrowserSession, getSupabaseBrowserClient } from '@/lib/supabase/client';
 import type { UserType } from '@/lib/types/auth';
 
 function parseUserType(value: string | null): UserType | undefined {
@@ -50,6 +50,7 @@ function AuthCallbackContent() {
           refreshToken: data.session.refresh_token,
           userType,
         });
+        await clearSupabaseBrowserSession();
 
         try {
           const { Capacitor } = await import('@capacitor/core');

@@ -29,10 +29,8 @@ for arg in "$@"; do
         if [[ -n "$1" && ! "$1" =~ ^-- ]]; then KEY_VALUE="$1"; fi
         if [ -z "$KEY_VALUE" ]; then echo "Enter your muapi.ai API key:" >&2; read -r KEY_VALUE; fi
         if [ -n "$KEY_VALUE" ]; then
-            grep -v "^MUAPI_KEY=" .env > .env.tmp 2>/dev/null || true
-            mv .env.tmp .env 2>/dev/null || true
-            echo "MUAPI_KEY=$KEY_VALUE" >> .env
-            echo "MUAPI_KEY saved to .env" >&2
+            echo "Run this in your shell instead of saving the key to disk:" >&2
+            echo "export MUAPI_KEY='${KEY_VALUE}'" >&2
         fi
         exit 0
     fi

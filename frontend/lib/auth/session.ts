@@ -5,24 +5,33 @@ const MAX_AGE_SECONDS = 60 * 60;
 
 export type SessionUserType = 'creator' | 'sponsor';
 
+function cookieSecurityAttribute(): string {
+  if (typeof window === 'undefined') return '';
+  return window.location.protocol === 'https:' ? '; Secure' : '';
+}
+
+function buildCookie(name: string, value: string, maxAge: number): string {
+  return `${name}=${encodeURIComponent(value)}; path=/; max-age=${maxAge}; SameSite=Lax${cookieSecurityAttribute()}`;
+}
+
 export function setAccessToken(token: string): void {
   if (typeof document === 'undefined') return;
-  document.cookie = `${ACCESS_TOKEN_COOKIE}=${encodeURIComponent(token)}; path=/; max-age=${MAX_AGE_SECONDS}; SameSite=Lax`;
+  document.cookie = buildCookie(ACCESS_TOKEN_COOKIE, token, MAX_AGE_SECONDS);
 }
 
 export function setUserTypeCookie(userType: SessionUserType): void {
   if (typeof document === 'undefined') return;
-  document.cookie = `${USER_TYPE_COOKIE}=${userType}; path=/; max-age=${MAX_AGE_SECONDS}; SameSite=Lax`;
+  document.cookie = buildCookie(USER_TYPE_COOKIE, userType, MAX_AGE_SECONDS);
 }
 
 export function clearAccessToken(): void {
   if (typeof document === 'undefined') return;
-  document.cookie = `${ACCESS_TOKEN_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+  document.cookie = buildCookie(ACCESS_TOKEN_COOKIE, '', 0);
 }
 
 export function clearUserTypeCookie(): void {
   if (typeof document === 'undefined') return;
-  document.cookie = `${USER_TYPE_COOKIE}=; path=/; max-age=0; SameSite=Lax`;
+  document.cookie = buildCookie(USER_TYPE_COOKIE, '', 0);
 }
 
 export function clearSessionCookies(): void {
