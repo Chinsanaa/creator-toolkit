@@ -80,6 +80,7 @@ export default function RootLayout({
           <ThemeProvider>
             <ErrorBoundary>
               <AuthProvider>
+                <ApplePlatformBootstrap />
                 <OfflineBanner />
                 {children}
               </AuthProvider>

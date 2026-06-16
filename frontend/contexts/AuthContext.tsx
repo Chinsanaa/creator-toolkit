@@ -18,6 +18,7 @@ import {
   getAccessToken,
   setUserTypeCookie,
 } from '@/lib/auth/session';
+import { clearSupabaseBrowserSession } from '@/lib/supabase/client';
 import type { AuthUser, LoginRequest, SignupRequest } from '@/lib/types/auth';
 
 interface AuthContextValue {
@@ -110,6 +111,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     refreshSeq.current += 1;
     await api.logout();
+    await clearSupabaseBrowserSession();
     clearSessionCookies();
     setUser(null);
     router.push('/login');

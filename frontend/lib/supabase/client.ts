@@ -16,12 +16,22 @@ export function getSupabaseBrowserClient(): SupabaseClient {
 
   browserClient = createClient(url, anonKey, {
     auth: {
-      flowType: 'pkce',
-      detectSessionInUrl: false,
+      flowType: 'implicit',
+      detectSessionInUrl: true,
       persistSession: true,
       autoRefreshToken: false,
     },
   });
 
   return browserClient;
+}
+
+export async function clearSupabaseBrowserSession(): Promise<void> {
+  if (!browserClient) return;
+
+  try {
+    await browserClient.auth.signOut({ scope: 'local' });
+  } catch {
+    // The backend owns the refresh session; local cleanup should not block logout.
+  }
 }

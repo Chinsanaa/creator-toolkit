@@ -1,4 +1,5 @@
 import express, { Response } from 'express';
+import { ipKeyGenerator, rateLimit } from 'express-rate-limit';
 import authService from '../services/authService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
 import { logServerError } from '../utils/serverLog';
@@ -16,7 +17,42 @@ function setRefreshTokenCookie(res: Response, refreshToken: string): void {
   res.cookie('refreshToken', refreshToken, REFRESH_COOKIE_OPTIONS);
 }
 
-router.post('/signup', async (req: AuthRequest, res: Response) => {
+const authRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  limit: 5,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip ?? '')}:${req.method}:${req.path}`,
+  message: { error: 'Too many auth attempts. Please try again later.' },
+});
+
+const SAFE_AUTH_ERRORS = new Set([
+  'Missing required fields',
+  'You must accept the Terms and Conditions and Privacy Policy',
+  'Password must be at least 8 characters',
+  'Invalid account type',
+  'Username already taken',
+  'User with this email already exists',
+  'Invalid email or password',
+  'Email and password required',
+  'Please confirm your email before logging in',
+  'Missing OAuth session tokens',
+  'Invalid or expired OAuth session',
+  'Refresh token not found',
+  'Invalid refresh token',
+  'Password is required to delete your account',
+  'Incorrect password',
+  'Account deletion is temporarily unavailable. Please contact support or try again later.',
+  'Could not delete account data. Remove active campaigns or pending payouts, then try again.',
+  'Failed to delete account. Please try again or contact support.',
+]);
+
+function authErrorMessage(error: unknown, fallback: string): string {
+  if (!(error instanceof Error)) return fallback;
+  return SAFE_AUTH_ERRORS.has(error.message) ? error.message : fallback;
+}
+
+router.post('/signup', authRateLimiter, async (req: AuthRequest, res: Response) => {
   try {
     const { email, password, name, username, phone, userType, acceptedTerms } = req.body;
 
@@ -40,12 +76,12 @@ router.post('/signup', async (req: AuthRequest, res: Response) => {
       accessToken: result.accessToken,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Signup failed';
+    const message = authErrorMessage(error, 'Signup failed');
     res.status(400).json({ error: message });
   }
 });
 
-router.post('/login', async (req: AuthRequest, res: Response) => {
+router.post('/login', authRateLimiter, async (req: AuthRequest, res: Response) => {
   try {
     const { email, password } = req.body;
 
@@ -62,12 +98,12 @@ router.post('/login', async (req: AuthRequest, res: Response) => {
       accessToken: result.accessToken,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Login failed';
+    const message = authErrorMessage(error, 'Login failed');
     res.status(401).json({ error: message });
   }
 });
 
-router.post('/oauth/session', async (req: AuthRequest, res: Response) => {
+router.post('/oauth/session', authRateLimiter, async (req: AuthRequest, res: Response) => {
   try {
     const { accessToken, refreshToken, userType } = req.body as {
       accessToken?: string;
@@ -91,7 +127,7 @@ router.post('/oauth/session', async (req: AuthRequest, res: Response) => {
       accessToken: result.accessToken,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'OAuth sign-in failed';
+    const message = authErrorMessage(error, 'OAuth sign-in failed');
     res.status(400).json({ error: message });
   }
 });
@@ -106,7 +142,7 @@ router.post('/logout', async (req: AuthRequest, res: Response) => {
   res.json({ message: 'Logged out successfully' });
 });
 
-router.post('/refresh', async (req: AuthRequest, res: Response) => {
+router.post('/refresh', authRateLimiter, async (req: AuthRequest, res: Response) => {
   try {
     const refreshToken = req.cookies.refreshToken;
 
@@ -124,7 +160,7 @@ router.post('/refresh', async (req: AuthRequest, res: Response) => {
       accessToken: result.accessToken,
     });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Refresh failed';
+    const message = authErrorMessage(error, 'Refresh failed');
     res.status(401).json({ error: message });
   }
 });
@@ -137,9 +173,8 @@ router.get('/me', verifyToken, async (req: AuthRequest, res: Response) => {
       userId: user.id,
       user,
     });
-  } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to fetch profile';
-    res.status(500).json({ error: message });
+  } catch {
+    res.status(500).json({ error: 'Failed to fetch profile' });
   }
 });
 
@@ -153,7 +188,7 @@ router.delete('/account', verifyToken, async (req: AuthRequest, res: Response) =
     res.clearCookie('refreshToken');
     res.json({ message: 'Account deleted successfully' });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to delete account';
+    const message = authErrorMessage(error, 'Failed to delete account');
     const status = message.toLowerCase().includes('password') ? 401 : 400;
     if (status >= 500) {
       logServerError('Delete account error', error);
