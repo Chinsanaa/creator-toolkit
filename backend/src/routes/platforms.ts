@@ -1,6 +1,8 @@
 import express, { Response } from 'express';
 import platformService from '../services/platformService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
+import { trimString } from '../utils/validate';
+import { safeErrorMessage } from '../utils/safeErrorMessage';
 
 const router = express.Router();
 
@@ -9,8 +11,7 @@ router.get('/', verifyToken, async (req: AuthRequest, res: Response) => {
     const accounts = await platformService.listAccounts(req.userId!, req.token!);
     res.json({ accounts });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to load platforms';
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: safeErrorMessage(error, 'Failed to load platforms') });
   }
 });
 
@@ -26,7 +27,14 @@ router.get('/sync/history', verifyToken, async (req: AuthRequest, res: Response)
 
 router.post('/connect', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
-    const { platform, platformUsername } = req.body;
+    const platform = trimString(req.body?.platform, 32);
+    const platformUsername = trimString(req.body?.platformUsername, 64);
+
+    if (!platform || !platformUsername) {
+      res.status(400).json({ error: 'Platform and username are required' });
+      return;
+    }
+
     const account = await platformService.connect(
       req.userId!,
       req.token!,

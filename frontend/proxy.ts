@@ -3,6 +3,7 @@ import type { NextRequest } from 'next/server';
 import { homePathForUserType } from '@/lib/auth/routes';
 import { isCreatorRoute, isProtectedRoute, isSponsorRoute } from '@/lib/auth/paths';
 import { ACCESS_TOKEN_COOKIE, USER_TYPE_COOKIE } from '@/lib/auth/session';
+import { parseAccessToken } from '@/lib/auth/token';
 import type { UserType } from '@/lib/types/auth';
 
 function parseUserType(value: string | undefined): UserType | null {
@@ -12,7 +13,9 @@ function parseUserType(value: string | undefined): UserType | null {
 
 export function proxy(request: NextRequest) {
   const token = request.cookies.get(ACCESS_TOKEN_COOKIE)?.value;
-  const userType = parseUserType(request.cookies.get(USER_TYPE_COOKIE)?.value);
+  const session = parseAccessToken(token);
+  const cookieUserType = parseUserType(request.cookies.get(USER_TYPE_COOKIE)?.value);
+  const userType = session.userType ?? cookieUserType;
   const { pathname } = request.nextUrl;
 
   const isAuthRoute =
@@ -21,13 +24,13 @@ export function proxy(request: NextRequest) {
     pathname.startsWith('/login/') ||
     pathname.startsWith('/signup/');
 
-  if (isProtectedRoute(pathname) && !token) {
+  if (isProtectedRoute(pathname) && !session.valid) {
     const loginUrl = new URL('/login', request.url);
     loginUrl.searchParams.set('next', pathname);
     return NextResponse.redirect(loginUrl);
   }
 
-  if (token && userType) {
+  if (session.valid && userType) {
     if (userType === 'sponsor' && isCreatorRoute(pathname)) {
       return NextResponse.redirect(new URL('/sponsor/dashboard', request.url));
     }
@@ -36,7 +39,7 @@ export function proxy(request: NextRequest) {
     }
   }
 
-  if (isAuthRoute && token) {
+  if (isAuthRoute && session.valid) {
     const home = userType ? homePathForUserType(userType) : '/dashboard';
     return NextResponse.redirect(new URL(home, request.url));
   }

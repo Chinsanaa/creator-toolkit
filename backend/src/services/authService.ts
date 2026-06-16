@@ -137,6 +137,7 @@ class AuthService {
       preferredUserType &&
       isNewUser &&
       !meta.user_type &&
+      profile.userType === 'creator' &&
       profile.userType !== preferredUserType
     ) {
       updates.user_type = preferredUserType;

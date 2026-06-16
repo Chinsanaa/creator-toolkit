@@ -1,6 +1,8 @@
 import express, { Response } from 'express';
 import walletService from '../services/walletService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
+import { isValidUuid, parsePositiveInt, trimString } from '../utils/validate';
+import { safeErrorMessage } from '../utils/safeErrorMessage';
 
 const router = express.Router();
 
@@ -9,8 +11,7 @@ router.get('/summary', verifyToken, async (req: AuthRequest, res: Response) => {
     const summary = await walletService.getSummary(req.userId!, req.token!);
     res.json(summary);
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to load wallet';
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: safeErrorMessage(error, 'Failed to load wallet') });
   }
 });
 
@@ -19,8 +20,7 @@ router.get('/transactions', verifyToken, async (req: AuthRequest, res: Response)
     const transactions = await walletService.listTransactions(req.userId!, req.token!);
     res.json({ transactions });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to load transactions';
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: safeErrorMessage(error, 'Failed to load transactions') });
   }
 });
 
@@ -29,19 +29,26 @@ router.get('/bank-accounts', verifyToken, async (req: AuthRequest, res: Response
     const accounts = await walletService.listBankAccounts(req.userId!, req.token!);
     res.json({ bankAccounts: accounts });
   } catch (error: unknown) {
-    const message = error instanceof Error ? error.message : 'Failed to load bank accounts';
-    res.status(500).json({ error: message });
+    res.status(500).json({ error: safeErrorMessage(error, 'Failed to load bank accounts') });
   }
 });
 
 router.post('/bank-accounts', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
-    const { bankName, accountNumber, accountHolderName, setAsDefault } = req.body;
+    const bankName = trimString(req.body?.bankName, 120);
+    const accountNumber = trimString(req.body?.accountNumber, 32);
+    const accountHolderName = trimString(req.body?.accountHolderName, 120);
+
+    if (!bankName || !accountNumber || !accountHolderName) {
+      res.status(400).json({ error: 'Invalid bank account details' });
+      return;
+    }
+
     const account = await walletService.addBankAccount(req.userId!, req.token!, {
       bankName,
       accountNumber,
       accountHolderName,
-      setAsDefault,
+      setAsDefault: req.body?.setAsDefault === true,
     });
     res.status(201).json({ bankAccount: account });
   } catch (error: unknown) {
@@ -55,10 +62,16 @@ router.patch(
   verifyToken,
   async (req: AuthRequest, res: Response) => {
     try {
+      const bankAccountId = String(req.params.id);
+      if (!isValidUuid(bankAccountId)) {
+        res.status(400).json({ error: 'Invalid bank account id' });
+        return;
+      }
+
       await walletService.setDefaultBankAccount(
         req.userId!,
         req.token!,
-        String(req.params.id)
+        bankAccountId
       );
       res.json({ message: 'Default bank account updated' });
     } catch (error: unknown) {
@@ -70,11 +83,18 @@ router.patch(
 
 router.post('/payouts', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
-    const { amountMnt, bankAccountId } = req.body;
+    const amountMnt = parsePositiveInt(req.body?.amountMnt, { min: 50_000, max: 100_000_000 });
+    const bankAccountId = trimString(req.body?.bankAccountId, 64);
+
+    if (!amountMnt || !bankAccountId || !isValidUuid(bankAccountId)) {
+      res.status(400).json({ error: 'Invalid payout request' });
+      return;
+    }
+
     const payout = await walletService.requestPayout(
       req.userId!,
       req.token!,
-      Number(amountMnt),
+      amountMnt,
       bankAccountId
     );
     res.status(201).json({
