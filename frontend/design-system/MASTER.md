@@ -1,35 +1,125 @@
-# Creator Toolkit — Design System (ui-ux-pro-max)
+# Earnio Design System
 
-**Style:** Vibrant & block-based · Gen Z creator monetization  
+**Style:** Electric blue fintech-for-creators · Gen Z · Clean & airy  
 **Mode:** Light + dark (full parity)
+
+## Brand identity
+
+Earnio uses a single electric-blue identity: **Earnio Blue `#2E5BFF`** (azure) paired with a cool slate neutral ramp, money-green for credits, and a cyan "spark" accent used only as a highlight.
 
 ## Colors
 
 | Token | Light | Dark |
 |-------|-------|------|
-| Primary | `#E11D48` | `#FB7185` |
-| Accent (CTA secondary) | `#2563EB` | `#60A5FA` |
-| Background | `#FFF1F2` | `#0A0709` |
-| Surface / card | `#FFFFFF` | `#161214` |
-| Foreground | `#4C0519` | `#FFF1F2` |
-| Muted text | `#9F1239` | `#FDA4AF` |
-| Border | `#FECDD3` | `#3F2A32` |
+| Primary | `#2E5BFF` (Earnio Blue) | `#5C7DFF` |
+| Accent / spark | `#12C2F3` (cyan) | `#3FD6FF` |
+| Background | `#F7FAFF` | `#0B1220` |
+| Surface / card | `#FFFFFF` | `#141C2C` |
+| Foreground / ink | `#0B1220` | `#F4F7FC` |
+| Muted text | `#5A6A85` | `#8492A8` |
+| Border | `#D7DEEA` | `#27324A` |
+| Success | `#10B981` | `#34D399` |
+| Danger | `#F0455A` | `#F87171` |
+
+### Gradients
+
+- **Brand:** `linear-gradient(135deg, #4D74FF 0%, #2E5BFF 45%, #1736B8 100%)`
+- **Spark:** `linear-gradient(115deg, #2E5BFF 0%, #12C2F3 100%)`
+- **Ink:** `linear-gradient(160deg, #161E2E 0%, #0B1220 100%)`
+
+### Atmospheric mesh (backgrounds)
+
+Blue-tinted radial gradients using `--mesh-1` (`#DCE6FF`), `--mesh-2` (`#CFEBFF`), `--mesh-3` (`#E6ECFF`). Applied via `.mesh-bg` class on `<body>`.
 
 ## Typography
 
-- **Display / headings:** Outfit (600–800)
-- **Body:** DM Sans (400–600)
-- **Stats / code:** JetBrains Mono
+- **Display / headings:** **Space Grotesk** (400–700), tight tracking (`-0.02em` to `-0.035em`). CSS var: `--font-display`. Tailwind: `font-display`.
+- **Body / UI:** **Plus Jakarta Sans** (400–800), friendly and legible. CSS var: `--font-sans`. Tailwind: `font-sans` (default body font).
+- **Stats / numerals:** **JetBrains Mono** (400–600), tabular figures. CSS var: `--font-mono`. Tailwind: `font-mono`.
 
-## Effects
+## Spacing & radii
 
-- Mesh gradient backgrounds (rose → coral → blue)
-- Glass cards: `backdrop-blur` + subtle border
-- Motion: 200–300ms ease-out; respect `prefers-reduced-motion`
-- Touch targets: min 44px
+Base unit: **4px**. Border radius base: **8px**.
+
+| Name | Value |
+|------|-------|
+| `--radius-xs` | 6px |
+| `--radius-sm` / `rounded-xl` | 8px — inputs, small chips |
+| `--radius-md` / `rounded-2xl` | 12px — buttons, rows |
+| `--radius-lg` | 16px — cards |
+| `--radius-xl` | 20px — panels |
+| `--radius-2xl` | 28px — hero cards |
+| `--radius-full` / `rounded-full` | 999px — pills, avatars |
+
+## Shadows
+
+Cool navy-tinted (not grey). Brand glow reserved for primary CTAs only.
+
+| Token | Use |
+|-------|-----|
+| `--shadow-sm` | Subtle cards and panels |
+| `--shadow-md` | Elevated panels |
+| `--shadow-glow` | Blue glow on primary actions |
+| `--shadow-brand` | Hero CTA spotlight |
+
+## Effects & motion
+
+- **Default easing:** `cubic-bezier(0.22, 1, 0.36, 1)` (ease-out)
+- **Spring:** `cubic-bezier(0.34, 1.56, 0.64, 1)` — toggles, badges
+- **Durations:** 140ms fast · 220ms base · 360ms slow
+- **Hover:** color darkens one step + `translateY(-1px)` lift
+- **Press:** `scale(0.97–0.98)` squeeze
+- **Focus ring:** 3px `color-mix(in srgb, #2E5BFF 28%, transparent)`
+- **Page enter:** `fade-up` animation (`.animate-fade-up`)
+
+## Component classes (globals.css)
+
+All existing class names are preserved. The `:root` tokens have been repointed to the Earnio Blue palette — `var(--primary)` is now `#2E5BFF`, `var(--background)` is `#F7FAFF`, etc. No component JSX changes are needed; token values change, class names stay the same.
+
+Key classes:
+
+| Class | Role |
+|-------|------|
+| `.mesh-bg` | Atmospheric blue mesh on `<body>` |
+| `.btn-primary` | Earnio Blue pill button |
+| `.btn-secondary` | Bordered white pill |
+| `.landing-btn-dark` | Ink-dark pill (secondary on landing) |
+| `.creator-panel` / `.creator-panel-lg` | Glass card for app content |
+| `.creator-hero-card` | Elevated hero card with blue/cyan gradient top-bar |
+| `.stat-card` | Dashboard stat panel with hover border |
+| `.auth-card` | Frosted auth container |
+| `.font-display` | Apply Space Grotesk |
+| `.font-mono-stat` | Apply JetBrains Mono for numbers |
+
+## Iconography
+
+**Lucide** — clean open-source line set, ~1.75px stroke, rounded caps. Load from CDN:
+
+```html
+<script src="https://unpkg.com/lucide@latest"></script>
+<i data-lucide="wallet"></i>
+<script>lucide.createIcons()</script>
+```
+
+Platform icons (TikTok / YouTube / Instagram) use official brand glyphs in brand colors. Emoji are not used as iconography.
+
+## Logo mark
+
+The Earnio mark is a **rising-trend arrow** — a geometric path going up-right with a cyan circle at the base. Defined in `components/brand/EarnioLogo.tsx` (`EarnioMark` component). Also available as static SVGs in `public/logo/`:
+
+- `earnio-mark.svg` — gradient tile version
+- `earnio-mark-mono.svg` — `currentColor` monochrome
 
 ## Anti-patterns
 
-- Generic purple-on-white SaaS look
+- Rose / pink / coral as primary (removed in this rebrand)
+- Purple-on-white generic SaaS look
+- Warm / sepia background tints
 - Emoji as icons
-- Hidden earnings data
+- Mixing Lucide with other icon families
+
+## Source
+
+Designed in Claude Design and exported as a design system handoff. Full prototype files (specimen cards, component demos, iOS and web UI kits) are in `frontend/design-system/earnio-ds/`.
+
+GitHub source: https://github.com/Chinsanaa/creator-toolkit

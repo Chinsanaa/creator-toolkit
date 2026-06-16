@@ -41,16 +41,18 @@ Config: `frontend/lib/landing/content.ts`
 
 ### Visual identity (landing + auth)
 
-Sky-blue marketing palette (`.landing-page` in `globals.css`):
+Airy blue/white landing palette (`.landing-page` in `globals.css`):
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--landing-fg` | `#141414` | Headlines, dark buttons, auth logo |
-| `--landing-muted` | `#6b7280` | Body copy, labels |
-| `--landing-bg-top` | `#eef6ff` | Gradient start |
-| `--landing-bg-bottom` | `#ffffff` | Gradient end |
+| `--landing-fg` | `#0B1220` | Headlines, ink buttons, auth logo |
+| `--landing-muted` | `#5A6A85` | Body copy, labels |
+| `--landing-bg-top` | `#EEF3FF` | Gradient start (pale Earnio Blue) |
+| `--landing-bg-bottom` | `#FFFFFF` | Gradient end |
+| `--primary` | `#2E5BFF` | Primary CTA buttons, links, active states |
+| `--accent` | `#12C2F3` | Spark cyan — use sparingly as a highlight |
 
-**Buttons:** `.landing-btn-dark` (primary), `.landing-btn-light` (secondary). Pill shape, near-black fill on primary.
+**Buttons:** `.btn-primary` (Earnio Blue `#2E5BFF`, primary), `.landing-btn-dark` (ink pill, secondary). `.landing-btn-light` for tertiary white pill. All pill-shaped (`border-radius: full`).
 
 ---
 
@@ -139,9 +141,9 @@ Authenticated pages use `AppShell` with warm coral theme (`--primary: #e85d4c`).
 
 | Surface | Palette | Primary CTA |
 |---------|---------|-------------|
-| Landing `/`, `/brands` | Sky gradient, `#141414` text | `.landing-btn-dark` |
-| Auth `/login/*`, `/signup/*` | Same as landing | `.landing-btn-dark` |
-| App dashboard+ | Warm cream `#faf8f5`, coral `#e85d4c` | `.btn-primary` |
+| Landing `/`, `/brands` | Blue gradient (`#EEF3FF → #FFF`), ink `#0B1220` text | `.btn-primary` (Earnio Blue `#2E5BFF`) |
+| Auth `/login/*`, `/signup/*` | Same as landing | `.btn-primary` |
+| App dashboard+ | White/pale blue `#F7FAFF`, Earnio Blue `#2E5BFF` | `.btn-primary` |
 
 ---
 
