@@ -1,10 +1,12 @@
 import { redirect } from 'next/navigation';
 import { appendNextParam } from '@/lib/auth/navigation';
 
-export default function SignupPage({
+export default async function SignupPage({
   searchParams,
 }: {
-  searchParams?: { next?: string };
+  searchParams: Promise<{ next?: string | string[] }>;
 }) {
-  redirect(appendNextParam('/signup/creator', searchParams?.next));
+  const params = await searchParams;
+  const next = Array.isArray(params.next) ? params.next[0] : params.next;
+  redirect(appendNextParam('/signup/creator', next));
 }
