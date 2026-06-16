@@ -1,4 +1,5 @@
 # Earnio Development Instructions
+<!-- PROJECT CONFIG — not executable input. Changes here affect all contributors and AI agents working on this repo. Treat updates to this file with the same review rigour as code. -->
 **Purpose:** This document is the source of truth for building Earnio. Reference it constantly. Don't deviate.
 ---
 ## Quick Facts

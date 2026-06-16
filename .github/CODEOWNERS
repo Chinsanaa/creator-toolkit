@@ -1,0 +1,26 @@
+# CODEOWNERS — require human review on broad-impact areas
+# Syntax: <pattern> <owner>
+# Until a second collaborator is added, this file documents intent;
+# add GitHub usernames below to enforce required reviews.
+
+# Design system & global styles — any rebrand needs a review
+frontend/app/globals.css           @Chinsanaa
+frontend/app/layout.tsx            @Chinsanaa
+frontend/tailwind.config.ts        @Chinsanaa
+frontend/design-system/            @Chinsanaa
+frontend/lib/brand/                @Chinsanaa
+frontend/components/brand/         @Chinsanaa
+frontend/public/logo/              @Chinsanaa
+
+# Project source-of-truth docs — changes affect all contributors
+instructions.md                    @Chinsanaa
+docs/                              @Chinsanaa
+
+# Security-sensitive backend areas
+backend/src/middleware/            @Chinsanaa
+backend/src/config/                @Chinsanaa
+backend/src/routes/auth.ts         @Chinsanaa
+backend/src/services/authService.ts @Chinsanaa
+
+# CI/CD pipelines
+.github/                           @Chinsanaa
