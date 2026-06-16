@@ -20,7 +20,7 @@ export function loadEnvConfig(): EnvConfig {
 
   return {
     port: Number(process.env.PORT) || 3001,
-    frontendUrl: process.env.FRONTEND_URL?.trim() || 'http://localhost:3000',
+    frontendUrl: (process.env.FRONTEND_URL?.trim() || 'http://localhost:3000').replace(/\/$/, ''),
     supabaseUrl,
     supabaseAnonKey,
     nodeEnv: process.env.NODE_ENV?.trim() || 'development',
