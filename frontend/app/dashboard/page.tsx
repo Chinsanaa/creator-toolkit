@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { MonthlyTrend } from '@/components/dashboard/MonthlyTrend';
 import { StatsCards } from '@/components/dashboard/StatsCards';
@@ -77,6 +78,13 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const { t } = useLanguage();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login?next=/dashboard');
+    }
+  }, [authLoading, user, router]);
 
   if (authLoading || !user) {
     return (

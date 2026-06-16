@@ -1,11 +1,20 @@
 'use client';
 
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { SponsorShell } from '@/components/sponsor/SponsorShell';
 import { AccountSettingsContent } from '@/components/settings/AccountSettingsContent';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function SponsorSettingsPage() {
   const { user, loading } = useAuth();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace('/login?next=/sponsor/settings');
+    }
+  }, [loading, user, router]);
 
   if (loading || !user) {
     return (

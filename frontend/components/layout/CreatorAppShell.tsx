@@ -7,6 +7,7 @@ import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { CREATOR_SIDEBAR_NAV, isCreatorNavActive } from '@/components/layout/creator-nav';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
+import { ThemeToggle } from '@/components/ui/ThemeToggle';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { formatHandle } from '@/lib/format';
 
@@ -167,6 +168,7 @@ export function CreatorAppShell({
 
           <div className="creator-topbar-actions flex items-center gap-3">
             <LanguageSwitcher />
+            <ThemeToggle />
             <NotificationBell tone="creator" />
             {(userName || userHandle) && (
               <Link href="/settings" className="hidden text-right md:block">

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { SponsorShell } from '@/components/sponsor/SponsorShell';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -97,6 +98,13 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
 export default function SponsorDashboardPage() {
   const { user, loading: authLoading } = useAuth();
   const { t } = useLanguage();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.replace('/login?next=/sponsor/dashboard');
+    }
+  }, [authLoading, user, router]);
 
   if (authLoading || !user) {
     return (

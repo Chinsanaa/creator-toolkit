@@ -37,6 +37,13 @@ describe('Protected routes', () => {
     assert.equal(res.status, 401);
   });
 
+  it('rejects unauthenticated sponsorship application alias route', async () => {
+    const res = await request(app())
+      .post('/api/sponsorships/apply')
+      .send({ sponsorshipId: 'demo', responseText: 'Interested' });
+    assert.equal(res.status, 401);
+  });
+
   it('rejects unauthenticated notifications', async () => {
     const res = await request(app()).get('/api/notifications');
     assert.equal(res.status, 401);
@@ -51,6 +58,11 @@ describe('Protected routes', () => {
 
   it('rejects OAuth session without tokens', async () => {
     const res = await request(app()).post('/api/auth/oauth/session').send({});
+    assert.equal(res.status, 400);
+  });
+
+  it('validates signup payload before external auth call', async () => {
+    const res = await request(app()).post('/api/auth/signup').send({});
     assert.equal(res.status, 400);
   });
 });

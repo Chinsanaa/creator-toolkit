@@ -12,6 +12,7 @@ import {
 import { useRouter } from 'next/navigation';
 import * as api from '@/lib/api/client';
 import { homePathForUserType } from '@/lib/auth/routes';
+import { getNextPathFromWindow } from '@/lib/auth/navigation';
 import {
   clearSessionCookies,
   getAccessToken,
@@ -86,7 +87,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!profile) {
         throw new Error('Failed to load profile after login');
       }
-      router.push(homePathForUserType(profile.userType));
+      router.push(getNextPathFromWindow() ?? homePathForUserType(profile.userType));
       router.refresh();
     },
     [router, refreshUser]
@@ -100,7 +101,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!profile) {
         throw new Error('Failed to load profile after signup');
       }
-      router.push(homePathForUserType(profile.userType));
+      router.push(getNextPathFromWindow() ?? homePathForUserType(profile.userType));
       router.refresh();
     },
     [router, refreshUser]

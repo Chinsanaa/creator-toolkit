@@ -27,6 +27,36 @@ router.get('/applications/me', verifyToken, async (req: AuthRequest, res: Respon
   }
 });
 
+router.post('/apply', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const { sponsorshipId, responseText } = req.body as {
+      sponsorshipId?: string;
+      responseText?: string;
+    };
+
+    if (!sponsorshipId?.trim()) {
+      res.status(400).json({ error: 'sponsorshipId is required' });
+      return;
+    }
+
+    const result = await sponsorshipService.apply(
+      sponsorshipId,
+      req.userId!,
+      req.token!,
+      responseText ?? ''
+    );
+
+    res.status(201).json({
+      message: 'Application submitted',
+      application: result,
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to apply';
+    const status = message.includes('already applied') ? 409 : 400;
+    res.status(status).json({ error: message });
+  }
+});
+
 router.get('/:id', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
     const id = String(req.params.id);
