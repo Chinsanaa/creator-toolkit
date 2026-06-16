@@ -1,5 +1,5 @@
 import express, { Response } from 'express';
-import { rateLimit } from 'express-rate-limit';
+import { ipKeyGenerator, rateLimit } from 'express-rate-limit';
 import authService from '../services/authService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
 import { logServerError } from '../utils/serverLog';
@@ -22,6 +22,7 @@ const authRateLimiter = rateLimit({
   limit: 5,
   standardHeaders: true,
   legacyHeaders: false,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip ?? '')}:${req.method}:${req.path}`,
   message: { error: 'Too many auth attempts. Please try again later.' },
 });
 

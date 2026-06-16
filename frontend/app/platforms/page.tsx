@@ -1,6 +1,6 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -32,40 +32,30 @@ export default function PlatformsPage() {
   const [message, setMessage] = useState<string | null>(null);
   const { t } = useLanguage();
 
-  async function load() {
+  const load = useCallback(async (isCancelled: () => boolean = () => false) => {
     setError(null);
     try {
       const [accs, hist] = await Promise.all([listPlatforms(), listSyncHistory()]);
-      setAccounts(accs);
-      setHistory(hist);
+      if (!isCancelled()) {
+        setAccounts(accs);
+        setHistory(hist);
+      }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : t('failed_to_load_platforms'));
+      if (!isCancelled()) {
+        setError(err instanceof ApiError ? err.message : t('failed_to_load_platforms'));
+      }
     } finally {
-      setLoading(false);
+      if (!isCancelled()) setLoading(false);
     }
-  }
+  }, [t]);
 
   useEffect(() => {
     let cancelled = false;
-    void (async () => {
-      try {
-        const [accs, hist] = await Promise.all([listPlatforms(), listSyncHistory()]);
-        if (!cancelled) {
-          setAccounts(accs);
-          setHistory(hist);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof ApiError ? err.message : t('failed_to_load_platforms'));
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+    void load(() => cancelled);
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [load]);
 
   async function handleConnect(e: FormEvent) {
     e.preventDefault();
