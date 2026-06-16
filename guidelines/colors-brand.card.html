@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<!-- @dsCard Colors: Brand Blue -->
+<html lang="en"><head><meta charset="UTF-8"><title>Brand Blue</title>
+<link rel="stylesheet" href="../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
+<div id="root"></div>
+<script type="text/babel">
+const swatches = [
+  {name:'Blue 50',var:'--blue-50',hex:'#EEF3FF'},
+  {name:'Blue 100',var:'--blue-100',hex:'#D9E5FF'},
+  {name:'Blue 200',var:'--blue-200',hex:'#B3CBFF'},
+  {name:'Blue 300',var:'--blue-300',hex:'#8DAFFF'},
+  {name:'Blue 400',var:'--blue-400',hex:'#6693FF'},
+  {name:'Blue 500',var:'--blue-500',hex:'#2E5BFF',primary:true},
+  {name:'Blue 600',var:'--blue-600',hex:'#2449CC'},
+  {name:'Blue 700',var:'--blue-700',hex:'#1A3799'},
+  {name:'Blue 800',var:'--blue-800',hex:'#112566'},
+  {name:'Blue 900',var:'--blue-900',hex:'#14266B'},
+];
+function App() {
+  return (
+    <div>
+      <h2 style={{fontFamily:'var(--font-display)',fontSize:'20px',fontWeight:700,color:'var(--text-primary)',marginBottom:'16px'}}>Brand Blue Scale</h2>
+      <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
+        {swatches.map(s=>(
+          <div key={s.var} style={{width:'88px'}}>
+            <div style={{height:'56px',borderRadius:'var(--radius-md)',background:s.hex,border:s.primary?'2px solid var(--blue-700)':'1.5px solid rgba(0,0,0,0.06)'}}/>
+            <div style={{fontSize:'11px',fontWeight:600,marginTop:'6px',color:'var(--text-primary)'}}>{s.name}</div>
+            <div style={{fontSize:'11px',color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>{s.hex}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body></html>

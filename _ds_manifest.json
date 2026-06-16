@@ -1,0 +1,54 @@
+{
+  "name": "Earnio Design System",
+  "version": "1.0.0",
+  "namespace": "EarnioDesignSystem_f806e6",
+  "bundle": "_ds_bundle.js",
+  "tokens": [
+    "tokens/colors.css",
+    "tokens/fonts.css",
+    "tokens/typography.css",
+    "tokens/spacing.css",
+    "tokens/effects.css"
+  ],
+  "components": [
+    "components/buttons/Button.jsx",
+    "components/buttons/IconButton.jsx",
+    "components/forms/Input.jsx",
+    "components/forms/Select.jsx",
+    "components/forms/Checkbox.jsx",
+    "components/forms/Switch.jsx",
+    "components/data-display/Badge.jsx",
+    "components/data-display/Avatar.jsx",
+    "components/data-display/StatCard.jsx",
+    "components/data-display/ProgressBar.jsx",
+    "components/surfaces/Card.jsx",
+    "components/navigation/Tabs.jsx"
+  ],
+  "specimens": [
+    "guidelines/colors-brand.card.html",
+    "guidelines/colors-neutrals.card.html",
+    "guidelines/colors-semantic.card.html",
+    "guidelines/colors-surfaces.card.html",
+    "guidelines/type-display.card.html",
+    "guidelines/type-body.card.html",
+    "guidelines/type-mono.card.html",
+    "guidelines/type-scale.card.html",
+    "guidelines/type-weights.card.html",
+    "guidelines/spacing-scale.card.html",
+    "guidelines/radii.card.html",
+    "guidelines/shadows.card.html",
+    "assets/brand-logo.card.html",
+    "assets/brand-icons.card.html",
+    "assets/brand-gradients.card.html",
+    "components/buttons/buttons.card.html",
+    "components/forms/forms.card.html",
+    "components/data-display/data-display.card.html",
+    "components/surfaces/surfaces.card.html",
+    "components/navigation/navigation.card.html"
+  ],
+  "uiKits": [
+    "ui_kits/website",
+    "ui_kits/app",
+    "ui_kits/ios"
+  ]
+}

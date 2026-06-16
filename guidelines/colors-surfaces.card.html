@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<!-- @dsCard Colors: Surfaces -->
+<html lang="en"><head><meta charset="UTF-8"><title>Surface Tokens</title>
+<link rel="stylesheet" href="../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
+<div id="root"></div>
+<script type="text/babel">
+const tokens = [
+  {name:'--surface',value:'#FFFFFF',label:'Surface'},
+  {name:'--surface-muted',value:'#F4F7FC',label:'Surface Muted'},
+  {name:'--primary-soft',value:'#EEF3FF',label:'Primary Soft'},
+  {name:'--primary-border',value:'#B3CBFF',label:'Primary Border'},
+  {name:'--border',value:'#CDD6E8',label:'Border'},
+  {name:'--text-primary',value:'#0B1220',label:'Text Primary'},
+  {name:'--text-secondary',value:'#3F577A',label:'Text Secondary'},
+  {name:'--text-muted',value:'#7F96B5',label:'Text Muted'},
+];
+function App() {
+  return (
+    <div>
+      <h2 style={{fontFamily:'var(--font-display)',fontSize:'20px',fontWeight:700,color:'var(--text-primary)',marginBottom:'16px'}}>Surface & Text Aliases</h2>
+      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'12px'}}>
+        {tokens.map(t=>(
+          <div key={t.name} style={{background:'var(--surface)',borderRadius:'var(--radius-md)',padding:'12px',border:'1.5px solid var(--border)'}}>
+            <div style={{height:'32px',borderRadius:'6px',background:t.value,border:'1.5px solid rgba(0,0,0,0.06)',marginBottom:'8px'}}/>
+            <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-primary)'}}>{t.label}</div>
+            <div style={{fontSize:'11px',color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>{t.name}</div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body></html>

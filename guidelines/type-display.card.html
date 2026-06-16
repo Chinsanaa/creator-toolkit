@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<!-- @dsCard Typography: Display -->
+<html lang="en"><head><meta charset="UTF-8"><title>Display Type</title>
+<link rel="stylesheet" href="../styles.css">
+<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+</head>
+<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
+<div id="root"></div>
+<script type="text/babel">
+function App() {
+  return (
+    <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'32px',border:'1.5px solid var(--border)'}}>
+      <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-muted)',letterSpacing:'0.08em',marginBottom:'24px'}}>SPACE GROTESK — DISPLAY</div>
+      <div style={{fontFamily:'var(--font-display)',fontSize:'48px',fontWeight:700,letterSpacing:'-0.035em',lineHeight:1.05,color:'var(--text-primary)',marginBottom:'8px'}}>Earn more,<br/>stress less.</div>
+      <div style={{fontFamily:'var(--font-display)',fontSize:'32px',fontWeight:600,letterSpacing:'-0.02em',lineHeight:1.1,color:'var(--text-secondary)'}}>Connect your platforms and get paid.</div>
+      <div style={{marginTop:'24px',paddingTop:'24px',borderTop:'1.5px solid var(--border)',display:'flex',gap:'32px'}}>
+        <div><div style={{fontSize:'12px',color:'var(--text-muted)'}}>Weight</div><div style={{fontWeight:600}}>600 / 700</div></div>
+        <div><div style={{fontSize:'12px',color:'var(--text-muted)'}}>Tracking</div><div style={{fontWeight:600}}>-0.02em to -0.035em</div></div>
+        <div><div style={{fontSize:'12px',color:'var(--text-muted)'}}>Leading</div><div style={{fontWeight:600}}>1.05</div></div>
+      </div>
+    </div>
+  );
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body></html>
