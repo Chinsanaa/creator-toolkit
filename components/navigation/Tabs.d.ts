@@ -1,15 +1,24 @@
-export interface Tab {
+import * as React from 'react';
+
+export interface TabItem {
+  /** Stable value identifying the tab. */
   value: string;
-  label: string;
+  /** Visible label. */
+  label: React.ReactNode;
+  /** Optional count pill (e.g. number of applications). */
   count?: number;
 }
 
-export interface TabsProps {
-  tabs: Tab[];
-  value: string;
+export interface TabsProps extends Omit<React.HTMLAttributes<HTMLDivElement>, 'onChange'> {
+  /** The tabs to render. */
+  tabs: TabItem[];
+  /** Selected tab value (controlled). Defaults to the first tab. */
+  value?: string;
+  /** Called with the new value when a tab is clicked. */
   onChange?: (value: string) => void;
+  /** Visual style. @default "pill" */
   variant?: 'pill' | 'underline';
-  className?: string;
 }
 
-export declare function Tabs(props: TabsProps): JSX.Element;
+/** Tab switcher — segmented pill or underline. */
+export function Tabs(props: TabsProps): React.JSX.Element;

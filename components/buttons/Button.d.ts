@@ -1,11 +1,21 @@
-import { ReactNode, ButtonHTMLAttributes } from 'react';
+import * as React from 'react';
 
-export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Visual style. @default "primary" */
   variant?: 'primary' | 'dark' | 'secondary' | 'ghost';
+  /** Size. @default "md" */
   size?: 'sm' | 'md' | 'lg';
+  /** Stretch to fill the container width. @default false */
   fullWidth?: boolean;
-  iconLeft?: ReactNode;
-  iconRight?: ReactNode;
+  /** Icon element rendered before the label (e.g. a Lucide <svg>). */
+  leftIcon?: React.ReactNode;
+  /** Icon element rendered after the label. */
+  rightIcon?: React.ReactNode;
 }
 
-export declare function Button(props: ButtonProps): JSX.Element;
+/**
+ * Earnio's pill button. Primary CTA across the product.
+ *
+ * @startingPoint section="Components" subtitle="Pill buttons — primary, dark, secondary, ghost" viewport="700x180"
+ */
+export function Button(props: ButtonProps): React.JSX.Element;

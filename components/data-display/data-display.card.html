@@ -1,70 +1,53 @@
+<!-- @dsCard group="Components" viewport="700x250" name="Data display" subtitle="Stat cards, badges, avatars & progress" -->
 <!DOCTYPE html>
-<!-- @dsCard Components: Data Display -->
-<html lang="en"><head><meta charset="UTF-8"><title>Data Display</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <link rel="stylesheet" href="../../styles.css">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+<script src="../../_ds_bundle.js"></script>
+<style>
+  body{margin:0;font-family:var(--font-sans);background:var(--bg-page);padding:26px}
+  .stats{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+  .row{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}
+</style>
 </head>
-<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
+<body>
 <div id="root"></div>
 <script type="text/babel">
-function App() {
-  return (
-    <div style={{display:'flex',flexDirection:'column',gap:'24px'}}>
-      <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'24px',border:'1.5px solid var(--border)'}}>
-        <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-muted)',letterSpacing:'0.08em',marginBottom:'16px'}}>STAT CARDS</div>
-        <div style={{display:'grid',gridTemplateColumns:'repeat(2,1fr)',gap:'12px'}}>
-          {[
-            {label:'Total Earnings',value:'₮ 4,820,000',delta:'+12.4%',up:true},
-            {label:'This Month',value:'₮ 312,500',delta:'-3.1%',up:false},
-          ].map(s=>(
-            <div key={s.label} style={{background:'var(--surface)',border:'1.5px solid var(--border)',borderRadius:'var(--radius-lg)',padding:'20px'}}>
-              <div style={{fontSize:'13px',color:'var(--text-muted)',marginBottom:'4px'}}>{s.label}</div>
-              <div style={{fontFamily:'var(--font-mono)',fontSize:'24px',fontWeight:600,fontFeatureSettings:"'tnum' 1"}}>{s.value}</div>
-              <div style={{fontSize:'12px',fontWeight:600,color:s.up?'var(--success)':'var(--danger)',marginTop:'4px'}}>{s.up?'↑':'↓'} {s.delta}</div>
-            </div>
-          ))}
+  const { StatCard, Badge, Avatar, ProgressBar } = window.EarnioDesignSystem_f806e6;
+  const Trend = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M3 17l6-6 4 4 8-8M21 7h-5M21 7v5"/></svg>;
+  const Wallet = () => <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round"><path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5"/><path d="M16 12h.01"/></svg>;
+  function Demo(){
+    return (
+      <div>
+        <div className="stats">
+          <StatCard label="Total earnings" value="₮12.4M" delta="18.2%" trend="up" hint="vs last month" icon={<Trend/>} />
+          <StatCard label="Available to withdraw" value="₮2.1M" hint="Across 3 platforms" icon={<Wallet/>} />
+        </div>
+        <div className="row">
+          <Badge tone="success" dot>Approved</Badge>
+          <Badge tone="warning" dot>Pending</Badge>
+          <Badge tone="danger" dot>Rejected</Badge>
+          <Badge tone="brand">Featured</Badge>
+          <Badge tone="neutral">TikTok</Badge>
+          <Badge tone="outline">Draft</Badge>
+        </div>
+        <div className="row">
+          <Avatar name="Bold Erdene" size="lg" ring />
+          <Avatar name="Sarnai" size="md" />
+          <Avatar name="Temuulen" size="sm" />
+          <Avatar name="UG" size="xs" />
+          <div style={{flex:1,minWidth:'220px'}}>
+            <ProgressBar label="Campaign budget" value={3.2} max={5} valueFormat={(v,m)=>`₮${v}M / ₮${m}M`} />
+          </div>
         </div>
       </div>
-      <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'24px',border:'1.5px solid var(--border)'}}>
-        <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-muted)',letterSpacing:'0.08em',marginBottom:'16px'}}>BADGES</div>
-        <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
-          {[['neutral','#E8EDF6','#2A3D5C'],['brand','#EEF3FF','#2E5BFF'],['success','#D1FAE5','#10B981'],['warning','#FEF3C7','#B45309'],['danger','#FEE2E5','#F0455A']].map(([t,bg,c])=>(
-            <span key={t} style={{display:'inline-flex',alignItems:'center',gap:'4px',padding:'3px 10px',borderRadius:'999px',background:bg,color:c,fontSize:'12px',fontWeight:600}}>
-              <span style={{width:'6px',height:'6px',borderRadius:'50%',background:c}}/>
-              {t}
-            </span>
-          ))}
-        </div>
-      </div>
-      <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'24px',border:'1.5px solid var(--border)'}}>
-        <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-muted)',letterSpacing:'0.08em',marginBottom:'16px'}}>AVATARS</div>
-        <div style={{display:'flex',gap:'12px',alignItems:'center'}}>
-          {[28,36,44,56].map(sz=>(
-            <div key={sz} style={{width:sz,height:sz,borderRadius:'50%',background:'linear-gradient(135deg,#4D74FF,#2E5BFF)',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff',fontWeight:700,fontSize:Math.round(sz*0.38)}}>БД</div>
-          ))}
-        </div>
-      </div>
-      <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'24px',border:'1.5px solid var(--border)'}}>
-        <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-muted)',letterSpacing:'0.08em',marginBottom:'16px'}}>PROGRESS BARS</div>
-        <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-          {[{label:'TikTok',pct:68},{label:'YouTube',pct:45},{label:'Instagram',pct:23}].map(p=>(
-            <div key={p.label}>
-              <div style={{display:'flex',justifyContent:'space-between',marginBottom:'4px'}}>
-                <span style={{fontSize:'13px',color:'var(--text-secondary)'}}>{p.label}</span>
-                <span style={{fontFamily:'var(--font-mono)',fontSize:'13px'}}>{p.pct}%</span>
-              </div>
-              <div style={{height:'6px',borderRadius:'999px',background:'var(--ink-100)'}}>
-                <div style={{height:'100%',width:`${p.pct}%`,borderRadius:'999px',background:'linear-gradient(115deg,#2E5BFF,#12C2F3)'}}/>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+    );
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(<Demo/>);
 </script>
-</body></html>
+</body>
+</html>

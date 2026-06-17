@@ -1,13 +1,13 @@
-import { SelectHTMLAttributes, ReactNode } from 'react';
+import * as React from 'react';
 
-export interface SelectOption { value: string; label: string; }
+export type SelectOption = string | { value: string; label: string };
 
-export interface SelectProps extends SelectHTMLAttributes<HTMLSelectElement> {
+export interface SelectProps extends React.SelectHTMLAttributes<HTMLSelectElement> {
+  /** Field label rendered above the select. */
   label?: string;
-  hint?: string;
-  error?: string;
-  options?: SelectOption[] | string[];
-  children?: ReactNode;
+  /** Options as strings or {value,label}. Omit to pass <option> children. */
+  options?: SelectOption[];
 }
 
-export declare function Select(props: SelectProps): JSX.Element;
+/** Styled native <select> with a custom chevron. */
+export function Select(props: SelectProps): React.JSX.Element;

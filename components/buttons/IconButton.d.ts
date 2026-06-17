@@ -1,10 +1,15 @@
-import { ReactNode, ButtonHTMLAttributes } from 'react';
+import * as React from 'react';
 
-export interface IconButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  icon: ReactNode;
-  variant?: 'primary' | 'dark' | 'secondary' | 'ghost';
+export interface IconButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+  /** Visual style. @default "ghost" */
+  variant?: 'solid' | 'outline' | 'ghost';
+  /** Size. @default "md" */
   size?: 'sm' | 'md' | 'lg';
-  'aria-label': string;
+  /** Accessible label (required — the button has no visible text). */
+  label: string;
+  /** The icon element, e.g. a Lucide <svg>. */
+  children: React.ReactNode;
 }
 
-export declare function IconButton(props: IconButtonProps): JSX.Element;
+/** Square, icon-only button for top bars and toolbars. */
+export function IconButton(props: IconButtonProps): React.JSX.Element;

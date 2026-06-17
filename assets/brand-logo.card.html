@@ -1,42 +1,75 @@
+<!-- @dsCard group="Brand" viewport="700x300" name="Logo · mark" subtitle="The Earnio mark on light, soft, and dark surfaces" -->
 <!DOCTYPE html>
-<!-- @dsCard Brand: Logo -->
-<html lang="en"><head><meta charset="UTF-8"><title>Logo Lockups</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <link rel="stylesheet" href="../styles.css">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0;
+    font-family: var(--font-sans);
+    background: var(--surface);
+    color: var(--text-strong);
+    padding: 28px;
+  }
+  .row { display: flex; gap: 20px; flex-wrap: wrap; }
+  .tile {
+    flex: 1 1 180px;
+    border-radius: var(--radius-xl);
+    border: 1px solid var(--border);
+    padding: 28px 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    text-align: center;
+  }
+  .tile.light { background: var(--surface); }
+  .tile.soft  { background: var(--blue-50); border-color: var(--blue-100); }
+  .tile.dark  { background: var(--gradient-ink); border-color: transparent; }
+  .tile img { width: 72px; height: 72px; }
+  .lockup { display: flex; align-items: center; gap: 12px; }
+  .lockup .word {
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 28px;
+    letter-spacing: var(--tracking-tight);
+  }
+  .lockup .mark { width: 36px; height: 36px; color: var(--primary); }
+  .tile.dark .lockup .word { color: #fff; }
+  .tile.dark .lockup .mark { color: #fff; }
+  .cap { font-size: 12px; color: var(--text-muted); font-weight: 600; letter-spacing: var(--tracking-wide); text-transform: uppercase; }
+  .tile.dark .cap { color: rgba(255,255,255,0.7); }
+</style>
 </head>
-<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
-<div id="root"></div>
-<script type="text/babel">
-function Mark({color}) {
-  return (
-    <svg width="32" height="32" viewBox="0 0 96 96" fill="none">
-      {color==='gradient'
-        ? <><defs><linearGradient id="g" x1="48" y1="0" x2="48" y2="96" gradientUnits="userSpaceOnUse"><stop offset="0%" stopColor="#4D74FF"/><stop offset="50%" stopColor="#2E5BFF"/><stop offset="100%" stopColor="#1736B8"/></linearGradient></defs>
-            <polyline points="16,72 38,44 60,26 82,44" stroke="url(#g)" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="16" cy="72" r="5" fill="url(#g)"/></>
-        : <><polyline points="16,72 38,44 60,26 82,44" stroke="currentColor" strokeWidth="7" strokeLinecap="round" strokeLinejoin="round"/>
-            <circle cx="16" cy="72" r="5" fill="currentColor"/></>}
-    </svg>
-  );
-}
-function App() {
-  return (
-    <div style={{display:'flex',flexDirection:'column',gap:'24px'}}>
-      <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'32px',border:'1.5px solid var(--border)',display:'flex',alignItems:'center',gap:'10px'}}>
-        <Mark color="gradient"/>
-        <span style={{fontFamily:'var(--font-display)',fontSize:'22px',fontWeight:700,letterSpacing:'-0.02em',background:'var(--gradient-brand)',WebkitBackgroundClip:'text',WebkitTextFillColor:'transparent'}}>Earnio</span>
-        <span style={{marginLeft:'24px',fontSize:'12px',color:'var(--text-muted)'}}>Color lockup</span>
-      </div>
-      <div style={{background:'var(--ink-900)',borderRadius:'var(--radius-lg)',padding:'32px',display:'flex',alignItems:'center',gap:'10px'}}>
-        <span style={{color:'#fff'}}><Mark color="mono"/></span>
-        <span style={{fontFamily:'var(--font-display)',fontSize:'22px',fontWeight:700,letterSpacing:'-0.02em',color:'#fff'}}>Earnio</span>
-        <span style={{marginLeft:'24px',fontSize:'12px',color:'rgba(255,255,255,0.4)'}}>Mono on dark</span>
-      </div>
+<body>
+  <div class="row">
+    <div class="tile light">
+      <img src="logo/earnio-mark.svg" alt="Earnio mark">
+      <div class="cap">Primary tile</div>
     </div>
-  );
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
-</body></html>
+    <div class="tile soft">
+      <div class="lockup">
+        <svg class="mark" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+          <path d="M34 62 L62 34" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M44 34 H62 V52" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="word">Earnio</span>
+      </div>
+      <div class="cap">Wordmark lockup</div>
+    </div>
+    <div class="tile dark">
+      <div class="lockup">
+        <svg class="mark" viewBox="0 0 96 96" fill="none" aria-hidden="true">
+          <path d="M34 62 L62 34" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M44 34 H62 V52" stroke="currentColor" stroke-width="9" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="word">Earnio</span>
+      </div>
+      <div class="cap">On ink / dark</div>
+    </div>
+  </div>
+</body>
+</html>

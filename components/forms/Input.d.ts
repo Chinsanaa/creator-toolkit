@@ -1,10 +1,15 @@
-import { InputHTMLAttributes, ReactNode } from 'react';
+import * as React from 'react';
 
-export interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+  /** Field label rendered above the input. */
   label?: string;
+  /** Helper text below the field. */
   hint?: string;
+  /** Error message — turns the field red and overrides `hint`. */
   error?: string;
-  icon?: ReactNode;
+  /** Leading icon element (e.g. a Lucide <svg>). */
+  icon?: React.ReactNode;
 }
 
-export declare function Input(props: InputProps): JSX.Element;
+/** Labelled text input with icon, hint and error states. */
+export function Input(props: InputProps): React.JSX.Element;

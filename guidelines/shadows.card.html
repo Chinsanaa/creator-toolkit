@@ -1,34 +1,26 @@
+<!-- @dsCard group="Spacing" viewport="700x210" name="Elevation & glow" subtitle="Cool navy-tinted shadows + the brand glow" -->
 <!DOCTYPE html>
-<!-- @dsCard Spacing: Shadows -->
-<html lang="en"><head><meta charset="UTF-8"><title>Shadows</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <link rel="stylesheet" href="../styles.css">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);background:var(--bg-page);padding:30px 24px}
+  .grid{display:flex;gap:22px;flex-wrap:wrap}
+  .item{display:flex;flex-direction:column;gap:10px;align-items:center}
+  .box{width:96px;height:62px;border-radius:var(--radius-lg);background:var(--surface);border:1px solid var(--border)}
+  .glow{background:var(--primary);border-color:transparent}
+  .lbl{font-family:var(--font-mono);font-size:10px;color:var(--text-muted)}
+</style>
 </head>
-<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
-<div id="root"></div>
-<script type="text/babel">
-const shadows = [
-  {name:'sm',token:'--shadow-sm'},{name:'md',token:'--shadow-md'},{name:'lg',token:'--shadow-lg'},
-  {name:'xl',token:'--shadow-xl'},{name:'glow',token:'--shadow-glow'},{name:'brand',token:'--shadow-brand'},
-];
-function App() {
-  return (
-    <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'32px',border:'1.5px solid var(--border)'}}>
-      <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-muted)',letterSpacing:'0.08em',marginBottom:'24px'}}>SHADOWS + GLOW</div>
-      <div style={{display:'flex',gap:'24px',flexWrap:'wrap'}}>
-        {shadows.map(s=>(
-          <div key={s.token} style={{textAlign:'center'}}>
-            <div style={{width:'72px',height:'72px',borderRadius:'var(--radius-md)',background:'var(--surface)',boxShadow:`var(${s.token})`,marginBottom:'12px'}}/>
-            <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-primary)'}}>{s.name}</div>
-            <div style={{fontSize:'10px',color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>{s.token}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
-</body></html>
+<body>
+  <div class="grid">
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-sm)"></div><span class="lbl">--shadow-sm</span></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-md)"></div><span class="lbl">--shadow-md</span></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-lg)"></div><span class="lbl">--shadow-lg</span></div>
+    <div class="item"><div class="box" style="box-shadow:var(--shadow-xl)"></div><span class="lbl">--shadow-xl</span></div>
+    <div class="item"><div class="box glow" style="box-shadow:var(--shadow-brand)"></div><span class="lbl">--shadow-brand</span></div>
+  </div>
+</body>
+</html>

@@ -1,40 +1,43 @@
+<!-- @dsCard group="Colors" viewport="700x190" name="Surface & text aliases" subtitle="Semantic tokens the product actually references" -->
 <!DOCTYPE html>
-<!-- @dsCard Colors: Surfaces -->
-<html lang="en"><head><meta charset="UTF-8"><title>Surface Tokens</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <link rel="stylesheet" href="../styles.css">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);padding:24px;background:var(--bg-page)}
+  .row{display:flex;gap:14px}
+  .col{flex:1;display:flex;flex-direction:column;gap:10px}
+  .surf{border-radius:var(--radius-lg);border:1px solid var(--border);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+  .lbl{font-family:var(--font-mono);font-size:10px;color:var(--text-muted)}
+  .strong{color:var(--text-strong);font-weight:700;font-size:15px}
+  .body{color:var(--text-body);font-size:13px}
+  .muted{color:var(--text-muted);font-size:13px}
+  .link{color:var(--text-link);font-weight:600;font-size:13px}
+</style>
 </head>
-<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
-<div id="root"></div>
-<script type="text/babel">
-const tokens = [
-  {name:'--surface',value:'#FFFFFF',label:'Surface'},
-  {name:'--surface-muted',value:'#F4F7FC',label:'Surface Muted'},
-  {name:'--primary-soft',value:'#EEF3FF',label:'Primary Soft'},
-  {name:'--primary-border',value:'#B3CBFF',label:'Primary Border'},
-  {name:'--border',value:'#CDD6E8',label:'Border'},
-  {name:'--text-primary',value:'#0B1220',label:'Text Primary'},
-  {name:'--text-secondary',value:'#3F577A',label:'Text Secondary'},
-  {name:'--text-muted',value:'#7F96B5',label:'Text Muted'},
-];
-function App() {
-  return (
-    <div>
-      <h2 style={{fontFamily:'var(--font-display)',fontSize:'20px',fontWeight:700,color:'var(--text-primary)',marginBottom:'16px'}}>Surface & Text Aliases</h2>
-      <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:'12px'}}>
-        {tokens.map(t=>(
-          <div key={t.name} style={{background:'var(--surface)',borderRadius:'var(--radius-md)',padding:'12px',border:'1.5px solid var(--border)'}}>
-            <div style={{height:'32px',borderRadius:'6px',background:t.value,border:'1.5px solid rgba(0,0,0,0.06)',marginBottom:'8px'}}/>
-            <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-primary)'}}>{t.label}</div>
-            <div style={{fontSize:'11px',color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>{t.name}</div>
-          </div>
-        ))}
+<body>
+  <div class="row">
+    <div class="col">
+      <div class="surf" style="background:var(--surface)">
+        <span class="lbl">--surface</span>
+        <span class="strong">Text strong</span>
+        <span class="body">Text body — the default reading color</span>
+        <span class="muted">Text muted · secondary</span>
+        <span class="link">Text link →</span>
       </div>
     </div>
-  );
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
-</body></html>
+    <div class="col">
+      <div class="surf" style="background:var(--surface-muted)">
+        <span class="lbl">--surface-muted</span>
+        <span class="body">Subtle fill for rows & wells</span>
+      </div>
+      <div class="surf" style="background:var(--primary-soft);border-color:var(--primary-border)">
+        <span class="lbl">--primary-soft</span>
+        <span class="body" style="color:var(--primary-press)">Tinted brand surface</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

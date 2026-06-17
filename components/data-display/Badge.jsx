@@ -1,30 +1,35 @@
 import React from 'react';
 
-const styles = `
-.ern-badge {
-  display: inline-flex; align-items: center; gap: 5px;
-  padding: 3px 10px; border-radius: var(--radius-full);
-  font-family: var(--font-body); font-size: 12px; font-weight: 600;
-  white-space: nowrap;
-}
-.ern-badge-neutral { background: var(--ink-100); color: var(--ink-700); }
-.ern-badge-brand { background: var(--primary-soft); color: var(--primary); }
-.ern-badge-success { background: var(--success-soft); color: var(--success); }
-.ern-badge-warning { background: var(--warning-soft); color: #B45309; }
-.ern-badge-danger { background: var(--danger-soft); color: var(--danger); }
-.ern-badge-solid { background: var(--primary); color: #fff; }
-.ern-badge-outline { background: transparent; color: var(--primary); border: 1.5px solid var(--primary-border); }
-.ern-badge-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
+const STYLE_ID = 'earnio-badge-styles';
+const CSS = `
+.ern-badge{display:inline-flex;align-items:center;gap:5px;font-family:var(--font-sans);font-weight:600;font-size:12px;line-height:1;border-radius:var(--radius-full);padding:5px 10px;white-space:nowrap;border:1px solid transparent}
+.ern-badge__dot{width:6px;height:6px;border-radius:50%;background:currentColor}
+.ern-badge--neutral{background:var(--surface-muted);color:var(--text-body);border-color:var(--border)}
+.ern-badge--brand{background:var(--primary-soft);color:var(--primary-press);border-color:var(--primary-border)}
+.ern-badge--success{background:var(--success-soft);color:#0a7d5a}
+.ern-badge--warning{background:var(--warning-soft);color:#9a6207}
+.ern-badge--danger{background:var(--danger-soft);color:#b32134}
+.ern-badge--solid{background:var(--primary);color:#fff}
+.ern-badge--outline{background:transparent;color:var(--text-body);border-color:var(--border-strong)}
 `;
 
-export function Badge({ children, tone = 'neutral', dot = false, className = '' }) {
+function ensureStyles() {
+  if (typeof document === 'undefined') return;
+  if (!document.getElementById(STYLE_ID)) {
+    const s = document.createElement('style');
+    s.id = STYLE_ID;
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }
+}
+
+/** Small status pill / label. Use a `dot` for live statuses. */
+export function Badge({ tone = 'neutral', dot = false, className = '', children, ...rest }) {
+  ensureStyles();
   return (
-    <>
-      <style>{styles}</style>
-      <span className={['ern-badge', `ern-badge-${tone}`, className].filter(Boolean).join(' ')}>
-        {dot && <span className="ern-badge-dot" />}
-        {children}
-      </span>
-    </>
+    <span className={['ern-badge', `ern-badge--${tone}`, className].filter(Boolean).join(' ')} {...rest}>
+      {dot ? <span className="ern-badge__dot" aria-hidden="true" /> : null}
+      {children}
+    </span>
   );
 }

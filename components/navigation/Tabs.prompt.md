@@ -1,14 +1,12 @@
-# Tabs
+Tab switcher — `pill` (segmented control) or `underline`. Used for filtering applications, wallet sections, dashboard ranges.
 
-Pill (segmented) or underline variant. Controlled via value/onChange.
+```jsx
+const [tab, setTab] = React.useState('all');
+<Tabs variant="pill" value={tab} onChange={setTab} tabs={[
+  {value:'all', label:'All'},
+  {value:'pending', label:'Pending', count:3},
+  {value:'approved', label:'Approved', count:5},
+]} />
+```
 
-## Props
-- `tabs`: Array<{ value, label, count? }>
-- `value`: active tab value
-- `onChange`: (value: string) => void
-- `variant`: pill | underline (default: pill)
-
-## Rules
-- Pill variant: use for filtering/segmenting within a page
-- Underline variant: use for page-level section navigation
-- count badges show numeric indicators on tab labels
+Props: `tabs` ({value,label,count}[]), `value`, `onChange`, `variant` (`pill|underline`). Controlled — track the value in your own state.

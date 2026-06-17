@@ -1,14 +1,9 @@
-# Input
+Labelled text input — the standard form field across auth and wallet flows.
 
-Labeled text input with hint and error states. Min-height 44px.
+```jsx
+<Input label="Email" type="email" placeholder="you@example.com" />
+<Input label="Amount (MNT)" icon={<SearchIcon />} hint="Minimum ₮50,000" />
+<Input label="Account number" error="Required" />
+```
 
-## Props
-- `label`: string — rendered as <label>
-- `hint`: string — helper text below input
-- `error`: string — shows red border + message
-- `icon`: ReactNode — leading icon (16px, left-aligned)
-
-## Rules
-- Always include a label for accessibility
-- Error message replaces hint when both provided
-- Use ₮ in placeholder for money fields
+Props: `label`, `hint`, `error`, `icon`, plus all native `<input>` attributes. Error state overrides hint and turns the border red.

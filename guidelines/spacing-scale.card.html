@@ -1,36 +1,23 @@
+<!-- @dsCard group="Spacing" viewport="700x230" name="Spacing scale" subtitle="4px base unit, 1 → 16" -->
 <!DOCTYPE html>
-<!-- @dsCard Spacing: Scale -->
-<html lang="en"><head><meta charset="UTF-8"><title>Spacing Scale</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <link rel="stylesheet" href="../styles.css">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);background:var(--surface);color:var(--text-strong);padding:24px}
+  .r{display:flex;align-items:center;gap:14px;padding:4px 0}
+  .tok{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);width:150px;flex:none}
+  .bar{height:16px;border-radius:4px;background:var(--gradient-spark)}
+</style>
 </head>
-<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
-<div id="root"></div>
-<script type="text/babel">
-const steps = [
-  {token:'--space-1',px:'4px'},{token:'--space-2',px:'8px'},{token:'--space-3',px:'12px'},
-  {token:'--space-4',px:'16px'},{token:'--space-5',px:'20px'},{token:'--space-6',px:'24px'},
-  {token:'--space-8',px:'32px'},{token:'--space-10',px:'40px'},{token:'--space-12',px:'48px'},
-  {token:'--space-16',px:'64px'},
-];
-function App() {
-  return (
-    <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'32px',border:'1.5px solid var(--border)'}}>
-      <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-muted)',letterSpacing:'0.08em',marginBottom:'24px'}}>SPACING SCALE — 4px BASE</div>
-      <div style={{display:'flex',flexDirection:'column',gap:'10px'}}>
-        {steps.map(s=>(
-          <div key={s.token} style={{display:'flex',alignItems:'center',gap:'12px'}}>
-            <span style={{fontFamily:'var(--font-mono)',fontSize:'11px',color:'var(--text-muted)',width:'90px'}}>{s.token}</span>
-            <span style={{fontSize:'11px',color:'var(--text-muted)',width:'32px'}}>{s.px}</span>
-            <div style={{height:'12px',borderRadius:'3px',background:'var(--primary)',opacity:0.7,width:s.px}}/>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
-</body></html>
+<body>
+  <div id="rows"></div>
+  <script>
+    const rows=[['--space-1',4],['--space-2',8],['--space-3',12],['--space-4',16],['--space-6',24],['--space-8',32],['--space-12',48],['--space-16',64]];
+    document.getElementById('rows').innerHTML=rows.map(([t,px])=>`
+      <div class="r"><span class="tok">${t} · ${px}px</span><div class="bar" style="width:${px}px"></div></div>`).join('');
+  </script>
+</body>
+</html>

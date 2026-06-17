@@ -1,8 +1,8 @@
-# Checkbox
+Checkbox with a custom blue check — used for legal consent and multi-select filters.
 
-20px custom checkbox with animated checkmark pop on check.
+```jsx
+<Checkbox label="I accept the Terms and Privacy Policy" />
+<Checkbox defaultChecked><strong>TikTok</strong> earnings</Checkbox>
+```
 
-## Props
-- `label`: string — inline label
-- `checked`, `onChange`: controlled
-- `disabled`: boolean
+Props: `label` (or children), plus native checkbox attributes (`checked`, `defaultChecked`, `onChange`, `disabled`).

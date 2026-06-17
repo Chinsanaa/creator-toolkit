@@ -1,37 +1,39 @@
 import React from 'react';
 
-const styles = `
-.ern-checkbox-wrap { display: flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
-.ern-checkbox-input { display: none; }
-.ern-checkbox-box {
-  width: 20px; height: 20px; border-radius: 6px;
-  border: 2px solid var(--border-strong); background: var(--surface);
-  display: flex; align-items: center; justify-content: center;
-  transition: all var(--duration-fast) var(--ease-spring);
-  flex-shrink: 0;
-}
-.ern-checkbox-input:checked + .ern-checkbox-box {
-  background: var(--primary); border-color: var(--primary);
-  transform: scale(1.05);
-}
-.ern-checkbox-box svg { opacity: 0; transition: opacity var(--duration-fast); }
-.ern-checkbox-input:checked + .ern-checkbox-box svg { opacity: 1; }
-.ern-checkbox-label { font-family: var(--font-body); font-size: 14px; color: var(--text-primary); }
+const STYLE_ID = 'earnio-checkbox-styles';
+const CSS = `
+.ern-check{display:inline-flex;align-items:flex-start;gap:10px;font-family:var(--font-sans);cursor:pointer;user-select:none}
+.ern-check input{position:absolute;opacity:0;width:0;height:0}
+.ern-check__box{flex:none;width:20px;height:20px;border-radius:6px;border:1.5px solid var(--border-strong);background:var(--surface);display:inline-flex;align-items:center;justify-content:center;transition:background var(--dur-fast) var(--ease-out),border-color var(--dur-fast) var(--ease-out);margin-top:1px}
+.ern-check__box svg{width:13px;height:13px;color:#fff;opacity:0;transform:scale(.6);transition:opacity var(--dur-fast),transform var(--dur-fast) var(--ease-spring)}
+.ern-check input:checked + .ern-check__box{background:var(--primary);border-color:var(--primary)}
+.ern-check input:checked + .ern-check__box svg{opacity:1;transform:scale(1)}
+.ern-check input:focus-visible + .ern-check__box{box-shadow:var(--focus-ring)}
+.ern-check input:disabled + .ern-check__box{opacity:.5}
+.ern-check__label{font-size:14px;color:var(--text-body);line-height:1.4}
+.ern-check__label strong{color:var(--text-strong);font-weight:600}
 `;
 
-export function Checkbox({ label, checked, onChange, disabled, className = '', ...props }) {
+function ensureStyles() {
+  if (typeof document === 'undefined') return;
+  if (!document.getElementById(STYLE_ID)) {
+    const s = document.createElement('style');
+    s.id = STYLE_ID;
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }
+}
+
+/** Checkbox with a custom blue box. Pass label text or rich children. */
+export function Checkbox({ label, className = '', children, ...rest }) {
+  ensureStyles();
   return (
-    <>
-      <style>{styles}</style>
-      <label className={['ern-checkbox-wrap', className].filter(Boolean).join(' ')}>
-        <input type="checkbox" className="ern-checkbox-input" checked={checked} onChange={onChange} disabled={disabled} {...props} />
-        <span className="ern-checkbox-box">
-          <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
-            <polyline points="2,6 5,9 10,3" stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </span>
-        {label && <span className="ern-checkbox-label">{label}</span>}
-      </label>
-    </>
+    <label className={['ern-check', className].filter(Boolean).join(' ')}>
+      <input type="checkbox" {...rest} />
+      <span className="ern-check__box" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3.5" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5" /></svg>
+      </span>
+      {(label || children) ? <span className="ern-check__label">{label || children}</span> : null}
+    </label>
   );
 }

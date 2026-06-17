@@ -1,15 +1,8 @@
-# StatCard
+Dashboard metric card — label, big mono value, optional trend delta and icon. The core of the earnings dashboard and wallet.
 
-Dashboard metric card. Blue border lift on hover.
+```jsx
+<StatCard label="Total earnings" value="₮12.4M" delta="18.2%" trend="up" hint="vs last month" icon={<TrendingUpIcon />} />
+<StatCard label="This month" value="₮2.4M" hint="Last month: ₮2.0M" />
+```
 
-## Props
-- `label`: string — metric name
-- `value`: string | number — rendered in JetBrains Mono
-- `delta`: string — trend value (e.g. "+12.4%")
-- `deltaUp`: boolean — true = green up arrow, false = red down
-- `hint`: string — secondary label
-- `icon`: ReactNode — optional icon top-right
-
-## Rules
-- Always use ₮ prefix for money values
-- Values render in JetBrains Mono with tabular figures
+Props: `label`, `value`, `delta`, `trend` (`up|down`), `hint`, `icon`. Value renders in JetBrains Mono; the card lifts to a blue border on hover.

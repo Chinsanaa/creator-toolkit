@@ -1,34 +1,25 @@
+<!-- @dsCard group="Spacing" viewport="700x180" name="Corner radii" subtitle="8px base → full pills" -->
 <!DOCTYPE html>
-<!-- @dsCard Spacing: Radii -->
-<html lang="en"><head><meta charset="UTF-8"><title>Corner Radii</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <link rel="stylesheet" href="../styles.css">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);background:var(--surface);padding:24px}
+  .grid{display:flex;gap:16px;align-items:flex-end}
+  .item{display:flex;flex-direction:column;gap:8px;align-items:center}
+  .box{width:74px;height:74px;background:var(--blue-50);border:1.5px solid var(--primary);border-bottom:none}
+  .lbl{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);text-align:center}
+</style>
 </head>
-<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
-<div id="root"></div>
-<script type="text/babel">
-const radii = [
-  {token:'--radius-sm',value:'8px'},{token:'--radius-md',value:'12px'},{token:'--radius-lg',value:'16px'},
-  {token:'--radius-xl',value:'20px'},{token:'--radius-2xl',value:'28px'},{token:'--radius-full',value:'999px'},
-];
-function App() {
-  return (
-    <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'32px',border:'1.5px solid var(--border)'}}>
-      <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-muted)',letterSpacing:'0.08em',marginBottom:'24px'}}>CORNER RADII</div>
-      <div style={{display:'flex',gap:'20px',flexWrap:'wrap'}}>
-        {radii.map(r=>(
-          <div key={r.token} style={{textAlign:'center'}}>
-            <div style={{width:'64px',height:'64px',borderRadius:r.value,background:'var(--primary-soft)',border:'2px solid var(--primary-border)',marginBottom:'8px'}}/>
-            <div style={{fontSize:'11px',fontWeight:600,color:'var(--text-primary)'}}>{r.value}</div>
-            <div style={{fontSize:'10px',color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>{r.token}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
-</body></html>
+<body>
+  <div class="grid" id="grid"></div>
+  <script>
+    const r=[['sm',8],['md',12],['lg',16],['xl',20],['2xl',28],['full',37]];
+    document.getElementById('grid').innerHTML=r.map(([n,px])=>`
+      <div class="item"><div class="box" style="border-radius:${px}px ${px}px 0 0"></div>
+      <span class="lbl">--radius-${n}<br>${n==='full'?'999':px}px</span></div>`).join('');
+  </script>
+</body>
+</html>

@@ -1,12 +1,8 @@
-# IconButton
+Icon-only square button for top bars, toolbars and compact controls. Always give it an `aria-label` via `label`.
 
-Square icon-only button. Always requires `aria-label` for accessibility.
+```jsx
+<IconButton variant="outline" label="Notifications"><BellIcon /></IconButton>
+<IconButton variant="solid" label="Add"><PlusIcon /></IconButton>
+```
 
-## Sizes
-- sm: 34×34px
-- md: 44×44px (default)
-- lg: 52×52px
-
-## Rules
-- `aria-label` is required — never omit it
-- Use same variants as Button
+Variants: `solid` (brand blue), `outline` (bordered white), `ghost` (default, transparent). Sizes `sm | md | lg` (36/44/52px). Pass the icon as children.
