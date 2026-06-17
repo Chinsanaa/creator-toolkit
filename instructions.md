@@ -16,7 +16,7 @@
 **Revenue Model:** 20% commission ONLY. No subscription tier. Creators keep 80%.
 ---
 ## The 6 Locked Documents
-All specs are in `Earnio_6_Documents.pdf`. Don't invent anything. Always reference:
+All specs are in `docs/Earnio_6_Documents.pdf`. Don't invent anything. Always reference:
 1. **PRD** — Problem, users, features, success metrics
 2. **TRD** — Tech stack (Next.js, Express, Supabase, Resend test, mock platforms)
 3. **App Flow** — Creator + Sponsor journeys, all routes
