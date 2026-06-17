@@ -16,7 +16,7 @@ This system was built by reading the real Earnio product code. If you have acces
   - `frontend/` — Next.js 16 website + creator/sponsor apps (Tailwind CSS 4)
   - `frontend/lib/landing/content.ts` — all marketing copy & nav (single source)
   - `frontend/app/globals.css` — the product's original design tokens
-  - `README.md` / `instructions.md` / `Earnio_6_Documents.pdf` — product spec, journeys, brand notes
+  - `README.md` / `instructions.md` / `docs/Earnio_6_Documents.pdf` — product spec, journeys, brand notes
 
 > **Brand refresh note.** The original product shipped an inconsistent palette (purple `#6336F1` in docs, coral `#e85d4c` in brand constants, rose/pink in `globals.css`) on Poppins/Montserrat. Per the founder's direction this system **replaces** all of that with a single coherent **electric-blue identity**, a **new logo**, and a modern type pairing (Space Grotesk + Plus Jakarta Sans). Product *structure, routes, and copy* are preserved; only the visual language is new.
 
