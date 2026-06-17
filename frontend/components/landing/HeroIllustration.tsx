@@ -1,29 +1,98 @@
-function FloatingCard({
+const ICONS = {
+  trend: (
+    <path d="M3 17l6-6 4 4 8-8M21 7h-5M21 7v5" />
+  ),
+  wallet: (
+    <>
+      <path d="M19 7V5a2 2 0 0 0-2-2H5a2 2 0 0 0 0 4h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5" />
+      <path d="M16 12h.01" />
+    </>
+  ),
+  check: <path d="M20 6 9 17l-5-5" />,
+} as const;
+
+function Icon({ name, strokeWidth = 1.9 }: { name: keyof typeof ICONS; strokeWidth?: number }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={strokeWidth}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-[15px] w-[15px]"
+      aria-hidden
+    >
+      {ICONS[name]}
+    </svg>
+  );
+}
+
+function Chip({
   className,
-  metric,
+  icon,
+  label,
+  tone = 'primary',
   delay,
 }: {
   className?: string;
-  metric: string;
+  icon: keyof typeof ICONS;
+  label: string;
+  tone?: 'primary' | 'success';
   delay?: string;
 }) {
   return (
     <div
-      className={`landing-float-card absolute flex items-center gap-2 rounded-2xl px-3 py-2.5 ${className ?? ''}`}
+      className={`landing-float-card landing-float absolute flex items-center gap-2 rounded-full border border-border bg-surface/90 px-3.5 py-2 backdrop-blur-md ${className ?? ''}`}
       style={delay ? { animationDelay: delay } : undefined}
     >
-      <div className="relative flex h-9 w-9 shrink-0 items-center justify-center">
-        <span className="absolute h-9 w-9 rounded-full bg-violet-400/15" />
-        <span className="absolute h-6 w-6 rounded-full bg-violet-400/25" />
-        <span className="relative h-3 w-3 rounded-full bg-violet-500/90" />
-      </div>
-      <div className="flex items-center gap-1 text-sm font-semibold text-landing-fg">
-        <svg className="h-3.5 w-3.5 fill-landing-fg" viewBox="0 0 24 24" aria-hidden>
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-        </svg>
-        {metric}
-      </div>
+      <span
+        className={`flex h-[26px] w-[26px] shrink-0 items-center justify-center rounded-full ${
+          tone === 'success' ? 'bg-success/15 text-success' : 'bg-primary-soft text-primary'
+        }`}
+      >
+        <Icon name={icon} />
+      </span>
+      <span className="font-mono text-[13px] font-bold text-landing-fg">{label}</span>
     </div>
+  );
+}
+
+const BARS = [38, 52, 44, 66, 58, 80, 72, 96];
+
+const PLATFORM_ICONS = {
+  tiktok: (
+    <path d="M16.6 5.8a4.4 4.4 0 0 1-3.1-1.3v8.4a4.6 4.6 0 1 1-3.9-4.5v2.2a2.4 2.4 0 1 0 1.7 2.3V2h2.2a4.4 4.4 0 0 0 3.1 3.8z" />
+  ),
+  youtube: (
+    <>
+      <path d="M21.6 7.2a2.7 2.7 0 0 0-1.9-1.9C18 4.8 12 4.8 12 4.8s-6 0-7.7.5A2.7 2.7 0 0 0 2.4 7.2 28 28 0 0 0 2 12a28 28 0 0 0 .4 4.8 2.7 2.7 0 0 0 1.9 1.9c1.7.5 7.7.5 7.7.5s6 0 7.7-.5a2.7 2.7 0 0 0 1.9-1.9A28 28 0 0 0 22 12a28 28 0 0 0-.4-4.8z" />
+      <path d="M10 9.5l5 2.5-5 2.5z" fill="currentColor" stroke="none" />
+    </>
+  ),
+  instagram: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="3.5" />
+      <circle cx="17.2" cy="6.8" r="1" fill="currentColor" stroke="none" />
+    </>
+  ),
+};
+
+function PlatformIcon({ name }: { name: keyof typeof PLATFORM_ICONS }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-[18px] w-[18px]"
+      aria-hidden
+    >
+      {PLATFORM_ICONS[name]}
+    </svg>
   );
 }
 
@@ -33,68 +102,58 @@ export function HeroIllustration({
   metrics?: [string, string, string];
 }) {
   return (
-    <div className="relative mx-auto aspect-square w-full max-w-[520px] lg:max-w-none">
-      {/* Light rays */}
-      <div className="landing-rays pointer-events-none absolute inset-0" aria-hidden />
-
+    <div className="relative mx-auto flex min-h-[420px] w-full max-w-[520px] items-center justify-center lg:max-w-none">
       {/* Orbital paths */}
       <svg
-        className="pointer-events-none absolute inset-0 h-full w-full text-white/60"
+        className="pointer-events-none absolute inset-0 h-full w-full text-[var(--blue-200)]"
         viewBox="0 0 400 400"
         fill="none"
         aria-hidden
       >
-        <ellipse cx="200" cy="200" rx="160" ry="100" stroke="currentColor" strokeWidth="1" strokeDasharray="4 8" />
+        <ellipse cx="200" cy="200" rx="172" ry="118" stroke="currentColor" strokeWidth="1.2" strokeDasharray="3 9" />
         <ellipse
           cx="200"
           cy="200"
           rx="120"
-          ry="70"
+          ry="78"
           stroke="currentColor"
-          strokeWidth="1"
-          strokeDasharray="3 6"
-          transform="rotate(-15 200 200)"
+          strokeWidth="1.2"
+          strokeDasharray="3 9"
+          transform="rotate(-12 200 200)"
         />
       </svg>
 
-      <FloatingCard className="left-[2%] top-[18%] landing-float" metric={metrics[0]} delay="0s" />
-      <FloatingCard className="right-[0%] top-[8%] landing-float" metric={metrics[1]} delay="0.5s" />
-      <FloatingCard className="bottom-[28%] left-[8%] landing-float" metric={metrics[2]} delay="1s" />
-
-      {/* Paper plane */}
-      <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <svg
-          className="h-48 w-48 drop-shadow-2xl sm:h-56 sm:w-56 lg:h-64 lg:w-64"
-          viewBox="0 0 200 200"
-          fill="none"
-          aria-hidden
-        >
-          <defs>
-            <pattern id="dots" x="0" y="0" width="6" height="6" patternUnits="userSpaceOnUse">
-              <circle cx="1" cy="1" r="0.8" fill="#cbd5e1" opacity="0.5" />
-            </pattern>
-            <linearGradient id="planeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="#ffffff" />
-              <stop offset="100%" stopColor="#f1f5f9" />
-            </linearGradient>
-          </defs>
-          <path
-            d="M20 100 L180 30 L120 170 L95 115 Z"
-            fill="url(#planeGrad)"
-            stroke="#e2e8f0"
-            strokeWidth="1.5"
-            strokeLinejoin="round"
-          />
-          <path d="M95 115 L120 170 L75 130 Z" fill="url(#dots)" opacity="0.6" />
-          <path
-            d="M20 100 L180 30 L120 170 L95 115 Z"
-            fill="none"
-            stroke="white"
-            strokeWidth="0.5"
-            opacity="0.8"
-          />
-        </svg>
+      {/* Earnings stat card */}
+      <div className="relative w-[300px] -rotate-2 rounded-2xl border border-border bg-surface p-6 shadow-xl">
+        <div className="flex items-center justify-between">
+          <span className="text-[13px] font-semibold text-muted-foreground">This month</span>
+          <span className="inline-flex items-center gap-1 font-mono text-[13px] font-bold text-success">
+            ▲ 18.2%
+          </span>
+        </div>
+        <div className="mt-1.5 font-mono text-[32px] font-semibold tracking-[-0.02em] text-landing-fg">
+          ₮2,480,000
+        </div>
+        <div className="mt-[18px] flex h-14 items-end gap-1.5">
+          {BARS.map((h, i) => (
+            <div
+              key={i}
+              className={`flex-1 rounded-[5px] ${i === BARS.length - 1 ? 'bg-accent' : 'bg-[var(--blue-100)]'}`}
+              style={{ height: `${h}%` }}
+            />
+          ))}
+        </div>
+        <div className="mt-[18px] flex items-center gap-3.5 text-muted-foreground">
+          <PlatformIcon name="tiktok" />
+          <PlatformIcon name="youtube" />
+          <PlatformIcon name="instagram" />
+          <span className="ml-auto text-[12px] font-semibold text-muted-foreground">3 connected</span>
+        </div>
       </div>
+
+      <Chip className="left-[0%] top-[6%]" icon="trend" label={`${metrics[0]} views`} delay="0s" />
+      <Chip className="right-[-2%] top-[12%]" icon="wallet" label={`${metrics[2]} earned`} delay="0.5s" />
+      <Chip className="bottom-[8%] left-[6%]" icon="check" label="Payout sent" tone="success" delay="1s" />
     </div>
   );
 }
