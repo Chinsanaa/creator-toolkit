@@ -1,40 +1,25 @@
+<!-- @dsCard group="Type" viewport="700x300" name="Type scale" subtitle="xs → 3xl, the working range" -->
 <!DOCTYPE html>
-<!-- @dsCard Typography: Scale -->
-<html lang="en"><head><meta charset="UTF-8"><title>Type Scale</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <link rel="stylesheet" href="../styles.css">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-display);background:var(--surface);color:var(--text-strong);padding:24px}
+  .r{display:flex;align-items:baseline;gap:16px;padding:5px 0;border-bottom:1px solid var(--border)}
+  .r:last-child{border:0}
+  .tok{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);width:120px;flex:none}
+  .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
 </head>
-<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
-<div id="root"></div>
-<script type="text/babel">
-const scale = [
-  {token:'--text-5xl',size:'48px',label:'5xl'},
-  {token:'--text-4xl',size:'40px',label:'4xl'},
-  {token:'--text-3xl',size:'32px',label:'3xl'},
-  {token:'--text-2xl',size:'24px',label:'2xl'},
-  {token:'--text-xl',size:'20px',label:'xl'},
-  {token:'--text-lg',size:'18px',label:'lg'},
-  {token:'--text-base',size:'16px',label:'base'},
-  {token:'--text-sm',size:'14px',label:'sm'},
-  {token:'--text-xs',size:'12px',label:'xs'},
-];
-function App() {
-  return (
-    <div style={{background:'var(--surface)',borderRadius:'var(--radius-lg)',padding:'32px',border:'1.5px solid var(--border)'}}>
-      <div style={{fontSize:'12px',fontWeight:600,color:'var(--text-muted)',letterSpacing:'0.08em',marginBottom:'24px'}}>TYPE SCALE</div>
-      <div style={{display:'flex',flexDirection:'column',gap:'12px'}}>
-        {scale.map(s=>(
-          <div key={s.token} style={{display:'flex',alignItems:'center',gap:'16px'}}>
-            <span style={{fontFamily:'var(--font-mono)',fontSize:'11px',color:'var(--text-muted)',width:'80px'}}>{s.token}</span>
-            <span style={{fontSize:s.size,fontWeight:500,color:'var(--text-primary)',lineHeight:1.2}}>Earnio platform</span>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
-</body></html>
+<body>
+  <div id="rows"></div>
+  <script>
+    const rows=[['--text-3xl · 48',48],['--text-2xl · 36',36],['--text-xl · 28',28],['--text-lg · 22',22],['--text-md · 18',18],['--text-base · 16',16],['--text-sm · 14',14],['--text-xs · 12',12]];
+    document.getElementById('rows').innerHTML=rows.map(([t,px])=>`
+      <div class="r"><span class="tok">${t.split(' · ')[0]}<br>${px}px</span>
+      <span class="s" style="font-size:${px}px;font-weight:600;letter-spacing:-.02em">Earn more, create more</span></div>`).join('');
+  </script>
+</body>
+</html>

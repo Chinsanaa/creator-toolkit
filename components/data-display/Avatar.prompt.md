@@ -1,12 +1,8 @@
-# Avatar
+Circular avatar — image, or initials on the brand gradient when no image.
 
-Circle avatar. Shows image or initials on brand gradient.
+```jsx
+<Avatar name="Bold-Erdene" size="md" />
+<Avatar name="Sarnai" src="/sarnai.jpg" ring />
+```
 
-## Sizes
-- sm: 28px, md: 36px, lg: 44px, xl: 56px
-
-## Props
-- `src`: image URL
-- `name`: used for initials fallback (first two words' initials)
-- `size`: sm | md | lg | xl
-- `ring`: boolean — adds blue ring
+Props: `name`, `src`, `size` (`xs|sm|md|lg` = 28/36/44/56px), `ring`. Initials are derived from the first two words of `name`.

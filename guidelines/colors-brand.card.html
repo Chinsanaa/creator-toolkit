@@ -1,42 +1,30 @@
+<!-- @dsCard group="Colors" viewport="700x200" name="Brand · Earnio Blue" subtitle="Primary azure scale — 500 is the brand blue" -->
 <!DOCTYPE html>
-<!-- @dsCard Colors: Brand Blue -->
-<html lang="en"><head><meta charset="UTF-8"><title>Brand Blue</title>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
 <link rel="stylesheet" href="../styles.css">
-<script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
-<script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
-<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);background:var(--surface);color:var(--text-strong);padding:24px}
+  .scale{display:flex;gap:10px}
+  .sw{flex:1;display:flex;flex-direction:column;gap:8px}
+  .chip{height:64px;border-radius:var(--radius-md);border:1px solid rgba(11,18,32,.06)}
+  .name{font-size:11px;font-weight:700;color:var(--text-body)}
+  .hex{font-family:var(--font-mono);font-size:10px;color:var(--text-muted)}
+  .star{position:absolute;top:8px;right:8px;color:#fff;font-size:14px}
+  .sw.primary .chip{box-shadow:var(--shadow-brand);position:relative}
+</style>
 </head>
-<body style="margin:0;padding:24px;background:var(--surface-muted);font-family:var(--font-body)">
-<div id="root"></div>
-<script type="text/babel">
-const swatches = [
-  {name:'Blue 50',var:'--blue-50',hex:'#EEF3FF'},
-  {name:'Blue 100',var:'--blue-100',hex:'#D9E5FF'},
-  {name:'Blue 200',var:'--blue-200',hex:'#B3CBFF'},
-  {name:'Blue 300',var:'--blue-300',hex:'#8DAFFF'},
-  {name:'Blue 400',var:'--blue-400',hex:'#6693FF'},
-  {name:'Blue 500',var:'--blue-500',hex:'#2E5BFF',primary:true},
-  {name:'Blue 600',var:'--blue-600',hex:'#2449CC'},
-  {name:'Blue 700',var:'--blue-700',hex:'#1A3799'},
-  {name:'Blue 800',var:'--blue-800',hex:'#112566'},
-  {name:'Blue 900',var:'--blue-900',hex:'#14266B'},
-];
-function App() {
-  return (
-    <div>
-      <h2 style={{fontFamily:'var(--font-display)',fontSize:'20px',fontWeight:700,color:'var(--text-primary)',marginBottom:'16px'}}>Brand Blue Scale</h2>
-      <div style={{display:'flex',gap:'8px',flexWrap:'wrap'}}>
-        {swatches.map(s=>(
-          <div key={s.var} style={{width:'88px'}}>
-            <div style={{height:'56px',borderRadius:'var(--radius-md)',background:s.hex,border:s.primary?'2px solid var(--blue-700)':'1.5px solid rgba(0,0,0,0.06)'}}/>
-            <div style={{fontSize:'11px',fontWeight:600,marginTop:'6px',color:'var(--text-primary)'}}>{s.name}</div>
-            <div style={{fontSize:'11px',color:'var(--text-muted)',fontFamily:'var(--font-mono)'}}>{s.hex}</div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}
-ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
-</script>
-</body></html>
+<body>
+  <div class="scale" id="scale"></div>
+  <script>
+    const steps=[['50','#EEF3FF'],['100','#DCE6FF'],['200','#B9CCFF'],['300','#8DA8FF'],['400','#5C7DFF'],['500','#2E5BFF'],['600','#1F45E5'],['700','#1736B8'],['800','#152C8F'],['900','#14266B']];
+    document.getElementById('scale').innerHTML=steps.map(([n,h])=>`
+      <div class="sw ${n==='500'?'primary':''}">
+        <div class="chip" style="background:${h}">${n==='500'?'<span class="star">★</span>':''}</div>
+        <div class="name">Blue ${n}</div><div class="hex">${h}</div>
+      </div>`).join('');
+  </script>
+</body>
+</html>

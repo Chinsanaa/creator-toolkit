@@ -1,40 +1,50 @@
 import React from 'react';
 
-const styles = `
-.ern-stat-card {
-  background: var(--surface); border: 1.5px solid var(--border);
-  border-radius: var(--radius-lg); padding: 20px 24px;
-  display: flex; flex-direction: column; gap: 4px;
-  box-shadow: var(--shadow-sm);
-  transition: border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
-}
-.ern-stat-card:hover { border-color: var(--primary); box-shadow: var(--shadow-brand); }
-.ern-stat-label { font-family: var(--font-body); font-size: 13px; color: var(--text-muted); font-weight: 500; }
-.ern-stat-value { font-family: var(--font-mono); font-size: 28px; font-weight: 600; color: var(--text-primary); font-feature-settings: 'tnum' 1; line-height: 1.1; }
-.ern-stat-delta { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 600; }
-.ern-stat-delta-up { color: var(--success); }
-.ern-stat-delta-down { color: var(--danger); }
-.ern-stat-hint { font-size: 12px; color: var(--text-muted); }
-.ern-stat-icon { color: var(--primary); opacity: 0.7; }
+const STYLE_ID = 'earnio-statcard-styles';
+const CSS = `
+.ern-stat{position:relative;overflow:hidden;background:var(--surface);border:1px solid var(--border);border-radius:var(--radius-lg);padding:18px 20px;box-shadow:var(--shadow-sm);transition:border-color var(--dur-base) var(--ease-out),box-shadow var(--dur-base) var(--ease-out);font-family:var(--font-sans)}
+.ern-stat:hover{border-color:var(--primary-border);box-shadow:var(--shadow-md)}
+.ern-stat__top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.ern-stat__label{font-size:13px;font-weight:600;color:var(--text-muted)}
+.ern-stat__icon{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:var(--radius-md);background:var(--primary-soft);color:var(--primary)}
+.ern-stat__icon svg{width:18px;height:18px;stroke-width:1.75}
+.ern-stat__value{font-family:var(--font-mono);font-weight:600;font-size:28px;letter-spacing:-.02em;color:var(--text-strong);margin-top:12px;font-feature-settings:'tnum' 1}
+.ern-stat__foot{display:flex;align-items:center;gap:7px;margin-top:8px;font-size:12px;color:var(--text-muted)}
+.ern-stat__delta{display:inline-flex;align-items:center;gap:3px;font-weight:700}
+.ern-stat__delta--up{color:var(--success)}
+.ern-stat__delta--down{color:var(--danger)}
 `;
 
-export function StatCard({ label, value, delta, deltaUp, hint, icon, className = '' }) {
+function ensureStyles() {
+  if (typeof document === 'undefined') return;
+  if (!document.getElementById(STYLE_ID)) {
+    const s = document.createElement('style');
+    s.id = STYLE_ID;
+    s.textContent = CSS;
+    document.head.appendChild(s);
+  }
+}
+
+/** Dashboard metric card — label, big mono value, optional trend delta + icon. */
+export function StatCard({ label, value, delta = null, trend = 'up', hint, icon = null, className = '', ...rest }) {
+  ensureStyles();
   return (
-    <>
-      <style>{styles}</style>
-      <div className={['ern-stat-card', className].filter(Boolean).join(' ')}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-          <span className="ern-stat-label">{label}</span>
-          {icon && <span className="ern-stat-icon">{icon}</span>}
-        </div>
-        <span className="ern-stat-value">{value}</span>
-        {delta !== undefined && (
-          <span className={['ern-stat-delta', deltaUp ? 'ern-stat-delta-up' : 'ern-stat-delta-down'].join(' ')}>
-            {deltaUp ? '↑' : '↓'} {delta}
-          </span>
-        )}
-        {hint && <span className="ern-stat-hint">{hint}</span>}
+    <article className={['ern-stat', className].filter(Boolean).join(' ')} {...rest}>
+      <div className="ern-stat__top">
+        <span className="ern-stat__label">{label}</span>
+        {icon ? <span className="ern-stat__icon" aria-hidden="true">{icon}</span> : null}
       </div>
-    </>
+      <div className="ern-stat__value">{value}</div>
+      {(delta || hint) ? (
+        <div className="ern-stat__foot">
+          {delta ? (
+            <span className={`ern-stat__delta ern-stat__delta--${trend}`}>
+              <span aria-hidden="true">{trend === 'up' ? '▲' : '▼'}</span>{delta}
+            </span>
+          ) : null}
+          {hint ? <span>{hint}</span> : null}
+        </div>
+      ) : null}
+    </article>
   );
 }

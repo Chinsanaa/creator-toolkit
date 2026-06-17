@@ -1,15 +1,10 @@
-# Card
+The base surface for everything — panels, list containers, sponsorship cards.
 
-White rounded surface. Optional header with title, subtitle, action slot.
+```jsx
+<Card title="Request payout" subtitle="Minimum ₮50,000" action={<Badge tone="brand">Wallet</Badge>}>
+  …content…
+</Card>
+<Card interactive glass rounded="xl">…</Card>
+```
 
-## Props
-- `title`: string
-- `subtitle`: string
-- `action`: ReactNode — top-right slot (button, badge, etc.)
-- `size`: sm | md | lg (default: md)
-- `glass`: boolean — frosted glass effect (backdrop-blur)
-- `interactive`: boolean — hover-lift animation
-
-## Rules
-- Use glass variant for nav/sidebar overlays
-- Interactive cards get pointer cursor automatically
+Props: `title`, `subtitle`, `action`, `padding` (`sm|md|lg`), `rounded` (`lg|xl`), `glass` (frosted, for use over the mesh), `interactive` (hover-lift for clickable cards).

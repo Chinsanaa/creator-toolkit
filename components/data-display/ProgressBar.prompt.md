@@ -1,13 +1,8 @@
-# ProgressBar
+Slim progress bar — campaign budget used, payout goal, platform sync.
 
-Slim track with spark gradient fill. Animated width transition.
+```jsx
+<ProgressBar label="Campaign budget" value={3.2} max={5} valueFormat={(v,m)=>`₮${v}M / ₮${m}M`} />
+<ProgressBar value={80} tone="success" />
+```
 
-## Props
-- `label`: string
-- `value`: number
-- `max`: number (default: 100)
-- `format`: (value, max) => string — custom readout formatter
-
-## Rules
-- Fill uses spark gradient (blue → cyan)
-- Use ₮ values with format prop for earnings progress
+Props: `value`, `max`, `label`, `showValue`, `tone` (`brand|success|warning`), `valueFormat`. The brand fill uses the spark gradient.
