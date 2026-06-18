@@ -3,8 +3,10 @@ import { ipKeyGenerator, rateLimit } from 'express-rate-limit';
 import authService from '../services/authService';
 import passwordResetService from '../services/passwordResetService';
 import emailVerificationService from '../services/emailVerificationService';
+import tiktokOAuthService from '../services/tiktokOAuthService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
 import { logServerError } from '../utils/serverLog';
+import crypto from 'crypto';
 
 const router = express.Router();
 
@@ -378,6 +380,62 @@ router.post('/resend-verification-email', authRateLimiter, async (req: AuthReque
     });
   } catch (error: unknown) {
     const message = authErrorMessage(error, 'Failed to resend verification email');
+    res.status(400).json({ error: message });
+  }
+});
+
+// TikTok OAuth routes for platform connection
+router.get('/tiktok/authorize', async (req: AuthRequest, res: Response) => {
+  try {
+    const state = crypto.randomBytes(16).toString('hex');
+    // Store state in session (for basic CSRF protection)
+    // In production, store in cache/DB with expiry
+    res.cookie('tiktok_oauth_state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 10 * 60 * 1000, // 10 minutes
+    });
+
+    const authUrl = tiktokOAuthService.generateAuthorizationUrl(state);
+    res.json({ authUrl });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to generate TikTok auth URL';
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/tiktok/callback', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const { code } = req.body as { code?: string };
+
+    if (!code?.trim()) {
+      res.status(400).json({ error: 'Authorization code is required' });
+      return;
+    }
+
+    const state = req.cookies.tiktok_oauth_state;
+    if (!state) {
+      res.status(400).json({ error: 'Invalid OAuth session. Please try again.' });
+      return;
+    }
+
+    // Clear the state cookie
+    res.clearCookie('tiktok_oauth_state');
+
+    // Connect TikTok platform account
+    const account = await tiktokOAuthService.connectAccount(
+      req.userId!,
+      req.token!,
+      code.trim()
+    );
+
+    res.json({
+      message: 'TikTok account connected successfully',
+      account,
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to connect TikTok account';
     res.status(400).json({ error: message });
   }
 });

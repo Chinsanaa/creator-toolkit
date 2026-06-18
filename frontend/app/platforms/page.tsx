@@ -1,6 +1,7 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -10,6 +11,7 @@ import {
   listPlatforms,
   listSyncHistory,
   syncPlatform,
+  getTikTokAuthUrl,
 } from '@/lib/api/platforms';
 import { formatDate, formatHandle, platformLabel } from '@/lib/format';
 import type { PlatformAccount, SyncHistoryEntry } from '@/lib/types/platforms';
@@ -21,15 +23,17 @@ const PLATFORMS = [
 ] as const;
 
 export default function PlatformsPage() {
+  const router = useRouter();
   const [accounts, setAccounts] = useState<PlatformAccount[]>([]);
   const [history, setHistory] = useState<SyncHistoryEntry[]>([]);
-  const [platform, setPlatform] = useState<string>('tiktok');
+  const [platform, setPlatform] = useState<string>('youtube');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [oauthConnecting, setOAuthConnecting] = useState(false);
   const { t } = useLanguage();
 
   const load = useCallback(async (isCancelled: () => boolean = () => false) => {
@@ -71,6 +75,22 @@ export default function PlatformsPage() {
       setError(err instanceof ApiError ? err.message : t('failed_to_connect'));
     } finally {
       setConnecting(false);
+    }
+  }
+
+  async function handleTikTokOAuth() {
+    setOAuthConnecting(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const { authUrl } = await getTikTokAuthUrl();
+      // Store return URL in session storage so callback page knows where to redirect
+      sessionStorage.setItem('tiktok_return_url', window.location.href);
+      // Redirect to TikTok OAuth
+      window.location.href = authUrl;
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to initiate TikTok connection');
+      setOAuthConnecting(false);
     }
   }
 
@@ -147,35 +167,55 @@ export default function PlatformsPage() {
 
         <section className="creator-panel mt-6">
           <h2 className="text-base font-semibold text-landing-fg">{t('connect_a_platform')}</h2>
-          <form onSubmit={handleConnect} className="mt-4 space-y-4">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-landing-fg">{t('platform')}</label>
-              <select
-                value={platform}
-                onChange={(e) => setPlatform(e.target.value)}
-                className="auth-input"
-              >
-                {PLATFORMS.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-landing-fg">{t('username')}</label>
-              <input
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder={t('your_handle')}
-                className="auth-input"
-              />
-            </div>
-            <button type="submit" disabled={connecting} className="landing-btn-dark px-6 py-2.5 text-sm">
-              {connecting ? t('connecting') : t('connect')}
+
+          {/* TikTok OAuth Connection */}
+          <div className="mt-4 space-y-3">
+            <button
+              type="button"
+              disabled={oauthConnecting}
+              onClick={handleTikTokOAuth}
+              className="landing-btn-dark w-full px-6 py-2.5 text-sm"
+            >
+              {oauthConnecting ? 'Connecting to TikTok...' : 'Connect with TikTok'}
             </button>
-          </form>
+            <p className="text-xs text-landing-muted">
+              We'll request access to your TikTok analytics to sync earnings
+            </p>
+          </div>
+
+          {/* Username-based Connection */}
+          <div className="mt-6 border-t border-landing-border pt-6">
+            <p className="mb-4 text-sm font-medium text-landing-fg">Connect via username (YouTube, Instagram)</p>
+            <form onSubmit={handleConnect} className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-landing-fg">{t('platform')}</label>
+                <select
+                  value={platform}
+                  onChange={(e) => setPlatform(e.target.value)}
+                  className="auth-input"
+                >
+                  {PLATFORMS.filter((p) => p.id !== 'tiktok').map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-landing-fg">{t('username')}</label>
+                <input
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder={t('your_handle')}
+                  className="auth-input"
+                />
+              </div>
+              <button type="submit" disabled={connecting} className="landing-btn-light px-6 py-2.5 text-sm">
+                {connecting ? t('connecting') : t('connect')}
+              </button>
+            </form>
+          </div>
         </section>
 
         {history.length > 0 && (
