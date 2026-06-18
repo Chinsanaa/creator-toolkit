@@ -1,6 +1,7 @@
 import { randomInt } from 'node:crypto';
 import { User } from '@supabase/supabase-js';
 import { getAuthenticatedClient, supabase, supabaseAdmin } from '../database/supabase';
+import { validatePassword, getPasswordErrorMessage } from '../utils/passwords';
 import notificationService from './notificationService';
 
 export interface SignupPayload {
@@ -271,8 +272,10 @@ class AuthService {
       throw new Error('You must accept the Terms and Conditions and Privacy Policy');
     }
 
-    if (password.length < 8) {
-      throw new Error('Password must be at least 8 characters');
+    const passwordStrength = validatePassword(password);
+    if (!passwordStrength.isValid) {
+      const errorMessage = getPasswordErrorMessage(password);
+      throw new Error(errorMessage || 'Password does not meet security requirements');
     }
 
     if (userType !== 'creator' && userType !== 'sponsor') {
