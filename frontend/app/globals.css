@@ -764,9 +764,46 @@ html.apple-platform textarea {
 
 .dark .creator-panel,
 .dark .creator-panel-lg,
-.dark .creator-hero-card {
+.dark .creator-hero-card,
+.dark .creator-stat-card,
+.dark .creator-gig-card {
   border-color: rgb(51 65 85 / 0.75);
   background: rgb(10 15 26 / 0.86);
+}
+
+.dark .creator-stat-card-highlight {
+  border-color: transparent;
+}
+
+.dark .creator-platform-row {
+  border-color: rgb(51 65 85 / 0.7);
+  background: rgb(15 22 36 / 0.7);
+}
+
+.dark .creator-search {
+  border-color: rgb(51 65 85 / 0.7);
+  background: rgb(10 15 26 / 0.8);
+}
+
+.dark .creator-gig-thumb {
+  background: linear-gradient(135deg, rgb(31 48 70), rgb(15 31 51));
+}
+
+.dark .creator-table-wrap {
+  border-color: rgb(51 65 85 / 0.7);
+}
+
+.dark .creator-table th {
+  border-bottom-color: rgb(51 65 85 / 0.7);
+  background: rgb(10 15 26 / 0.6);
+}
+
+.dark .creator-table td {
+  border-bottom-color: rgb(51 65 85 / 0.5);
+}
+
+.dark .creator-table tbody tr:hover {
+  background: rgb(15 22 36 / 0.6);
 }
 
 /* Website (tablet/desktop): sidebar navigation on the left.
@@ -1103,6 +1140,182 @@ html.apple-platform textarea {
   height: 3px;
   background: linear-gradient(90deg, var(--primary), var(--accent));
   opacity: 0.85;
+}
+
+/* Page header used at the top of every creator app page */
+.creator-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.creator-page-title {
+  font-size: 1.375rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--landing-fg);
+}
+
+@media (min-width: 640px) {
+  .creator-page-title {
+    font-size: 1.625rem;
+  }
+}
+
+.creator-page-subtitle {
+  margin-top: 0.25rem;
+  font-size: 0.875rem;
+  color: var(--landing-muted);
+}
+
+/* Stat cards (wallet balances, etc.) */
+.creator-stat-card {
+  border-radius: 1.25rem;
+  border: 1px solid rgb(255 255 255 / 0.85);
+  background: rgb(255 255 255 / 0.82);
+  padding: 1.25rem;
+  box-shadow: var(--landing-card-shadow);
+  backdrop-filter: blur(10px);
+}
+
+.creator-stat-card-highlight {
+  border-color: transparent;
+  background: linear-gradient(135deg, var(--primary), var(--accent));
+}
+
+.creator-stat-card-highlight .creator-stat-label,
+.creator-stat-card-highlight .creator-stat-value {
+  color: #fff;
+}
+
+.creator-stat-label {
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: var(--landing-muted);
+}
+
+.creator-stat-value {
+  margin-top: 0.375rem;
+  font-size: 1.5rem;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--landing-fg);
+}
+
+/* Connected-platform rows (dashboard, platforms page) */
+.creator-platform-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.7);
+  background: rgb(255 255 255 / 0.6);
+  padding: 0.75rem 1rem;
+}
+
+/* Search input (explore page) */
+.creator-search {
+  width: 100%;
+  border-radius: 9999px;
+  border: 1px solid var(--landing-sky-100);
+  background: rgb(255 255 255 / 0.9);
+  padding: 0.75rem 1rem 0.75rem 2.75rem;
+  font-size: 0.875rem;
+  color: var(--landing-fg);
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.creator-search::placeholder {
+  color: var(--landing-muted);
+}
+
+.creator-search:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px var(--primary-soft);
+}
+
+/* Sponsorship/gig cards (explore page) */
+.creator-gig-card {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-radius: 1.25rem;
+  border: 1px solid rgb(255 255 255 / 0.85);
+  background: rgb(255 255 255 / 0.82);
+  box-shadow: var(--landing-card-shadow);
+  backdrop-filter: blur(10px);
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.creator-gig-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 16px 36px rgba(11, 18, 32, 0.14);
+}
+
+.creator-gig-thumb {
+  position: relative;
+  height: 9rem;
+  background: linear-gradient(135deg, var(--landing-sky-100), var(--landing-sky-50));
+}
+
+.creator-gig-price {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.75rem;
+  z-index: 1;
+  border-radius: 9999px;
+  background: var(--landing-fg);
+  padding: 0.25rem 0.625rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+/* Data tables (transaction history, etc.) */
+.creator-table-wrap {
+  overflow-x: auto;
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.7);
+}
+
+.creator-table {
+  width: 100%;
+  min-width: 32rem;
+  border-collapse: collapse;
+  text-align: left;
+  font-size: 0.875rem;
+}
+
+.creator-table th {
+  white-space: nowrap;
+  border-bottom: 1px solid var(--landing-sky-100);
+  background: rgb(255 255 255 / 0.6);
+  padding: 0.75rem 1rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--landing-muted);
+}
+
+.creator-table td {
+  border-bottom: 1px solid rgb(226 232 240 / 0.7);
+  padding: 0.875rem 1rem;
+  color: var(--landing-fg);
+  vertical-align: middle;
+}
+
+.creator-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.creator-table tbody tr:hover {
+  background: rgb(255 255 255 / 0.5);
 }
 
 .text-gradient {
