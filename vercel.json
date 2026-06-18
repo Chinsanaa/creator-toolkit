@@ -9,6 +9,5 @@
             "entrypoint": "backend",
             "routePrefix": "/_/backend"
         }
-    },
-    "_comment": "Cache-bust timestamp: 2026-06-19T00:42:00Z"
+    }
 }
