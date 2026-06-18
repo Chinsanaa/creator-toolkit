@@ -1,7 +1,6 @@
 'use client';
 
 import { FormEvent, useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -23,7 +22,6 @@ const PLATFORMS = [
 ] as const;
 
 export default function PlatformsPage() {
-  const router = useRouter();
   const [accounts, setAccounts] = useState<PlatformAccount[]>([]);
   const [history, setHistory] = useState<SyncHistoryEntry[]>([]);
   const [platform, setPlatform] = useState<string>('youtube');
@@ -179,7 +177,7 @@ export default function PlatformsPage() {
               {oauthConnecting ? 'Connecting to TikTok...' : 'Connect with TikTok'}
             </button>
             <p className="text-xs text-landing-muted">
-              We'll request access to your TikTok analytics to sync earnings
+              We&apos;ll request access to your TikTok analytics to sync earnings
             </p>
           </div>
 

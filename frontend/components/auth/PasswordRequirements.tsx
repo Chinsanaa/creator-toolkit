@@ -1,6 +1,6 @@
 'use client';
 
-import { validatePassword, type PasswordStrength } from '@/lib/passwords';
+import { validatePassword } from '@/lib/passwords';
 
 interface PasswordRequirementsProps {
   password: string;

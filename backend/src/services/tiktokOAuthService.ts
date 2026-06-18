@@ -17,6 +17,11 @@ interface TokenExchangeResponse {
   open_id?: string;
 }
 
+interface TikTokErrorResponse {
+  error_description?: string;
+  message?: string;
+}
+
 class TikTokOAuthService {
   private config: TikTokOAuthConfig | null = null;
 
@@ -85,7 +90,7 @@ class TikTokOAuthService {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
+      const error = (await response.json().catch(() => ({}))) as TikTokErrorResponse;
       throw new Error(
         `TikTok token exchange failed: ${error.error_description || error.message || response.statusText}`
       );
@@ -232,7 +237,7 @@ class TikTokOAuthService {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
+      const error = (await response.json().catch(() => ({}))) as TikTokErrorResponse;
       throw new Error(
         `TikTok token refresh failed: ${error.error_description || error.message || response.statusText}`
       );

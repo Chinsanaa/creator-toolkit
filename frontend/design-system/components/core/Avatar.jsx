@@ -1,4 +1,5 @@
 import React from 'react';
+import Image from 'next/image';
 
 const SIZES = { sm: 28, md: 36, lg: 48 };
 
@@ -24,12 +25,13 @@ export function Avatar({ name = '', src, size = 'md', tone = 'ink', className = 
         width: px, height: px, borderRadius: 'var(--radius-full)', overflow: 'hidden',
         background: src ? 'var(--surface)' : bg, color: '#fff',
         fontSize: px * 0.38, fontWeight: 600, fontFamily: 'var(--font-sans)', flexShrink: 0,
+        position: 'relative',
         ...style,
       }}
       {...rest}
     >
       {src ? (
-        <img src={src} alt={name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+        <Image fill src={src} alt={name} style={{ objectFit: 'cover' }} />
       ) : (
         initials(name)
       )}
