@@ -1,0 +1,44 @@
+<!-- @dsCard group="Components" viewport="700x230" name="Brand / Logo" subtitle="EarnioLogo lockups & mark variants" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link rel="stylesheet" href="../../styles.css">
+<style>
+  body { margin: 0; padding: 0; font-family: var(--font-sans); }
+  .grid { display:grid; grid-template-columns: 1fr 1fr; }
+  .panel { display:flex; align-items:center; justify-content:center; gap: 36px; height: 230px; flex-wrap: wrap; }
+  .light { background: var(--card); }
+  .dark { background: var(--ink-900); }
+  .cell { display:flex; flex-direction:column; align-items:center; gap: 10px; }
+  .cap { font-size: 10px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; }
+  .light .cap { color: var(--muted); }
+  .dark .cap { color: var(--ink-400); }
+</style>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+  <script src="../../_ds_bundle.js"></script>
+  <script type="text/babel">
+    const { EarnioLogo, EarnioMark } = window.LogoDesignSystem_dc608d;
+    function Demo() {
+      return (
+        <div className="grid">
+          <div className="panel light">
+            <div className="cell"><EarnioLogo variant="full" size={34} /><span className="cap">Full · on light</span></div>
+            <div className="cell"><EarnioMark size={48} /><span className="cap">Mark</span></div>
+          </div>
+          <div className="panel dark">
+            <div className="cell"><EarnioLogo variant="full" size={34} wordColor="#fff" /><span className="cap">Full · on ink</span></div>
+            <div className="cell"><EarnioMark size={48} color="#FFFFFF" /><span className="cap">Mono</span></div>
+          </div>
+        </div>
+      );
+    }
+    ReactDOM.createRoot(document.getElementById('root')).render(<Demo />);
+  </script>
+</body>
+</html>
