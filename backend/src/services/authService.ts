@@ -205,7 +205,7 @@ class AuthService {
     return profile;
   }
 
-  private async isUsernameTaken(username: string): Promise<boolean> {
+  public async isUsernameTaken(username: string): Promise<boolean> {
     const { data, error } = await supabase.rpc('is_username_available', {
       check_username: username,
     });

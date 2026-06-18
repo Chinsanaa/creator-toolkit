@@ -222,3 +222,17 @@ export async function resetPassword(payload: {
   setUserTypeCookie(data.user.userType);
   return data;
 }
+
+export async function checkUsernameAvailability(username: string): Promise<{
+  available: boolean;
+  username: string;
+}> {
+  return apiFetch(
+    '/api/auth/check-username',
+    {
+      method: 'POST',
+      body: JSON.stringify({ username }),
+    },
+    false
+  );
+}

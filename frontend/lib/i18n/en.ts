@@ -231,6 +231,10 @@ export const translations: Record<string, string> = {
   remember_password: 'Remember your password?',
   send_reset_link: 'Send reset link',
 
+  // Auth — Username Validation
+  username_available: 'Username is available',
+  username_already_taken: 'Username is already taken',
+
   // Sponsorships
   sponsorships_subtitle: 'Browse sponsorship opportunities from Mongolian brands.',
   my_applications: 'My applications',

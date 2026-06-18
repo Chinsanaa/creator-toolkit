@@ -293,4 +293,25 @@ router.post('/reset-password', resetPasswordRateLimiter, async (req: AuthRequest
   }
 });
 
+router.post('/check-username', async (req: AuthRequest, res: Response) => {
+  try {
+    const { username } = req.body as { username?: string };
+
+    if (!username?.trim()) {
+      res.status(400).json({ error: 'Username is required' });
+      return;
+    }
+
+    const isTaken = await authService.isUsernameTaken(username.trim());
+
+    res.json({
+      available: !isTaken,
+      username: username.trim(),
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Failed to check username availability');
+    res.status(400).json({ error: message });
+  }
+});
+
 export default router;
