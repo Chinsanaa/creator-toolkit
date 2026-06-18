@@ -316,44 +316,62 @@ Use this as a living backlog for editing and improving the product.
 
 ### P0 — Before real users / money
 
-- [ ] Replace **mock platform provider** with TikTok/YouTube OAuth + real earnings APIs (or official partner APIs).
-- [ ] Integrate **real payout provider** (Mongolian bank API or payment partner); admin flow to mark payouts `completed` / `failed`.
-- [ ] **Bank account verification** flow (manual or automated).
+- [ ] Replace **mock platform provider** with TikTok/YouTube/Instagram OAuth + real earnings APIs (or official partner APIs).
+- [ ] Integrate **real payout provider** (Khan Bank, Golomt APIs or payment partner); admin flow to mark payouts `completed` / `failed`.
+- [ ] **Bank account verification** flow (KYC, micro-deposits, or manual).
 - [x] **Middleware role checks** — `ct-user-type` cookie + `proxy.ts` redirects at the edge (May 2026).
 - [ ] Audit **Supabase RLS** on all tables; add automated policy tests.
+- [ ] **Automated Supabase RLS policy tests** — formal test suite for security policies.
 - [x] Require `SUPABASE_SERVICE_ROLE_KEY` in production; API fails startup if missing (May 2026).
+- [ ] **Security audit** (penetration testing).
 
 ### P1 — Reliability & quality
 
 - [x] Add **frontend lint** to CI (`.github/workflows/ci.yml`) (May 2026).
 - [x] Expand **backend tests** — 8 tests including 401 guards + cron auth (May 2026).
-- [ ] Add **E2E** (Playwright): signup → dashboard → apply → sponsor approve.
-- [x] Move platform sync to **external cron** in production — in-process scheduler skipped unless `ENABLE_IN_PROCESS_SYNC_CRON=true` (May 2026).
+- [ ] Add **Playwright E2E tests** — signup → dashboard → apply → sponsor approve flow.
+- [ ] Add **frontend component tests** (Jest/React Testing Library).
+- [ ] Expand **backend test coverage** to 50%+.
 - [ ] **E2E refresh token** test (expire access, confirm silent refresh).
+- [ ] **E2E concurrent request handling** tests.
+- [x] Move platform sync to **external cron** in production — in-process scheduler skipped unless `ENABLE_IN_PROCESS_SYNC_CRON=true` (May 2026).
+- [ ] Migrate sync scheduler to **external job queue** (BullMQ, AWS Lambda, Google Cloud Tasks).
+- [ ] Add **Sentry error tracking** integration.
+- [ ] Add **PostHog or Plausible analytics**.
+- [ ] Set up **Lighthouse CI budget**.
 - [x] Fix login redirect: authed **sponsor** → `/sponsor/dashboard` via proxy + cookies (May 2026).
 
 ### P2 — Product completeness
 
 - [x] Add **Instagram** to Platforms UI (May 2026).
+- [ ] **Campaign filters/search** with saved preferences.
+- [ ] **Campaign drafts** (save without publishing).
 - [x] **Dark mode** support with toggle and system preference (June 2026).
 - [x] **Persistent login** across browser sessions (June 2026).
 - [x] **Design system** with centralized Earnio tokens (June 2026).
+- [ ] **Creator public profiles** for sponsors (`@username` pages).
+- [ ] **Password reset** flow (email link).
+- [ ] **Email verification** flow (if Supabase requires confirmation).
+- [ ] **Admin panel** for dispute handling, pending payouts, and user management.
+- [ ] **Payment dispute / chargeback handling**.
 - [ ] **Platform fee** automation — document when fees are charged; implement on payout or credit if intended.
 - [ ] **Mobile navigation** (bottom tab bar) verified on iOS via Capacitor.
-- [ ] **Password reset** / email verification UX if Supabase requires confirmation.
-- [ ] **Admin panel** for pending payouts and dispute handling.
-- [ ] **Analytics** (PostHog/Plausible) and error tracking (Sentry).
 
 ### P3 — Polish & growth
 
+- [ ] i18n support (**Mongolian** UI copy, localized currency formatting).
 - [ ] **Mobile app launch** — iOS via Capacitor, test on real devices.
-- [ ] i18n (**Mongolian** UI copy).
-- [ ] Creator public profiles for sponsors (`@username` pages).
-- [ ] Campaign filters/search, saved drafts.
-- [ ] Push notifications (beyond email).
-- [ ] Lighthouse performance budget in CI.
+- [ ] **Mobile app push notifications** (Capacitor).
+- [ ] Creator **messaging / DM system**.
+- [ ] Creator **portfolio/reel showcase**.
+- [ ] **Brand discovery recommendations**.
+- [ ] Creator **tier/badge system** (verified, top performer, etc.).
+- [ ] **Referral program** (creator → creator, brand → creator).
+- [ ] **SMS notifications** (if market demands).
+- [ ] Creator **content calendar / scheduling**.
+- [ ] **API public endpoint** for creator stats (embeddable widgets).
+- [ ] **Lighthouse performance budget** in CI.
 - [ ] Remove unused root `package.json` Supabase deps or wire SSR auth properly.
-- [ ] **E2E tests** — Playwright for signup → apply → approve flows.
 - [ ] **Accessibility audit** — WCAG 2.1 AA compliance.
 
 ---
