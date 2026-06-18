@@ -2,9 +2,13 @@
 
 **Earn more, create more.**
 
-Earnio is a monetization platform for **Mongolian content creators** and the **brands** that want to sponsor them. Creators connect TikTok and YouTube, track earnings in one place, apply to brand deals, and withdraw money in MNT. Brands post sponsorship campaigns, review applications, and manage partnerships from a separate dashboard.
+Earnio is a full-stack UGC (User-Generated Content) monetization platform for **Mongolian Gen Z content creators** and the **brands** that want to sponsor them. Creators connect TikTok, YouTube, and Instagram, track earnings in one place, apply to brand deals, and withdraw money in MNT. Brands post sponsorship campaigns, review applications, and manage partnerships from a separate dashboard.
 
-This repository is a **monorepo** with a Next.js website (frontend) and an Express API (backend), backed by **Supabase** (PostgreSQL + authentication).
+This repository is a **monorepo** with a Next.js 16 website (frontend) and an Express 5 API (backend), backed by **Supabase** (PostgreSQL + authentication). The project is designed as an MVP with comprehensive features, responsive design, dark mode support, and mobile-ready interfaces.
+
+**Design System:** Modern dark-mode interface with Earnio Blue (`#2E5BFF`) as the primary brand color, cool slate ink ramp, cyan spark accents, and 8px border radius for all components.
+
+**Current Status:** Active development (June 2026) · **Platform Support:** Web + iOS (Capacitor)
 
 ---
 
@@ -16,6 +20,8 @@ This repository is a **monorepo** with a Next.js website (frontend) and an Expre
 - [Architecture](#architecture)
 - [Tech stack](#tech-stack)
 - [Repository layout](#repository-layout)
+- [Core Features](#core-features)
+- [Security Features](#security-features)
 - [Frontend](#frontend)
 - [Backend](#backend)
 - [Database & auth](#database--auth)
@@ -31,7 +37,7 @@ This repository is a **monorepo** with a Next.js website (frontend) and an Expre
 
 Most creators juggle multiple apps: one for analytics, another for brand DMs, spreadsheets for income, and a bank app for payouts. Earnio brings the workflow into a **single product**:
 
-1. **Connect** social platforms (TikTok, YouTube).
+1. **Connect** social platforms (TikTok, YouTube, Instagram).
 2. **See** earnings and trends on a dashboard.
 3. **Explore** sponsorship opportunities from local brands.
 4. **Apply** to campaigns and track application status.
@@ -78,7 +84,7 @@ Each audience has its own landing page, login/signup flow, and logged-in experie
 1. **Discover** — Visit the creator landing page. Learn how Earnio works, read FAQs, and click **Get Started**.
 2. **Sign up** — Create an account at `/signup/creator`. You must accept the Terms and Privacy Policy (legal text is served from the API and can be replaced later).
 3. **Onboard** — The dashboard shows a getting-started checklist:
-   - Connect TikTok or YouTube
+   - Connect TikTok, YouTube, or Instagram
    - Apply to a sponsorship
    - Add a bank account for payouts
 4. **Connect platforms** — On **Platforms**, link accounts by username. **Sync** pulls earnings into the dashboard (demo/mock provider in development).
@@ -98,27 +104,31 @@ Each audience has its own landing page, login/signup flow, and logged-in experie
 
 ## Architecture
 
-Earnio follows a classic **SPA + REST API** pattern:
+Earnio follows a classic **SPA + REST API** pattern with edge middleware protection:
 
 | Layer | Role |
 |-------|------|
-| **Frontend** | Next.js 16 app. Renders pages, handles navigation, stores the access token, calls the API. |
-| **Backend** | Express 5 API. Validates auth, runs business logic, talks to Supabase. |
-| **Supabase** | PostgreSQL database, row-level security, and user authentication (email/password). |
+| **Frontend** | Next.js 16 App Router with Turbopack. Renders pages, handles navigation, manages auth state with persistent login, calls the API. Features dark mode, responsive design, and mobile-optimized UI. |
+| **Backend** | Express 5 API with TypeScript. Validates auth, enforces role-based access, runs business logic, manages background sync jobs, integrates with Supabase. |
+| **Supabase** | PostgreSQL database with row-level security (RLS) policies, email/password authentication, JWT tokens. |
+| **Mobile** | Capacitor 7.x iOS wrapper for web app deployment to App Store. |
 
 **Request flow (example: load dashboard)**
 
 1. Browser loads `/dashboard` (Next.js page).
-2. Middleware checks for an auth cookie; unauthenticated users go to `/login`.
-3. React calls `GET /api/dashboard/summary` with a Bearer token.
-4. Backend verifies the JWT, queries Supabase, returns earnings + platform data.
-5. Frontend renders stats, charts, and the getting-started plan.
+2. Middleware (`proxy.ts`) checks for auth cookie and user role (`ct-user-type`); redirects unauthenticated users to `/login`.
+3. React component calls `GET /api/dashboard/summary` with Bearer token in headers.
+4. Backend verifies JWT, checks user role, queries Supabase, returns earnings + platform data.
+5. Frontend renders stats, charts, and the getting-started checklist with theme-aware styling.
 
 **Authentication model**
 
-- **Access token** — Short-lived JWT returned on login/signup; stored in memory + cookie for middleware.
-- **Refresh token** — HttpOnly cookie set by the backend; used to silently refresh the access token.
-- Protected API routes use the `verifyToken` middleware; missing or invalid tokens receive `401`.
+- **Access token** — Short-lived JWT (1 hour) returned on login/signup; stored in httpOnly cookie + memory.
+- **Refresh token** — Long-lived httpOnly cookie; used to silently refresh access token when expired.
+- **Persistent login** — SessionStorage + localStorage maintain login state across browser restarts until explicit logout.
+- **PKCE flow** — OAuth-compatible code flow for enhanced security.
+- Protected API routes use `verifyToken` middleware; missing or invalid tokens receive `401`.
+- **Role enforcement** — Middleware redirects users to correct dashboard (creator vs. sponsor) based on `ct-user-type` cookie.
 
 ---
 
@@ -126,20 +136,26 @@ Earnio follows a classic **SPA + REST API** pattern:
 
 | Area | Technology |
 |------|------------|
-| Frontend framework | [Next.js 16](https://nextjs.org) (App Router, Turbopack dev) |
-| Frontend UI | React 19, Tailwind CSS 4 |
+| Frontend framework | [Next.js 16](https://nextjs.org) (App Router, Turbopack dev, Server Components) |
+| Frontend UI | React 19, Tailwind CSS 4, Lucide Icons |
+| Frontend state | Context API (Auth), localStorage + sessionStorage (persistence) |
 | Backend | [Express 5](https://expressjs.com), TypeScript |
-| Database & auth | [Supabase](https://supabase.com) (PostgreSQL + Auth) |
+| Database & auth | [Supabase](https://supabase.com) (PostgreSQL 15+ with RLS policies, JWT Auth) |
 | Email | [Resend](https://resend.com) (transactional notifications) |
-| CI | GitHub Actions |
-| Containers | Docker Compose (optional local full stack) |
+| Mobile | [Capacitor 7.x](https://capacitorjs.com) (iOS native wrapper) |
+| CI/CD | GitHub Actions (tests, linting, builds) |
+| Containers | Docker Compose (local full-stack development) |
+| Hosting (recommended) | Vercel (frontend), Railway/Render (backend), Supabase (database) |
 
-**Brand & design**
+**Brand & design system**
 
 - Product name: **Earnio**
 - Slogan: *Earn more, create more*
 - Typography: Poppins (headings), Montserrat (body)
-- Primary color: `#6336F1` (purple gradient accents in logo and CTAs)
+- Primary color: `#2E5BFF` 
+- **Dark mode support** — Toggle in navigation; theme persisted in localStorage
+- **Design tokens** — Centralized color, spacing, and typography in Tailwind config
+- **Responsive design** — Mobile-first approach; sidebar (desktop) + bottom tab bar (mobile)
 
 ---
 
@@ -167,6 +183,101 @@ creator-toolkit/          # monorepo root (npm scripts delegate to frontend/back
 
 ---
 
+## Core Features
+
+### For Creators
+✅ **Authentication** — Sign up / login with email and password; persistent login across sessions
+✅ **Dashboard** — Real-time earnings summary, monthly trends, platform breakdown, getting-started checklist  
+✅ **Platform connections** — Connect TikTok, YouTube, Instagram; sync earnings with one-click sync button  
+✅ **Sponsorship marketplace** — Browse active brand campaigns, apply with pitch text, track application status  
+✅ **Wallet management** — View balance, transaction history, request payouts to Mongolian bank accounts  
+✅ **Notifications** — In-app bell (polling every 60s), email notifications via Resend  
+✅ **Dark mode** — System-aware or manual toggle with persistent preference  
+
+### For Brands/Sponsors
+✅ **Campaign management** — Create, edit, and manage sponsorship listings (budget, requirements, deadlines)  
+✅ **Application review** — Review creator pitches, approve or reject with optional notes  
+✅ **Dashboard** — Overview of active campaigns, application metrics, budget tracking  
+
+### Platform Features
+✅ **Role-based routing** — Edge middleware enforces creator/sponsor separation  
+✅ **Responsive design** — Mobile-optimized UI with adaptive navigation  
+✅ **Mock platform integration** — Realistic demo data for TikTok/YouTube/Instagram earnings  
+✅ **Background sync** — Periodic platform earnings synchronization (configurable 6h intervals)  
+✅ **Email notifications** — Transactional emails for signups, approvals, payouts  
+✅ **Row-level security** — PostgreSQL policies ensure data isolation per user  
+
+---
+
+## Security Features
+
+Earnio implements comprehensive security controls to protect user accounts and data:
+
+### Password Reset Flow
+✅ **Forgot Password** — Secure token-based password recovery  
+- Users submit their email address; endpoint returns security-friendly message regardless of email existence (prevents email enumeration)  
+- Backend generates **32-byte cryptographic tokens** and stores SHA256 hash in database with 1-hour expiry  
+- Reset links sent via email include token as URL parameter  
+- Tokens validated with expiry checking before allowing password reset  
+- **Rate limit:** 3 requests per 30 minutes per IP address
+
+### Email Verification 2FA
+✅ **Email Verification** — Two-factor authentication using time-based 6-digit codes  
+- Users receive 6-digit numeric codes (000000–999999) with 15-minute expiry  
+- Auto-lockout after 3 failed verification attempts  
+- Codes valid for single use; new resend generates fresh code  
+- Prevents account takeover through additional verification layer  
+- **Rate limits:** 5 verification requests per 15 minutes; unlimited resends  
+
+### Username Availability Validation
+✅ **Real-time Username Check** — Debounced client-side validation  
+- 300ms debounce prevents excessive API calls while user types  
+- Returns availability status with visual indicators (checkmark/X)  
+- Prevents duplicate usernames in database via unique constraint + RLS policy  
+- Allows signup form to guide user immediately without form submission  
+
+### Session Token Security
+✅ **HTTP-Only Cookies** — Tokens stored securely, inaccessible to JavaScript  
+- Access token (`ct-access-token`): Short-lived JWT (1 hour) in httpOnly cookie  
+- Refresh token: Long-lived httpOnly cookie for silent token refresh  
+- Flags: `Secure` (HTTPS only), `SameSite=Strict` (CSRF protection)  
+- **Never stored in localStorage** to prevent XSS attacks  
+- Client memory cache for fast access without exposing to DOM  
+
+### Client-Side Route Protection
+✅ **ProtectedRoute Component** — TypeScript-aware route wrapping  
+- Enforces authentication on protected pages  
+- Role-based access control (`requiredUserType` prop) — creator vs. sponsor  
+- Auto-redirects to login with optional custom fallback routes  
+- Centralized middleware (`proxy.ts`) double-checks auth at edge  
+
+### Rate Limiting & DDoS Protection
+✅ **IP-Based Rate Limiting** — Multi-tier protection via express-rate-limit  
+
+| Endpoint | Limit | Window |
+|----------|-------|--------|
+| Forgot Password | 3 requests | 30 minutes |
+| Reset Password | 2 requests | 60 minutes |
+| Login / Signup | 5 requests | 15 minutes |
+| Email Verification | 5 requests | 15 minutes |
+| Global API | 300 requests | 15 minutes |
+
+- Attacks from single IP hit 429 (Too Many Requests) after threshold  
+- Prevents brute force, credential stuffing, and account enumeration  
+- Configurable per endpoint without blocking legitimate users  
+
+### Additional Security Measures
+✅ **Row-Level Security (RLS)** — PostgreSQL policies ensure data isolation  
+- Users can only read/write their own records  
+- Supabase enforces policies at database level (cannot be bypassed)  
+✅ **CORS & HTTPS** — Only trusted origins allowed; redirects enforce encrypted connections  
+✅ **JWT Validation** — All protected endpoints verify token signature & expiry  
+✅ **Error Handling** — Generic error messages prevent information leakage (no "user not found" on login)  
+
+For detailed test results and implementation notes, see [SECURITY_AUDIT.md](SECURITY_AUDIT.md).
+
+---
+
 ## Frontend
 
 The frontend is a **Next.js App Router** application in `frontend/`. It serves both marketing pages and the logged-in product.
@@ -191,10 +302,10 @@ The frontend is a **Next.js App Router** application in `frontend/`. It serves b
 | `/sponsorships` | Explore and search sponsorship listings |
 | `/sponsorships/[id]` | Campaign detail + apply with a pitch |
 | `/sponsorships/applications` | Track your applications |
-| `/platforms` | Connect TikTok/YouTube and sync earnings |
+| `/platforms` | Connect TikTok, YouTube, and Instagram and sync earnings |
 | `/wallet` | Balances, payouts, bank accounts, transaction history |
 
-Uses `CreatorShell` → sidebar (desktop) + bottom tab bar (mobile), shared Earnio purple theme.
+Uses `CreatorShell` → sidebar (desktop) + bottom tab bar (mobile), Earnio purple theme with dark mode support. Recent updates include single-tab navigation system, profile dropdown in header, and improved visual hierarchy with consistent design tokens.
 
 ### Sponsor app (requires login)
 
@@ -235,7 +346,7 @@ The backend is an **Express 5** TypeScript API in `backend/`. It does not serve 
 | Prefix | Endpoints (summary) | Auth |
 |--------|---------------------|------|
 | `/api/health` | Service health + DB connectivity | Public |
-| `/api/auth` | `signup`, `login`, `logout`, `refresh`, `me` | Mixed |
+| `/api/auth` | `signup`, `login`, `logout`, `refresh`, `me`, `forgot-password`, `verify-reset-token`, `reset-password`, `check-username`, `send-verification-email`, `verify-email`, `resend-verification-email` | Mixed |
 | `/api/legal` | `privacy-policy`, `terms-and-conditions` (markdown) | Public |
 | `/api/dashboard` | Creator earnings summary & trends | Required |
 | `/api/platforms` | List/connect platforms, sync earnings, sync history | Required |
@@ -244,6 +355,23 @@ The backend is an **Express 5** TypeScript API in `backend/`. It does not serve 
 | `/api/sponsor` | Dashboard, campaigns CRUD, application review | Required |
 | `/api/notifications` | List, mark read | Required |
 | `/api/sync` | Cron trigger for platform sync jobs | Secret header |
+
+**Auth endpoints (detailed)**
+
+| Endpoint | Method | Rate Limit | Purpose |
+|----------|--------|-----------|---------|
+| `/api/auth/signup` | POST | 5/15min | Create account with email, password, username |
+| `/api/auth/login` | POST | 5/15min | Authenticate with email/password; returns access token |
+| `/api/auth/logout` | POST | — | Clear server session |
+| `/api/auth/refresh` | POST | — | Refresh expired access token using refresh cookie |
+| `/api/auth/me` | GET | — | Get current user profile |
+| `/api/auth/forgot-password` | POST | 3/30min | Request password reset; sends email with reset link |
+| `/api/auth/verify-reset-token` | POST | — | Validate reset token & check expiry; returns remaining time |
+| `/api/auth/reset-password` | POST | 2/60min | Complete password reset with token; auto-logs in user |
+| `/api/auth/check-username` | POST | — | Check if username is available for signup |
+| `/api/auth/send-verification-email` | POST | 5/15min | Send 6-digit verification code to email |
+| `/api/auth/verify-email` | POST | 5/15min | Verify email using code; marks account verified |
+| `/api/auth/resend-verification-email` | POST | 5/15min | Resend verification code; resets attempt counter |
 
 ### Backend structure
 
@@ -263,7 +391,14 @@ backend/src/
 
 ### Platform sync
 
-A background scheduler (`syncScheduler`) can periodically sync creator platform earnings. In production, an external cron can also hit `POST /api/sync/cron` with `SYNC_CRON_SECRET`. The current platform provider is a **mock** suitable for demos; real TikTok/YouTube integrations would plug in at `platforms/mockPlatformProvider.ts`.
+A background scheduler (`syncScheduler`) can periodically sync creator platform earnings:
+
+- **In-process cron** — When `ENABLE_SYNC_CRON=true`, syncs every 6 hours using `setInterval`
+- **External cron** — In production, external scheduler hits `POST /api/sync/cron` with `SYNC_CRON_SECRET` header
+- **Mock provider** — Current implementation uses deterministic hash-based earnings (`platforms/mockPlatformProvider.ts`), suitable for demos
+- **Real integration** — Production should replace mock with official TikTok/YouTube/Instagram OAuth + earnings APIs
+
+Sync updates earnings history, platform stats, and notifies users of new earnings in their dashboard.
 
 ---
 
@@ -370,6 +505,9 @@ Runs frontend on `:3000` and backend on `:3001` with linked env.
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-side admin operations |
 | `RESEND_API_KEY` | Email delivery (optional in dev) |
 | `EMAIL_FROM` | Sender address for notifications |
+| `PASSWORD_RESET_TOKEN_EXPIRY_MINUTES` | Reset token expiry (default `60` minutes) |
+| `EMAIL_VERIFICATION_CODE_EXPIRY_MINUTES` | Verification code expiry (default `15` minutes) |
+| `EMAIL_VERIFICATION_MAX_ATTEMPTS` | Failed verification attempts before lockout (default `3`) |
 | `ENABLE_SYNC_CRON` | Enable in-process sync scheduler |
 | `SYNC_CRON_SECRET` | Protects manual cron endpoint |
 

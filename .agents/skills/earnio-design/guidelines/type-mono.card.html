@@ -1,0 +1,25 @@
+<!-- @dsCard group="Type" viewport="700x200" name="Numerals · JetBrains Mono" subtitle="Money, stats & tabular readouts" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);background:var(--surface);color:var(--text-strong);padding:26px}
+  .stats{display:flex;gap:36px;flex-wrap:wrap}
+  .stat .lbl{font-size:12px;color:var(--text-muted);font-weight:600}
+  .stat .val{font-family:var(--font-mono);font-weight:600;font-size:34px;letter-spacing:-.02em;font-feature-settings:'tnum' 1}
+  .up{color:var(--success)}
+  .meta{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);margin-top:18px}
+</style>
+</head>
+<body>
+  <div class="stats">
+    <div class="stat"><div class="lbl">Total earnings</div><div class="val">₮12,480,000</div></div>
+    <div class="stat"><div class="lbl">This month</div><div class="val">₮2.4M</div></div>
+    <div class="stat"><div class="lbl">MoM</div><div class="val up">+18.2%</div></div>
+  </div>
+  <div class="meta">JetBrains Mono · 500 / 600 · tabular figures</div>
+</body>
+</html>

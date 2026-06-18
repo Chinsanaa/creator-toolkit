@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { listMyApplications } from '@/lib/api/sponsorships';
 import { applicationStatusLabel, formatDate, formatMnt } from '@/lib/format';
@@ -21,6 +22,7 @@ export default function MyApplicationsPage() {
   const [applications, setApplications] = useState<SponsorshipApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useLanguage();
 
   useEffect(() => {
     listMyApplications()
@@ -35,16 +37,16 @@ export default function MyApplicationsPage() {
     <DashboardShell>
       <div className="mx-auto max-w-3xl">
         <CreatorPageHeader
-          title="My applications"
-          subtitle="Track sponsorships you have applied to."
+          title={t('my_applications')}
+          subtitle={t('track_sponsorships')}
           action={
             <Link href="/sponsorships" className="landing-btn-light px-5 py-2.5 text-sm">
-              ← Explore
+              ← {t('explore')}
             </Link>
           }
         />
 
-        {loading && <p className="text-sm text-landing-muted">Loading…</p>}
+        {loading && <p className="text-sm text-landing-muted">{t('loading')}</p>}
         {error && (
           <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         )}
@@ -52,10 +54,10 @@ export default function MyApplicationsPage() {
         {!loading && !error && applications.length === 0 && (
           <div className="creator-panel text-center">
             <p className="text-sm text-landing-muted">
-              You have not applied to any sponsorships yet.
+              {t('no_applications_yet')}
             </p>
             <Link href="/sponsorships" className="landing-btn-dark mt-5 inline-flex px-6 py-2.5 text-sm">
-              Browse opportunities
+              {t('browse_opportunities')}
             </Link>
           </div>
         )}
@@ -69,7 +71,7 @@ export default function MyApplicationsPage() {
                     {app.sponsorship?.title.replace(/^\[Demo\]\s*/, '') ?? 'Sponsorship'}
                   </h2>
                   <p className="mt-1 text-sm text-landing-muted">
-                    Applied {formatDate(app.applied_at)}
+                    {t('applied')} {formatDate(app.applied_at)}
                   </p>
                 </div>
                 <span
@@ -93,7 +95,7 @@ export default function MyApplicationsPage() {
                   href={`/sponsorships/${app.sponsorship_id}`}
                   className="auth-link mt-4 inline-block text-sm font-medium"
                 >
-                  View listing →
+                  {t('view_listing')}
                 </Link>
               )}
             </li>

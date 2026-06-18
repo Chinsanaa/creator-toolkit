@@ -1,0 +1,28 @@
+import React from 'react';
+
+/**
+ * Track + fill progress bar. Used for onboarding plans, platform shares, and
+ * campaign budgets. `gradient` switches the fill to the spark gradient.
+ */
+export function ProgressBar({ value = 0, max = 100, height = 8, gradient = false, color, trackColor, className = '', style, ...rest }) {
+  const pct = Math.max(0, Math.min(100, (value / max) * 100));
+  return (
+    <div
+      className={className}
+      role="progressbar"
+      aria-valuenow={value}
+      aria-valuemin={0}
+      aria-valuemax={max}
+      style={{ width: '100%', height, borderRadius: 'var(--radius-full)', background: trackColor || 'var(--surface)', overflow: 'hidden', ...style }}
+      {...rest}
+    >
+      <div
+        style={{
+          width: `${pct}%`, height: '100%', borderRadius: 'var(--radius-full)',
+          background: gradient ? 'var(--gradient-spark)' : (color || 'var(--primary)'),
+          transition: 'width var(--dur-slow) var(--ease-out)',
+        }}
+      />
+    </div>
+  );
+}

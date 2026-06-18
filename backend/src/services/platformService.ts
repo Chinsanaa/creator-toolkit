@@ -210,10 +210,16 @@ class PlatformService {
     const startedAt = new Date().toISOString();
     const logPlatform = platform;
 
+    if (!supabaseAdmin) {
+      throw new Error('Platform sync is temporarily unavailable. Please try again later.');
+    }
+
+    const earningsClient = supabaseAdmin;
+
     try {
       const payload = fetchPlatformData(platform, platformUserId);
 
-      const { data: existingEarning } = await client
+      const { data: existingEarning } = await earningsClient
         .from('earnings')
         .select('id, amount_mnt')
         .eq('user_id', userId)
@@ -227,7 +233,7 @@ class PlatformService {
       let earningsMnt = 0;
 
       if (existingEarning) {
-        await client
+        await earningsClient
           .from('earnings')
           .update({
             amount_mnt: payload.earningsMnt,
@@ -235,10 +241,11 @@ class PlatformService {
             synced_from_api: true,
             updated_at: new Date().toISOString(),
           })
-          .eq('id', existingEarning.id);
+          .eq('id', existingEarning.id)
+          .eq('user_id', userId);
         earningsMnt = payload.earningsMnt;
       } else {
-        const { error: earnError } = await client.from('earnings').insert({
+        const { error: earnError } = await earningsClient.from('earnings').insert({
           user_id: userId,
           platform,
           amount_mnt: payload.earningsMnt,

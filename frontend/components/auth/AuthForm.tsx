@@ -4,7 +4,10 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { LegalConsent } from '@/components/auth/LegalConsent';
 import { OAuthProviderButtons } from '@/components/auth/OAuthProviderButtons';
+import { PasswordRequirements } from '@/components/auth/PasswordRequirements';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
+import { validatePassword, getPasswordErrorMessage } from '@/lib/passwords';
 import type { UserType } from '@/lib/types/auth';
 
 interface Field {
@@ -25,6 +28,7 @@ interface AuthFormProps {
   alternateLabel: string;
   onSubmit: (values: Record<string, string>) => Promise<void>;
   beforeForm?: React.ReactNode;
+  afterPassword?: React.ReactNode;
   legalConsentMode?: 'signup' | 'login';
   oauthUserType?: UserType;
 }
@@ -39,16 +43,24 @@ export function AuthForm({
   alternateLabel,
   onSubmit,
   beforeForm,
+  afterPassword,
   legalConsentMode,
   oauthUserType,
 }: AuthFormProps) {
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [passwordValue, setPasswordValue] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const { t } = useLanguage();
+
+  const hasPasswordField = fields.some((f) => f.type === 'password');
+  const isSignupForm = legalConsentMode === 'signup';
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setPasswordError(null);
     setPending(true);
 
     const formData = new FormData(e.currentTarget);
@@ -58,9 +70,21 @@ export function AuthForm({
     });
 
     if (legalConsentMode === 'signup' && !acceptedTerms) {
-      setError('You must accept the Terms and Conditions and Privacy Policy');
+      setError(t('must_accept_terms'));
       setPending(false);
       return;
+    }
+
+    // Validate password on signup
+    if (isSignupForm && values.password) {
+      const strength = validatePassword(values.password);
+      if (!strength.isValid) {
+        const errorMessage = getPasswordErrorMessage(values.password);
+        setPasswordError(errorMessage);
+        setError(null);
+        setPending(false);
+        return;
+      }
     }
 
     if (legalConsentMode === 'signup') {
@@ -70,9 +94,21 @@ export function AuthForm({
     try {
       await onSubmit(values);
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Something went wrong');
+      setError(err instanceof ApiError ? err.message : t('something_went_wrong'));
     } finally {
       setPending(false);
+    }
+  }
+
+  function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const password = e.currentTarget.value;
+    setPasswordValue(password);
+    // Only show error message on signup if password field is not empty
+    if (isSignupForm && password) {
+      const errorMessage = getPasswordErrorMessage(password);
+      setPasswordError(errorMessage);
+    } else {
+      setPasswordError(null);
     }
   }
 
@@ -96,31 +132,11 @@ export function AuthForm({
         {beforeForm}
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {legalConsentMode === 'signup' ? (
-            <LegalConsent
-              mode={legalConsentMode}
-              checked={acceptedTerms}
-              onCheckedChange={setAcceptedTerms}
-            />
-          ) : null}
-
-          {oauthUserType ? (
-            <div className="space-y-5">
-              <OAuthProviderButtons
-                userType={oauthUserType}
-                disabled={legalConsentMode === 'signup' && !acceptedTerms}
-              />
-              <div className="auth-divider">
-                <span>or continue with email</span>
-              </div>
-            </div>
-          ) : null}
-
           {fields.map((field) => (
             <div key={field.name}>
               <label
                 htmlFor={field.name}
-                className="mb-2 block text-sm font-medium text-landing-fg"
+                className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]"
               >
                 {field.label}
               </label>
@@ -130,12 +146,38 @@ export function AuthForm({
                 type={field.type ?? 'text'}
                 required={field.required ?? true}
                 placeholder={field.placeholder}
-                className="auth-input"
+                className={`auth-input ${
+                  field.type === 'password' && isSignupForm && passwordError
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                    : ''
+                }`}
+                onChange={field.type === 'password' && isSignupForm ? handlePasswordChange : undefined}
               />
+              {field.type === 'password' && isSignupForm && passwordError && (
+                <p className="mt-2 text-sm text-red-600">{passwordError}</p>
+              )}
+              {field.type === 'password' && isSignupForm && (
+                <PasswordRequirements password={passwordValue} showRequirements={true} />
+              )}
+              {field.type === 'password' && afterPassword && (
+                <div className="mt-2">{afterPassword}</div>
+              )}
             </div>
           ))}
 
-          {legalConsentMode === 'login' ? (
+          {oauthUserType ? (
+            <div className="space-y-5">
+              <div className="auth-divider">
+                <span>{t('or_continue_with_email')}</span>
+              </div>
+              <OAuthProviderButtons
+                userType={oauthUserType}
+                disabled={legalConsentMode === 'signup' && !acceptedTerms}
+              />
+            </div>
+          ) : null}
+
+          {legalConsentMode ? (
             <LegalConsent
               mode={legalConsentMode}
               checked={acceptedTerms}
@@ -147,14 +189,18 @@ export function AuthForm({
             <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
           )}
 
-          <button type="submit" disabled={pending} className="landing-btn-dark auth-submit">
-            {pending ? 'Please wait…' : submitLabel}
+          <button
+            type="submit"
+            disabled={pending || (isSignupForm && hasPasswordField && passwordError !== null && passwordValue !== '')}
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {pending ? t('please_wait') : submitLabel}
           </button>
         </form>
 
         <p className="mt-6 text-center text-sm text-landing-muted">
           {alternatePrompt}{' '}
-          <Link href={alternateHref} className="auth-link">
+          <Link href={alternateHref} className="link-primary">
             {alternateLabel}
           </Link>
         </p>

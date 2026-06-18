@@ -1,6 +1,7 @@
 'use client';
 
 import { useSyncExternalStore } from 'react';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 function subscribeOnlineStatus(onStoreChange: () => void) {
   window.addEventListener('online', onStoreChange);
@@ -25,6 +26,7 @@ export function OfflineBanner() {
     getOnlineSnapshot,
     getServerOnlineSnapshot
   );
+  const { t } = useLanguage();
 
   if (online) return null;
 
@@ -33,8 +35,7 @@ export function OfflineBanner() {
       role="alert"
       className="bg-[color:var(--primary)] px-4 py-2.5 text-center text-sm font-semibold text-white"
     >
-      You are offline. Some features may not work until you reconnect.
+      {t('offline_message')}
     </div>
   );
 }
-

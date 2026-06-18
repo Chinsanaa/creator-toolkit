@@ -25,3 +25,16 @@ export async function listSyncHistory(): Promise<SyncHistoryEntry[]> {
   const data = await apiFetch<{ history: SyncHistoryEntry[] }>('/api/platforms/sync/history');
   return data.history;
 }
+
+export async function getTikTokAuthUrl(): Promise<{ authUrl: string }> {
+  const data = await apiFetch<{ authUrl: string }>('/api/auth/tiktok/authorize');
+  return data;
+}
+
+export async function completeTikTokOAuth(code: string): Promise<{ account: PlatformAccount }> {
+  const data = await apiFetch<{ account: PlatformAccount }>('/api/auth/tiktok/callback', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+  return data;
+}

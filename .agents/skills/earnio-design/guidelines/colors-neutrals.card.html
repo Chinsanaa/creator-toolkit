@@ -1,0 +1,26 @@
+<!-- @dsCard group="Colors" viewport="700x200" name="Neutrals · Slate ink" subtitle="Cool-tinted neutral ramp for text, borders & surfaces" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);background:var(--surface);color:var(--text-strong);padding:24px}
+  .scale{display:flex;gap:10px}
+  .sw{flex:1;display:flex;flex-direction:column;gap:8px}
+  .chip{height:64px;border-radius:var(--radius-md);border:1px solid rgba(11,18,32,.08)}
+  .name{font-size:11px;font-weight:700;color:var(--text-body)}
+  .hex{font-family:var(--font-mono);font-size:10px;color:var(--text-muted)}
+</style>
+</head>
+<body>
+  <div class="scale" id="scale"></div>
+  <script>
+    const steps=[['900','#0B1220'],['800','#161E2E'],['700','#27324A'],['600','#3C4A66'],['500','#5A6A85'],['400','#8492A8'],['300','#AEB9CC'],['200','#D7DEEA'],['100','#E9EEF6'],['50','#F4F7FC']];
+    document.getElementById('scale').innerHTML=steps.map(([n,h])=>`
+      <div class="sw"><div class="chip" style="background:${h}"></div>
+      <div class="name">Ink ${n}</div><div class="hex">${h}</div></div>`).join('');
+  </script>
+</body>
+</html>

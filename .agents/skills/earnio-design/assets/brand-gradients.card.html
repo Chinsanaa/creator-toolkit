@@ -1,0 +1,28 @@
+<!-- @dsCard group="Brand" viewport="700x210" name="Gradients & mesh" subtitle="Brand, spark, ink gradients and the atmospheric mesh" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);background:var(--surface);padding:24px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .g{height:108px;border-radius:var(--radius-lg);display:flex;align-items:flex-end;padding:12px;color:#fff;font-weight:700;font-size:12px;border:1px solid rgba(11,18,32,.06)}
+  .mesh{background-color:var(--bg-page);background-image:
+    radial-gradient(ellipse 80% 60% at 12% -10%, var(--mesh-1) 0%, transparent 55%),
+    radial-gradient(ellipse 70% 50% at 92% 0%, var(--mesh-2) 0%, transparent 50%),
+    radial-gradient(ellipse 60% 40% at 50% 110%, var(--mesh-3) 0%, transparent 50%);
+    color:var(--text-strong)}
+  .name{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);margin-top:8px}
+</style>
+</head>
+<body>
+  <div class="grid">
+    <div><div class="g" style="background:var(--gradient-brand)">Brand</div><div class="name">--gradient-brand</div></div>
+    <div><div class="g" style="background:var(--gradient-spark)">Spark</div><div class="name">--gradient-spark</div></div>
+    <div><div class="g" style="background:var(--gradient-ink)">Ink</div><div class="name">--gradient-ink</div></div>
+    <div><div class="g mesh">Mesh</div><div class="name">--mesh-1/2/3</div></div>
+  </div>
+</body>
+</html>

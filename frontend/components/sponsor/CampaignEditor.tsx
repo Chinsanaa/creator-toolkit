@@ -1,5 +1,6 @@
 'use client';
 
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { CampaignFormValues } from '@/lib/sponsor/campaignForm';
 import { CAMPAIGN_CONTENT_TYPES } from '@/lib/sponsor/campaignForm';
 
@@ -10,13 +11,15 @@ interface CampaignEditorProps {
 }
 
 export function CampaignEditor({ values, onChange, disabled = false }: CampaignEditorProps) {
+  const { t } = useLanguage();
+
   function set<K extends keyof CampaignFormValues>(key: K, value: CampaignFormValues[K]) {
     onChange({ ...values, [key]: value });
   }
 
   return (
     <div className="space-y-5">
-      <Field label="Title" required>
+      <Field label={t('campaign_title_label')} required>
         <input
           type="text"
           required
@@ -27,7 +30,7 @@ export function CampaignEditor({ values, onChange, disabled = false }: CampaignE
         />
       </Field>
 
-      <Field label="Description" required>
+      <Field label={t('campaign_description_label')} required>
         <textarea
           required
           rows={6}
@@ -35,11 +38,11 @@ export function CampaignEditor({ values, onChange, disabled = false }: CampaignE
           value={values.description}
           onChange={(e) => set('description', e.target.value)}
           className="input-touch"
-          placeholder="Brief, deliverables, brand guidelines…"
+          placeholder={t('campaign_description_placeholder')}
         />
       </Field>
 
-      <Field label="Payment (MNT)" required>
+      <Field label={t('campaign_payment_label')} required>
         <input
           type="number"
           required
@@ -52,23 +55,23 @@ export function CampaignEditor({ values, onChange, disabled = false }: CampaignE
         />
       </Field>
 
-      <Field label="Content type">
+      <Field label={t('campaign_content_type_label')}>
         <select
           disabled={disabled}
           value={values.contentType}
           onChange={(e) => set('contentType', e.target.value)}
           className="input-touch"
         >
-          {CAMPAIGN_CONTENT_TYPES.map((t) => (
-            <option key={t.value} value={t.value}>
-              {t.label}
+          {CAMPAIGN_CONTENT_TYPES.map((ct) => (
+            <option key={ct.value} value={ct.value}>
+              {ct.label}
             </option>
           ))}
         </select>
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Min followers">
+        <Field label={t('campaign_min_followers_label')}>
           <input
             type="number"
             min={0}
@@ -78,7 +81,7 @@ export function CampaignEditor({ values, onChange, disabled = false }: CampaignE
             className="input-touch"
           />
         </Field>
-        <Field label="Max followers">
+        <Field label={t('campaign_max_followers_label')}>
           <input
             type="number"
             min={0}
@@ -90,7 +93,7 @@ export function CampaignEditor({ values, onChange, disabled = false }: CampaignE
         </Field>
       </div>
 
-      <Field label="Min engagement rate (%)">
+      <Field label={t('campaign_engagement_label')}>
         <input
           type="number"
           min={0}
@@ -104,7 +107,7 @@ export function CampaignEditor({ values, onChange, disabled = false }: CampaignE
       </Field>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Apply by">
+        <Field label={t('apply_by_label')}>
           <input
             type="date"
             disabled={disabled}
@@ -113,7 +116,7 @@ export function CampaignEditor({ values, onChange, disabled = false }: CampaignE
             className="input-touch"
           />
         </Field>
-        <Field label="Complete by">
+        <Field label={t('complete_by_label')}>
           <input
             type="date"
             disabled={disabled}

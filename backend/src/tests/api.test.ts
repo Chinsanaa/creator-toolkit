@@ -37,6 +37,13 @@ describe('Protected routes', () => {
     assert.equal(res.status, 401);
   });
 
+  it('rejects unauthenticated sponsorship application alias route', async () => {
+    const res = await request(app())
+      .post('/api/sponsorships/apply')
+      .send({ sponsorshipId: 'demo', responseText: 'Interested' });
+    assert.equal(res.status, 401);
+  });
+
   it('rejects unauthenticated notifications', async () => {
     const res = await request(app()).get('/api/notifications');
     assert.equal(res.status, 401);
@@ -52,6 +59,19 @@ describe('Protected routes', () => {
   it('rejects OAuth session without tokens', async () => {
     const res = await request(app()).post('/api/auth/oauth/session').send({});
     assert.equal(res.status, 400);
+  });
+
+  it('rate limits repeated refresh attempts', async () => {
+    const testApp = app();
+
+    for (let i = 0; i < 5; i += 1) {
+      const res = await request(testApp).post('/api/auth/refresh').send({});
+      assert.equal(res.status, 401);
+    }
+
+    const limited = await request(testApp).post('/api/auth/refresh').send({});
+    assert.equal(limited.status, 429);
+    assert.equal(limited.body.error, 'Too many auth attempts. Please try again later.');
   });
 });
 

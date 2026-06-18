@@ -1,0 +1,43 @@
+<!-- @dsCard group="Colors" viewport="700x190" name="Surface & text aliases" subtitle="Semantic tokens the product actually references" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);padding:24px;background:var(--bg-page)}
+  .row{display:flex;gap:14px}
+  .col{flex:1;display:flex;flex-direction:column;gap:10px}
+  .surf{border-radius:var(--radius-lg);border:1px solid var(--border);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+  .lbl{font-family:var(--font-mono);font-size:10px;color:var(--text-muted)}
+  .strong{color:var(--text-strong);font-weight:700;font-size:15px}
+  .body{color:var(--text-body);font-size:13px}
+  .muted{color:var(--text-muted);font-size:13px}
+  .link{color:var(--text-link);font-weight:600;font-size:13px}
+</style>
+</head>
+<body>
+  <div class="row">
+    <div class="col">
+      <div class="surf" style="background:var(--surface)">
+        <span class="lbl">--surface</span>
+        <span class="strong">Text strong</span>
+        <span class="body">Text body — the default reading color</span>
+        <span class="muted">Text muted · secondary</span>
+        <span class="link">Text link →</span>
+      </div>
+    </div>
+    <div class="col">
+      <div class="surf" style="background:var(--surface-muted)">
+        <span class="lbl">--surface-muted</span>
+        <span class="body">Subtle fill for rows & wells</span>
+      </div>
+      <div class="surf" style="background:var(--primary-soft);border-color:var(--primary-border)">
+        <span class="lbl">--primary-soft</span>
+        <span class="body" style="color:var(--primary-press)">Tinted brand surface</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>

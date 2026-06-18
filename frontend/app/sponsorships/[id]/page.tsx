@@ -13,12 +13,14 @@ import {
   formatMnt,
   formatHandle,
 } from '@/lib/format';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { SponsorshipListing } from '@/lib/types/sponsorship';
 
 export default function SponsorshipDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
+  const { t } = useLanguage();
 
   const [sponsorship, setSponsorship] = useState<SponsorshipListing | null>(null);
   const [loading, setLoading] = useState(true);
@@ -56,10 +58,10 @@ export default function SponsorshipDetailPage() {
     <DashboardShell>
       <div className="mx-auto max-w-2xl">
         <Link href="/sponsorships" className="auth-link text-sm font-medium">
-          ← Back to Explore
+          {t('back_to_explore')}
         </Link>
 
-        {loading && <p className="mt-8 text-sm text-landing-muted">Loading…</p>}
+        {loading && <p className="mt-8 text-sm text-landing-muted">{t('loading')}</p>}
         {error && (
           <p className="mt-8 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         )}
@@ -81,13 +83,13 @@ export default function SponsorshipDetailPage() {
 
             <dl className="creator-panel mt-6 grid gap-4 text-sm sm:grid-cols-2">
               <div>
-                <dt className="text-landing-muted">Content</dt>
+                <dt className="text-landing-muted">{t('content_label')}</dt>
                 <dd className="mt-0.5 font-medium text-landing-fg">
                   {contentTypeLabel(sponsorship.content_type)}
                 </dd>
               </div>
               <div>
-                <dt className="text-landing-muted">Min engagement</dt>
+                <dt className="text-landing-muted">{t('min_engagement_label')}</dt>
                 <dd className="mt-0.5 font-medium text-landing-fg">
                   {sponsorship.engagement_rate_min != null
                     ? `${sponsorship.engagement_rate_min}%`
@@ -95,7 +97,7 @@ export default function SponsorshipDetailPage() {
                 </dd>
               </div>
               <div>
-                <dt className="text-landing-muted">Followers</dt>
+                <dt className="text-landing-muted">{t('followers')}</dt>
                 <dd className="mt-0.5 font-medium text-landing-fg">
                   {formatFollowers(
                     sponsorship.required_followers_min,
@@ -104,13 +106,13 @@ export default function SponsorshipDetailPage() {
                 </dd>
               </div>
               <div>
-                <dt className="text-landing-muted">Apply by</dt>
+                <dt className="text-landing-muted">{t('apply_by_label')}</dt>
                 <dd className="mt-0.5 font-medium text-landing-fg">
                   {formatDate(sponsorship.deadline_apply)}
                 </dd>
               </div>
               <div>
-                <dt className="text-landing-muted">Complete by</dt>
+                <dt className="text-landing-muted">{t('complete_by_label')}</dt>
                 <dd className="mt-0.5 font-medium text-landing-fg">
                   {formatDate(sponsorship.deadline_complete)}
                 </dd>
@@ -118,7 +120,7 @@ export default function SponsorshipDetailPage() {
             </dl>
 
             <div className="creator-panel-lg mt-6">
-              <h2 className="font-semibold text-landing-fg">Brief</h2>
+              <h2 className="font-semibold text-landing-fg">{t('brief_label')}</h2>
               <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-landing-muted">
                 {sponsorship.description}
               </p>
@@ -126,7 +128,7 @@ export default function SponsorshipDetailPage() {
 
             {sponsorship.hasApplied ? (
               <p className="creator-panel mt-6 text-sm font-medium text-landing-fg">
-                You applied — status:{' '}
+                {t('you_applied_status')}{' '}
                 <span className="text-sky-700">
                   {applicationStatusLabel(sponsorship.applicationStatus ?? 'pending')}
                 </span>
@@ -135,7 +137,7 @@ export default function SponsorshipDetailPage() {
               <form onSubmit={handleApply} className="creator-panel-lg mt-6 space-y-4 pb-24 md:pb-0">
                 <div>
                   <label htmlFor="message" className="block text-sm font-medium text-landing-fg">
-                    Your pitch
+                    {t('your_pitch')}
                   </label>
                   <textarea
                     id="message"
@@ -143,7 +145,7 @@ export default function SponsorshipDetailPage() {
                     rows={5}
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
-                    placeholder="Why you're a fit, your audience, and relevant past work…"
+                    placeholder={t('sponsorship_pitch_placeholder')}
                     className="auth-input mt-2 min-h-[120px] resize-y"
                   />
                 </div>
@@ -154,7 +156,7 @@ export default function SponsorshipDetailPage() {
                     disabled={submitting}
                     className="landing-btn-dark w-full px-6 py-3 text-sm disabled:opacity-60 md:w-auto"
                   >
-                    {submitting ? 'Submitting…' : 'Submit application'}
+                    {submitting ? t('submitting') : t('submit_application')}
                   </button>
                 </div>
               </form>

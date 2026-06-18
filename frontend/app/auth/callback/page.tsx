@@ -21,35 +21,19 @@ function AuthCallbackContent() {
 
   useEffect(() => {
     let cancelled = false;
+    const supabase = getSupabaseBrowserClient();
 
-    async function finish() {
-      const oauthError = searchParams.get('error_description') ?? searchParams.get('error');
-      if (oauthError) {
-        if (!cancelled) setError(oauthError);
-        return;
-      }
+    const oauthError = searchParams.get('error_description') ?? searchParams.get('error');
+    if (oauthError) {
+      setError(oauthError);
+      return;
+    }
 
-      const code = searchParams.get('code');
-      if (!code) {
-        if (!cancelled) setError('Missing sign-in code. Please try again.');
-        return;
-      }
+    const userType = parseUserType(searchParams.get('user_type'));
 
-      const userType = parseUserType(searchParams.get('user_type'));
-
+    async function handleSession(accessToken: string, refreshToken: string) {
       try {
-        const supabase = getSupabaseBrowserClient();
-        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
-
-        if (exchangeError || !data.session) {
-          throw new Error(exchangeError?.message ?? 'Could not complete social sign-in');
-        }
-
-        const result = await completeOAuthSession({
-          accessToken: data.session.access_token,
-          refreshToken: data.session.refresh_token,
-          userType,
-        });
+        const result = await completeOAuthSession({ accessToken, refreshToken, userType });
 
         try {
           const { Capacitor } = await import('@capacitor/core');
@@ -74,7 +58,37 @@ function AuthCallbackContent() {
       }
     }
 
-    void finish();
+    async function completeOAuth() {
+      const code = searchParams.get('code');
+      if (code) {
+        const { data, error: exchangeError } = await supabase.auth.exchangeCodeForSession(code);
+        if (cancelled) return;
+
+        if (exchangeError) {
+          setError(exchangeError.message);
+          return;
+        }
+
+        if (data.session) {
+          await handleSession(data.session.access_token, data.session.refresh_token);
+          return;
+        }
+      }
+
+      const { data, error: sessionError } = await supabase.auth.getSession();
+      if (cancelled) return;
+
+      if (sessionError) {
+        setError(sessionError.message);
+        return;
+      }
+
+      if (data.session) {
+        await handleSession(data.session.access_token, data.session.refresh_token);
+      }
+    }
+
+    void completeOAuth();
 
     return () => {
       cancelled = true;

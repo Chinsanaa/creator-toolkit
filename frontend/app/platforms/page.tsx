@@ -1,14 +1,17 @@
 'use client';
 
-import { FormEvent, useEffect, useState } from 'react';
+import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import {
   connectPlatform,
   listPlatforms,
   listSyncHistory,
   syncPlatform,
+  getTikTokAuthUrl,
 } from '@/lib/api/platforms';
 import { formatDate, formatHandle, platformLabel } from '@/lib/format';
 import type { PlatformAccount, SyncHistoryEntry } from '@/lib/types/platforms';
@@ -20,50 +23,43 @@ const PLATFORMS = [
 ] as const;
 
 export default function PlatformsPage() {
+  const router = useRouter();
   const [accounts, setAccounts] = useState<PlatformAccount[]>([]);
   const [history, setHistory] = useState<SyncHistoryEntry[]>([]);
-  const [platform, setPlatform] = useState<string>('tiktok');
+  const [platform, setPlatform] = useState<string>('youtube');
   const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(true);
   const [connecting, setConnecting] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [oauthConnecting, setOAuthConnecting] = useState(false);
+  const { t } = useLanguage();
 
-  async function load() {
+  const load = useCallback(async (isCancelled: () => boolean = () => false) => {
     setError(null);
     try {
       const [accs, hist] = await Promise.all([listPlatforms(), listSyncHistory()]);
-      setAccounts(accs);
-      setHistory(hist);
+      if (!isCancelled()) {
+        setAccounts(accs);
+        setHistory(hist);
+      }
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to load platforms');
+      if (!isCancelled()) {
+        setError(err instanceof ApiError ? err.message : t('failed_to_load_platforms'));
+      }
     } finally {
-      setLoading(false);
+      if (!isCancelled()) setLoading(false);
     }
-  }
+  }, [t]);
 
   useEffect(() => {
     let cancelled = false;
-    void (async () => {
-      try {
-        const [accs, hist] = await Promise.all([listPlatforms(), listSyncHistory()]);
-        if (!cancelled) {
-          setAccounts(accs);
-          setHistory(hist);
-        }
-      } catch (err) {
-        if (!cancelled) {
-          setError(err instanceof ApiError ? err.message : 'Failed to load platforms');
-        }
-      } finally {
-        if (!cancelled) setLoading(false);
-      }
-    })();
+    void load(() => cancelled);
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [load]);
 
   async function handleConnect(e: FormEvent) {
     e.preventDefault();
@@ -73,12 +69,28 @@ export default function PlatformsPage() {
     try {
       await connectPlatform(platform, username);
       setUsername('');
-      setMessage(`${platformLabel(platform)} connected. Run sync to pull earnings.`);
+      setMessage(t('platform_connected').replace('{platform}', platformLabel(platform)));
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to connect');
+      setError(err instanceof ApiError ? err.message : t('failed_to_connect'));
     } finally {
       setConnecting(false);
+    }
+  }
+
+  async function handleTikTokOAuth() {
+    setOAuthConnecting(true);
+    setError(null);
+    setMessage(null);
+    try {
+      const { authUrl } = await getTikTokAuthUrl();
+      // Store return URL in session storage so callback page knows where to redirect
+      sessionStorage.setItem('tiktok_return_url', window.location.href);
+      // Redirect to TikTok OAuth
+      window.location.href = authUrl;
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to initiate TikTok connection');
+      setOAuthConnecting(false);
     }
   }
 
@@ -88,10 +100,10 @@ export default function PlatformsPage() {
     setMessage(null);
     try {
       await syncPlatform(accountId);
-      setMessage('Sync completed. Check Home for updated earnings.');
+      setMessage(t('sync_completed'));
       await load();
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Sync failed');
+      setError(err instanceof ApiError ? err.message : t('sync_failed'));
     } finally {
       setSyncingId(null);
     }
@@ -105,8 +117,8 @@ export default function PlatformsPage() {
     <DashboardShell>
       <div className="mx-auto max-w-3xl">
         <CreatorPageHeader
-          title="Platforms"
-          subtitle="Connect TikTok, YouTube, or Instagram and sync earnings into your dashboard."
+          title={t('platforms')}
+          subtitle={t('connect_platforms_subtitle')}
         />
 
         {message && (
@@ -117,11 +129,11 @@ export default function PlatformsPage() {
         )}
 
         <section className="creator-panel-lg">
-          <h2 className="text-base font-semibold text-landing-fg">Social accounts</h2>
-          <p className="mt-1 text-sm text-landing-muted">Manage platform connections for earnings sync.</p>
+          <h2 className="text-base font-semibold text-landing-fg">{t('social_accounts')}</h2>
+          <p className="mt-1 text-sm text-landing-muted">{t('manage_platform_connections')}</p>
 
           {loading ? (
-            <p className="mt-6 text-sm text-landing-muted">Loading…</p>
+            <p className="mt-6 text-sm text-landing-muted">{t('loading')}</p>
           ) : (
             <ul className="mt-6 space-y-3">
               {PLATFORMS.map((p) => {
@@ -131,7 +143,7 @@ export default function PlatformsPage() {
                     <div>
                       <p className="font-medium text-landing-fg">{p.label}</p>
                       <p className="text-sm text-landing-muted">
-                        {account ? formatHandle(account.platform_username) : 'Not connected'}
+                        {account ? formatHandle(account.platform_username) : t('not_connected')}
                       </p>
                     </div>
                     {account ? (
@@ -141,10 +153,10 @@ export default function PlatformsPage() {
                         onClick={() => handleSync(account.id)}
                         className="landing-btn-light px-4 py-2 text-xs"
                       >
-                        {syncingId === account.id ? 'Syncing…' : 'Sync'}
+                        {syncingId === account.id ? t('syncing') : t('sync')}
                       </button>
                     ) : (
-                      <span className="text-xs text-landing-muted">Use form below</span>
+                      <span className="text-xs text-landing-muted">{t('use_form_below')}</span>
                     )}
                   </li>
                 );
@@ -154,41 +166,61 @@ export default function PlatformsPage() {
         </section>
 
         <section className="creator-panel mt-6">
-          <h2 className="text-base font-semibold text-landing-fg">Connect a platform</h2>
-          <form onSubmit={handleConnect} className="mt-4 space-y-4">
-            <div>
-              <label className="mb-2 block text-sm font-medium text-landing-fg">Platform</label>
-              <select
-                value={platform}
-                onChange={(e) => setPlatform(e.target.value)}
-                className="auth-input"
-              >
-                {PLATFORMS.map((p) => (
-                  <option key={p.id} value={p.id}>
-                    {p.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label className="mb-2 block text-sm font-medium text-landing-fg">Username</label>
-              <input
-                required
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                placeholder="your_handle"
-                className="auth-input"
-              />
-            </div>
-            <button type="submit" disabled={connecting} className="landing-btn-dark px-6 py-2.5 text-sm">
-              {connecting ? 'Connecting…' : 'Connect'}
+          <h2 className="text-base font-semibold text-landing-fg">{t('connect_a_platform')}</h2>
+
+          {/* TikTok OAuth Connection */}
+          <div className="mt-4 space-y-3">
+            <button
+              type="button"
+              disabled={oauthConnecting}
+              onClick={handleTikTokOAuth}
+              className="landing-btn-dark w-full px-6 py-2.5 text-sm"
+            >
+              {oauthConnecting ? 'Connecting to TikTok...' : 'Connect with TikTok'}
             </button>
-          </form>
+            <p className="text-xs text-landing-muted">
+              We'll request access to your TikTok analytics to sync earnings
+            </p>
+          </div>
+
+          {/* Username-based Connection */}
+          <div className="mt-6 border-t border-landing-border pt-6">
+            <p className="mb-4 text-sm font-medium text-landing-fg">Connect via username (YouTube, Instagram)</p>
+            <form onSubmit={handleConnect} className="space-y-4">
+              <div>
+                <label className="mb-2 block text-sm font-medium text-landing-fg">{t('platform')}</label>
+                <select
+                  value={platform}
+                  onChange={(e) => setPlatform(e.target.value)}
+                  className="auth-input"
+                >
+                  {PLATFORMS.filter((p) => p.id !== 'tiktok').map((p) => (
+                    <option key={p.id} value={p.id}>
+                      {p.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-medium text-landing-fg">{t('username')}</label>
+                <input
+                  required
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                  placeholder={t('your_handle')}
+                  className="auth-input"
+                />
+              </div>
+              <button type="submit" disabled={connecting} className="landing-btn-light px-6 py-2.5 text-sm">
+                {connecting ? t('connecting') : t('connect')}
+              </button>
+            </form>
+          </div>
         </section>
 
         {history.length > 0 && (
           <section className="creator-panel mt-6">
-            <h2 className="text-base font-semibold text-landing-fg">Sync history</h2>
+            <h2 className="text-base font-semibold text-landing-fg">{t('sync_history')}</h2>
             <ul className="mt-4 space-y-2">
               {history.slice(0, 6).map((h) => (
                 <li

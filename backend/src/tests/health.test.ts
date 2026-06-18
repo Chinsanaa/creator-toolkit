@@ -13,13 +13,22 @@ const testConfig: EnvConfig = {
 };
 
 describe('GET /api/health', () => {
-  it('returns health payload with checks', async () => {
+  it('returns minimal public health payload', async () => {
     const app = createApp(testConfig);
     const res = await request(app).get('/api/health');
 
     assert.ok([200, 503].includes(res.status));
     assert.equal(typeof res.body.status, 'string');
     assert.equal(typeof res.body.timestamp, 'string');
+    assert.equal(res.body.port, undefined);
+    assert.equal(res.body.checks, undefined);
+  });
+
+  it('returns detailed health payload on internal route', async () => {
+    const app = createApp(testConfig);
+    const res = await request(app).get('/api/health/detailed');
+
+    assert.ok([200, 503].includes(res.status));
     assert.equal(Number(res.body.port), testConfig.port);
     assert.equal(typeof res.body.checks, 'object');
     assert.ok('database' in res.body.checks);

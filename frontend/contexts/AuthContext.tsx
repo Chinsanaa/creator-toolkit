@@ -12,11 +12,13 @@ import {
 import { useRouter } from 'next/navigation';
 import * as api from '@/lib/api/client';
 import { homePathForUserType } from '@/lib/auth/routes';
+import { getNextPathFromWindow } from '@/lib/auth/navigation';
 import {
   clearSessionCookies,
   getAccessToken,
   setUserTypeCookie,
 } from '@/lib/auth/session';
+import { clearSupabaseBrowserSession } from '@/lib/supabase/client';
 import type { AuthUser, LoginRequest, SignupRequest } from '@/lib/types/auth';
 
 interface AuthContextValue {
@@ -38,9 +40,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const refreshUser = useCallback(async (): Promise<AuthUser | null> => {
     const seq = ++refreshSeq.current;
-    const token = getAccessToken();
+    let token = getAccessToken();
     if (!token) {
-      if (seq === refreshSeq.current) setUser(null);
+      token = (await api.refreshAccessToken()) ? getAccessToken() : null;
+    }
+    if (seq !== refreshSeq.current) return null;
+    if (!token) {
+      setUser(null);
       return null;
     }
     try {
@@ -60,16 +66,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     let cancelled = false;
     void (async () => {
-      const token = getAccessToken();
-      if (!token) {
-        queueMicrotask(() => {
-          if (!cancelled) {
-            setUser(null);
-            setLoading(false);
-          }
-        });
-        return;
-      }
       await refreshUser();
       if (!cancelled) setLoading(false);
     })();
@@ -86,7 +82,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!profile) {
         throw new Error('Failed to load profile after login');
       }
-      router.push(homePathForUserType(profile.userType));
+      router.push(getNextPathFromWindow() ?? homePathForUserType(profile.userType));
       router.refresh();
     },
     [router, refreshUser]
@@ -100,7 +96,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!profile) {
         throw new Error('Failed to load profile after signup');
       }
-      router.push(homePathForUserType(profile.userType));
+      router.push(getNextPathFromWindow() ?? homePathForUserType(profile.userType));
       router.refresh();
     },
     [router, refreshUser]
@@ -109,6 +105,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = useCallback(async () => {
     refreshSeq.current += 1;
     await api.logout();
+    await clearSupabaseBrowserSession();
     clearSessionCookies();
     setUser(null);
     router.push('/login');

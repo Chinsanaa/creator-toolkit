@@ -1,4 +1,5 @@
-import { createClient, type SupabaseClient } from '@supabase/supabase-js';
+import { createBrowserClient } from '@supabase/ssr';
+import { type SupabaseClient } from '@supabase/supabase-js';
 
 let browserClient: SupabaseClient | null = null;
 
@@ -14,14 +15,27 @@ export function getSupabaseBrowserClient(): SupabaseClient {
     );
   }
 
-  browserClient = createClient(url, anonKey, {
+  // createBrowserClient from @supabase/ssr stores the PKCE code verifier in
+  // cookies instead of localStorage, so Chrome ITP cannot clear it during the
+  // OAuth redirect chain (supabase → provider → supabase → app).
+  browserClient = createBrowserClient(url, anonKey, {
     auth: {
       flowType: 'pkce',
-      detectSessionInUrl: false,
-      persistSession: false,
+      detectSessionInUrl: true,
+      persistSession: true,
       autoRefreshToken: false,
     },
   });
 
   return browserClient;
+}
+
+export async function clearSupabaseBrowserSession(): Promise<void> {
+  if (!browserClient) return;
+
+  try {
+    await browserClient.auth.signOut({ scope: 'local' });
+  } catch {
+    // The backend owns the refresh session; local cleanup should not block logout.
+  }
 }

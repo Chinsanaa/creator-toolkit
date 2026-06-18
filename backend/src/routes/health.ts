@@ -1,15 +1,34 @@
 import { supabase, hasServiceRoleKey } from '../database/supabase';
 import emailService from '../services/emailService';
 
-export interface HealthStatus {
+export interface PublicHealthStatus {
   status: 'ok' | 'degraded';
   timestamp: string;
+}
+
+export interface HealthStatus extends PublicHealthStatus {
   port: number;
   checks: {
     database: 'ok' | 'error';
     serviceRole: 'configured' | 'missing';
     email: 'configured' | 'disabled';
     syncCron: 'enabled' | 'disabled';
+  };
+}
+
+export async function getPublicHealthStatus(): Promise<PublicHealthStatus> {
+  let database: 'ok' | 'error' = 'error';
+
+  try {
+    const { error } = await supabase.from('users').select('id').limit(1);
+    if (!error) database = 'ok';
+  } catch {
+    database = 'error';
+  }
+
+  return {
+    status: database === 'ok' ? 'ok' : 'degraded',
+    timestamp: new Date().toISOString(),
   };
 }
 

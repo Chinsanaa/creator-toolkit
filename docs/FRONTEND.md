@@ -41,16 +41,18 @@ Config: `frontend/lib/landing/content.ts`
 
 ### Visual identity (landing + auth)
 
-Sky-blue marketing palette (`.landing-page` in `globals.css`):
+Airy blue/white landing palette (`.landing-page` in `globals.css`):
 
 | Token | Value | Usage |
 |-------|-------|-------|
-| `--landing-fg` | `#141414` | Headlines, dark buttons, auth logo |
-| `--landing-muted` | `#6b7280` | Body copy, labels |
-| `--landing-bg-top` | `#eef6ff` | Gradient start |
-| `--landing-bg-bottom` | `#ffffff` | Gradient end |
+| `--landing-fg` | `#0B1220` | Headlines, ink buttons, auth logo |
+| `--landing-muted` | `#5A6A85` | Body copy, labels |
+| `--landing-bg-top` | `#EEF3FF` | Gradient start (pale Earnio Blue) |
+| `--landing-bg-bottom` | `#FFFFFF` | Gradient end |
+| `--primary` | `#2E5BFF` | Primary CTA buttons, links, active states |
+| `--accent` | `#12C2F3` | Spark cyan — use sparingly as a highlight |
 
-**Buttons:** `.landing-btn-dark` (primary), `.landing-btn-light` (secondary). Pill shape, near-black fill on primary.
+**Buttons:** `.btn-primary` (Earnio Blue `#2E5BFF`, primary), `.landing-btn-dark` (ink pill, secondary). `.landing-btn-light` for tertiary white pill. All pill-shaped (`border-radius: full`).
 
 ---
 
@@ -127,6 +129,90 @@ Creator path                    Brand path
 | `.auth-link` | Near-black text links |
 | `.landing-btn-dark.auth-submit` | Full-width submit button |
 
+### Password Reset Flow
+
+**Routes:** `/forgot-password` (unauthenticated) → `/reset-password?token=xxx&email=...` (unauthenticated)
+
+| Step | Page | Component | Action |
+|------|------|-----------|--------|
+| 1 | `/login/creator` or `/login/sponsor` | `AuthForm` | User clicks "Forgot password?" link |
+| 2 | `/forgot-password` | `ForgotPasswordForm` | Submits email; shows "Check your email" message |
+| 3 | Email | Reset link | User clicks link in email with token + email params |
+| 4 | `/reset-password` | `ResetPasswordForm` | Verifies token on mount; shows countdown (60 min) |
+| 5 | `/reset-password` | `ResetPasswordForm` | Submits new password; auto-logs in on success |
+| 6 | `/dashboard` | App redirects | Redirected to correct user type dashboard |
+
+**Components:**
+- `ForgotPasswordForm` — Email input + submit, success state with resend option
+- `ResetPasswordForm` — Token verification, countdown timer, password fields with requirements display
+
+**Rate limits:**
+- Forgot password: 3 requests per 30 minutes per IP
+- Reset password: 2 requests per 60 minutes per IP
+
+### Email Verification (2FA)
+
+**Route:** `/auth/verify-email` (shown after signup in modal or dedicated page)
+
+| Step | Component | Action | UI |
+|------|-----------|--------|-----|
+| 1 | Signup redirect | User sees verification prompt | Modal or banner |
+| 2 | `EmailVerificationForm` | Submit email; backend sends 6-digit code | Text input (6 chars) |
+| 3 | `EmailVerificationForm` | User enters code | Visual feedback per digit |
+| 4 | Backend validates | Max 3 failed attempts; lockout prevents further tries | "Resend code" button |
+| 5 | On success | Marks account verified; redirects to dashboard | Success toast message |
+
+**Features:**
+- 6-digit numeric codes (000000–999999) with 15-minute expiry
+- Resend codes without hitting attempt counter
+- Auto-focus between digits; paste support
+- Countdown timer showing code expiry
+
+**Rate limits:**
+- Send verification: 5 requests per 15 minutes
+- Verify code: 5 attempts per 15 minutes
+- Resend: unlimited (resets attempt counter)
+
+### Protected Routes & Role-Based Access
+
+**ProtectedRoute component** wraps authenticated pages to enforce login + role (creator vs. sponsor):
+
+```typescript
+<ProtectedRoute requiredUserType="creator">
+  <DashboardPage />
+</ProtectedRoute>
+```
+
+**Behavior:**
+- Checks `useAuth()` hook for logged-in user
+- If not logged in: redirects to `/login/creator` (customizable via `fallbackRoute`)
+- If logged in but wrong user type: redirects to correct dashboard (`/dashboard` for creator, `/sponsor/dashboard` for sponsor)
+- If logged in and correct type: renders children
+
+**Usage:**
+- Page layout wrappers: `app/(creator)/dashboard/layout.tsx` wraps page with `<ProtectedRoute requiredUserType="creator">`
+- Individual components that require auth can also use it
+
+**Middleware protection (double-check):**
+- Edge middleware (`proxy.ts`) also checks auth on every request; redirects unauthenticated to `/login`
+- ProtectedRoute is a second layer for clarity and TypeScript type safety
+
+### Username Availability Check
+
+**Used in:** Signup forms during account creation
+
+| Feature | Behavior |
+|---------|----------|
+| **Debounce** | 300ms delay waits for user to finish typing |
+| **Visual feedback** | ✓ (green checkmark) if available; ✗ (red X) if taken |
+| **Loading state** | Spinner while API request is pending |
+| **Status text** | "Username available" or "Username already taken" |
+| **Form validation** | Cannot submit unless username is available |
+
+**Component:** `UsernameInput` — wraps text input with built-in availability checking
+
+**Rate limit:** No specific limit; considered low-risk (public endpoint)
+
 ---
 
 ## App shell (post-login)
@@ -139,9 +225,9 @@ Authenticated pages use `AppShell` with warm coral theme (`--primary: #e85d4c`).
 
 | Surface | Palette | Primary CTA |
 |---------|---------|-------------|
-| Landing `/`, `/brands` | Sky gradient, `#141414` text | `.landing-btn-dark` |
-| Auth `/login/*`, `/signup/*` | Same as landing | `.landing-btn-dark` |
-| App dashboard+ | Warm cream `#faf8f5`, coral `#e85d4c` | `.btn-primary` |
+| Landing `/`, `/brands` | Blue gradient (`#EEF3FF → #FFF`), ink `#0B1220` text | `.btn-primary` (Earnio Blue `#2E5BFF`) |
+| Auth `/login/*`, `/signup/*` | Same as landing | `.btn-primary` |
+| App dashboard+ | White/pale blue `#F7FAFF`, Earnio Blue `#2E5BFF` | `.btn-primary` |
 
 ---
 
@@ -152,8 +238,11 @@ Authenticated pages use `AppShell` with warm coral theme (`--primary: #e85d4c`).
 | `/` | Public | Creator landing |
 | `/brands` | Public | Brand landing |
 | `/login`, `/signup` | Public | Redirect → creator auth |
-| `/login/creator`, `/signup/creator` | Public | Creator auth |
-| `/login/sponsor`, `/signup/sponsor` | Public | Sponsor auth |
+| `/login/creator`, `/signup/creator` | Public | Creator auth (email, password, username) |
+| `/login/sponsor`, `/signup/sponsor` | Public | Sponsor auth (email, password) |
+| `/forgot-password` | Public | Password recovery form (email input) |
+| `/reset-password?token=xxx&email=yyy` | Public | New password form with token validation |
+| `/verify-email` | Authenticated | Email verification (6-digit code) |
 | `/docs` | Public | Docs shell |
 | `/dashboard`, `/platforms`, … | Creator auth | Creator shell |
 | `/sponsor/*` | Sponsor auth | Sponsor shell |
@@ -171,11 +260,20 @@ Authenticated pages use `AppShell` with warm coral theme (`--primary: #e85d4c`).
 | Global styles | `frontend/app/globals.css` |
 | Auth layout | `frontend/app/(auth)/layout.tsx` |
 | Auth components | `frontend/components/auth/*` |
+| Password reset form | `frontend/components/auth/ForgotPasswordForm.tsx` |
+| Reset password form | `frontend/components/auth/ResetPasswordForm.tsx` |
+| Email verification form | `frontend/components/auth/EmailVerificationForm.tsx` |
+| Username availability | `frontend/components/auth/UsernameInput.tsx` |
+| Protected route wrapper | `frontend/components/auth/ProtectedRoute.tsx` |
+| Email verification hook | `frontend/hooks/useEmailVerification.ts` |
+| Translations (EN) | `frontend/lib/i18n/en.ts` |
+| Translations (MN) | `frontend/lib/i18n/mn.ts` |
 
 ---
 
 ## QA checklist
 
+**Landing & navigation:**
 - [ ] `/` shows creator copy; **For Brands** goes to `/brands`
 - [ ] `/brands` shows brand copy; **For Creators** goes to `/`
 - [ ] Creator **Log in** / **Get started** → `/login/creator` and `/signup/creator`
@@ -184,3 +282,41 @@ Authenticated pages use `AppShell` with warm coral theme (`--primary: #e85d4c`).
 - [ ] Auth pages match landing sky gradient and dark pill submit button
 - [ ] Auth back links return to correct landing (`/` or `/brands`)
 - [ ] `/login` and `/signup` redirect to creator flows
+
+**Signup & username validation:**
+- [ ] Username input debounces (300ms) before checking availability
+- [ ] Available usernames show green checkmark; taken usernames show red X
+- [ ] Cannot submit signup form unless username is available
+- [ ] Username field shows loading spinner while API request pending
+- [ ] Form displays error message for whitespace-only usernames
+
+**Password reset:**
+- [ ] "Forgot password?" link visible on login pages (`/login/creator`, `/login/sponsor`)
+- [ ] `/forgot-password` shows email input; "Send reset link" button
+- [ ] After submitting email, shows "Check your email" message
+- [ ] Reset link in email includes token + email as URL params
+- [ ] Visiting reset link with valid token shows password form + countdown timer
+- [ ] Countdown shows "expires in X minutes" (60 min total)
+- [ ] Invalid or expired token shows error message; "Request new link" option
+- [ ] Password form enforces requirements (min length, special chars, etc.)
+- [ ] After reset, user auto-logs in and redirects to `/dashboard` (creator) or `/sponsor/dashboard` (sponsor)
+- [ ] Rate limiting: 3 forgot-password requests per 30 min per IP → 429 error
+
+**Email verification (2FA):**
+- [ ] After signup, user sees "Verify your email" prompt/modal
+- [ ] Clicking "Send code" triggers email delivery
+- [ ] Email contains 6-digit code with large, readable font
+- [ ] Code input accepts 6 numeric digits only
+- [ ] Auto-focus moves between digits (supports paste)
+- [ ] After 3 failed attempts, shows "Too many attempts" message
+- [ ] "Resend code" button resets attempt counter; generates new code
+- [ ] On successful verification, shows success message + redirects to `/dashboard`
+- [ ] Countdown timer shows code expiry (15 minutes)
+- [ ] Rate limiting: 5 verify-email requests per 15 min per IP → 429 error
+
+**Protected routes:**
+- [ ] Unauthenticated users cannot access `/dashboard`, `/platforms`, etc.
+- [ ] Accessing protected route without login redirects to `/login/creator`
+- [ ] Creator accessing sponsor routes redirects to `/dashboard`
+- [ ] Sponsor accessing creator routes redirects to `/sponsor/dashboard`
+- [ ] After logout, protected routes are inaccessible

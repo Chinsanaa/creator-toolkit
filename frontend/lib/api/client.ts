@@ -177,3 +177,101 @@ export async function completeOAuthSession(payload: OAuthSessionRequest): Promis
   );
   return data;
 }
+
+export async function forgotPassword(payload: { email: string }): Promise<void> {
+  await apiFetch(
+    '/api/auth/forgot-password',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    false
+  );
+}
+
+export async function verifyResetToken(payload: {
+  token: string;
+  email: string;
+}): Promise<{ valid: boolean; expiresIn: number }> {
+  return apiFetch(
+    '/api/auth/verify-reset-token',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    false
+  );
+}
+
+export async function resetPassword(payload: {
+  token: string;
+  email: string;
+  newPassword: string;
+}): Promise<AuthResponse> {
+  const data = normalizeAuthResponse(
+    await apiFetch<AuthResponse>(
+      '/api/auth/reset-password',
+      {
+        method: 'POST',
+        body: JSON.stringify(payload),
+      },
+      false
+    )
+  );
+  setAccessToken(data.accessToken);
+  setUserTypeCookie(data.user.userType);
+  return data;
+}
+
+export async function checkUsernameAvailability(username: string): Promise<{
+  available: boolean;
+  username: string;
+}> {
+  return apiFetch(
+    '/api/auth/check-username',
+    {
+      method: 'POST',
+      body: JSON.stringify({ username }),
+    },
+    false
+  );
+}
+
+export async function sendVerificationEmail(payload: {
+  userId: string;
+  email: string;
+}): Promise<void> {
+  await apiFetch(
+    '/api/auth/send-verification-email',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    false
+  );
+}
+
+export async function verifyEmail(payload: {
+  userId: string;
+  code: string;
+}): Promise<void> {
+  await apiFetch(
+    '/api/auth/verify-email',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    false
+  );
+}
+
+export async function resendVerificationEmail(payload: { userId: string }): Promise<void> {
+  await apiFetch(
+    '/api/auth/resend-verification-email',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    false
+  );
+}

@@ -144,3 +144,6 @@ vite.config.ts.timestamp-*
 
 # Nested duplicate checkout (accidental submodule gitlink)
 /creator-toolkit/
+
+# Claude Code local settings
+.claude/

@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { LegalDocumentModal } from '@/components/auth/LegalDocumentModal';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { LegalDocumentSlug } from '@/lib/types/legal';
 
 interface LegalConsentProps {
@@ -12,6 +13,7 @@ interface LegalConsentProps {
 
 export function LegalConsent({ mode, checked = false, onCheckedChange }: LegalConsentProps) {
   const [openSlug, setOpenSlug] = useState<LegalDocumentSlug | null>(null);
+  const { t } = useLanguage();
 
   function openDocument(slug: LegalDocumentSlug) {
     setOpenSlug(slug);
@@ -20,11 +22,11 @@ export function LegalConsent({ mode, checked = false, onCheckedChange }: LegalCo
   const links = (
     <>
       <button type="button" className="auth-link underline" onClick={() => openDocument('terms-and-conditions')}>
-        Terms and Conditions
+        {t('terms_and_conditions')}
       </button>
       {' and '}
       <button type="button" className="auth-link underline" onClick={() => openDocument('privacy-policy')}>
-        Privacy Policy
+        {t('privacy_policy')}
       </button>
     </>
   );

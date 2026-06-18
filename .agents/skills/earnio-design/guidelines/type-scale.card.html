@@ -1,0 +1,25 @@
+<!-- @dsCard group="Type" viewport="700x300" name="Type scale" subtitle="xs → 3xl, the working range" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-display);background:var(--surface);color:var(--text-strong);padding:24px}
+  .r{display:flex;align-items:baseline;gap:16px;padding:5px 0;border-bottom:1px solid var(--border)}
+  .r:last-child{border:0}
+  .tok{font-family:var(--font-mono);font-size:11px;color:var(--text-muted);width:120px;flex:none}
+  .s{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+</style>
+</head>
+<body>
+  <div id="rows"></div>
+  <script>
+    const rows=[['--text-3xl · 48',48],['--text-2xl · 36',36],['--text-xl · 28',28],['--text-lg · 22',22],['--text-md · 18',18],['--text-base · 16',16],['--text-sm · 14',14],['--text-xs · 12',12]];
+    document.getElementById('rows').innerHTML=rows.map(([t,px])=>`
+      <div class="r"><span class="tok">${t.split(' · ')[0]}<br>${px}px</span>
+      <span class="s" style="font-size:${px}px;font-weight:600;letter-spacing:-.02em">Earn more, create more</span></div>`).join('');
+  </script>
+</body>
+</html>

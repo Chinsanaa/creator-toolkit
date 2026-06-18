@@ -1,4 +1,5 @@
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
+import ws from 'ws';
 
 function requireEnv(name: string): string {
   const value = process.env[name];
@@ -12,22 +13,23 @@ const supabaseUrl = requireEnv('SUPABASE_URL');
 const supabaseAnonKey =
   process.env.SUPABASE_ANON_KEY || process.env.SUPABASE_KEY || requireEnv('SUPABASE_ANON_KEY');
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
+const clientOptions = {
   auth: {
     autoRefreshToken: false,
     persistSession: false,
   },
-});
+  realtime: {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    transport: ws as any,
+  },
+};
+
+export const supabase = createClient(supabaseUrl, supabaseAnonKey, clientOptions);
 
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
 export const supabaseAdmin: SupabaseClient | null = serviceRoleKey
-  ? createClient(supabaseUrl, serviceRoleKey, {
-      auth: {
-        autoRefreshToken: false,
-        persistSession: false,
-      },
-    })
+  ? createClient(supabaseUrl, serviceRoleKey, clientOptions)
   : null;
 
 export function hasServiceRoleKey(): boolean {
@@ -45,10 +47,7 @@ export function warnIfMissingServiceRoleKey(): void {
 
 export function getAuthenticatedClient(accessToken: string): SupabaseClient {
   return createClient(supabaseUrl, supabaseAnonKey, {
-    auth: {
-      autoRefreshToken: false,
-      persistSession: false,
-    },
+    ...clientOptions,
     global: {
       headers: {
         Authorization: `Bearer ${accessToken}`,

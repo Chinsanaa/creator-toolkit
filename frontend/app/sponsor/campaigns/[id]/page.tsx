@@ -16,12 +16,14 @@ import {
 } from '@/lib/api/sponsor';
 import { applicationStatusLabel, formatDate } from '@/lib/format';
 import { isLegacyUnpublished, isPublished } from '@/lib/sponsor/campaignForm';
+import { useLanguage } from '@/contexts/LanguageContext';
 import type { SponsorApplication, SponsorCampaign } from '@/lib/types/sponsor';
 
 export default function SponsorCampaignDetailPage() {
   const params = useParams();
   const router = useRouter();
   const id = params.id as string;
+  const { t } = useLanguage();
 
   const [campaign, setCampaign] = useState<SponsorCampaign | null>(null);
   const [applications, setApplications] = useState<SponsorApplication[]>([]);
@@ -74,13 +76,7 @@ export default function SponsorCampaignDetailPage() {
 
   async function handleDelete() {
     if (!campaign) return;
-    if (
-      !window.confirm(
-        'Delete this campaign? This cannot be undone.'
-      )
-    ) {
-      return;
-    }
+    if (!window.confirm(t('delete_campaign_confirm'))) return;
     setBusy(true);
     setError(null);
     try {
@@ -135,11 +131,11 @@ export default function SponsorCampaignDetailPage() {
   return (
     <SponsorShell>
       <Link href="/sponsor/campaigns" className="link-primary text-sm">
-        ← Back to campaigns
+        {t('back_to_campaigns')}
       </Link>
 
       {loading && (
-        <p className="mt-8 text-sm text-[color:var(--muted-foreground)]">Loading…</p>
+        <p className="mt-8 text-sm text-[color:var(--muted-foreground)]">{t('loading')}</p>
       )}
       {error ? (
         <p className="mt-8 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
@@ -166,12 +162,12 @@ export default function SponsorCampaignDetailPage() {
           {!legacy && (
             <section>
               <h2 className="font-display text-lg font-bold text-[color:var(--foreground)]">
-                Applications
+                {t('applications_heading')}
               </h2>
 
               {applications.length === 0 && (
                 <p className="mt-4 text-sm text-[color:var(--muted-foreground)]">
-                  No applications yet.
+                  {t('no_applications_campaign')}
                 </p>
               )}
 
@@ -191,7 +187,7 @@ export default function SponsorCampaignDetailPage() {
 
           {legacy && (
             <p className="text-sm text-[color:var(--muted-foreground)]">
-              Publish this campaign to make it visible to creators and receive applications.
+              {t('publish_campaign_note')}
             </p>
           )}
         </article>
@@ -212,6 +208,7 @@ function ApplicationCard({
   onReject: (notes?: string) => void;
 }) {
   const [notes, setNotes] = useState('');
+  const { t } = useLanguage();
   const pending = application.status === 'pending';
 
   return (
@@ -226,7 +223,7 @@ function ApplicationCard({
           )}
         </p>
         <p className="mt-1 text-xs text-[color:var(--muted)]">
-          Applied {formatDate(application.applied_at)} ·{' '}
+          {t('applied_label')} {formatDate(application.applied_at)} ·{' '}
           {applicationStatusLabel(application.status)}
         </p>
       </div>
@@ -239,7 +236,7 @@ function ApplicationCard({
 
       {application.sponsor_notes && !pending && (
         <p className="mt-2 text-xs text-[color:var(--muted)]">
-          Your note: {application.sponsor_notes}
+          {t('your_note_label')} {application.sponsor_notes}
         </p>
       )}
 
@@ -249,7 +246,7 @@ function ApplicationCard({
             rows={2}
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            placeholder="Optional note to creator…"
+            placeholder={t('sponsor_notes_placeholder')}
             className="input-touch"
           />
           <div className="flex gap-2">
@@ -259,7 +256,7 @@ function ApplicationCard({
               onClick={() => onApprove(notes.trim() || undefined)}
               className="min-h-11 rounded-xl bg-[color:var(--success)] px-4 py-2 text-sm font-semibold text-white disabled:opacity-60"
             >
-              {busy ? '…' : 'Approve'}
+              {busy ? '…' : t('approve')}
             </button>
             <button
               type="button"
@@ -267,7 +264,7 @@ function ApplicationCard({
               onClick={() => onReject(notes.trim() || undefined)}
               className="btn-secondary"
             >
-              Reject
+              {t('reject')}
             </button>
           </div>
         </div>

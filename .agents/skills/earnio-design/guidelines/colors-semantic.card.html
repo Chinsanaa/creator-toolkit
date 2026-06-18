@@ -1,0 +1,30 @@
+<!-- @dsCard group="Colors" viewport="700x220" name="Semantic & spark" subtitle="Success, warning, danger + the cyan spark accent" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);background:var(--surface);color:var(--text-strong);padding:24px}
+  .grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .item{display:flex;flex-direction:column;gap:8px}
+  .chip{height:56px;border-radius:var(--radius-md);display:flex;align-items:flex-end;padding:8px;color:#fff;font-weight:700;font-size:12px}
+  .soft{height:26px;border-radius:var(--radius-sm)}
+  .name{font-size:12px;font-weight:700;color:var(--text-body)}
+  .hex{font-family:var(--font-mono);font-size:10px;color:var(--text-muted)}
+</style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+  <script>
+    const items=[['Success','#10B981','#D9F6EC'],['Warning','#F5A524','#FBEBCF'],['Danger','#F0455A','#FCE0E4'],['Spark','#12C2F3','#D6F6FE']];
+    document.getElementById('grid').innerHTML=items.map(([n,h,s])=>`
+      <div class="item">
+        <div class="chip" style="background:${h}">${n}</div>
+        <div class="soft" style="background:${s}"></div>
+        <div class="name">${n}</div><div class="hex">${h} · soft ${s}</div>
+      </div>`).join('');
+  </script>
+</body>
+</html>

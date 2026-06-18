@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ApiError, deleteAccount } from '@/lib/api/client';
 import { clearSessionCookies } from '@/lib/auth/session';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 const CONFIRM_TEXT = 'DELETE';
 
@@ -13,6 +14,7 @@ export function DeleteAccountSection() {
   const [confirmText, setConfirmText] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
+  const { t } = useLanguage();
 
   const canSubmit =
     password.length > 0 && confirmText === CONFIRM_TEXT && !pending;
@@ -38,15 +40,15 @@ export function DeleteAccountSection() {
 
   return (
     <section className="creator-panel-lg border border-red-200/80">
-      <h2 className="text-base font-semibold tracking-tight text-red-700">Delete account</h2>
+      <h2 className="text-base font-semibold tracking-tight text-red-700">{t('delete_account')}</h2>
       <p className="mt-2 text-sm text-landing-muted">
-        Permanently remove your Earnio account, profile, and associated data. This cannot be undone.
+        {t('delete_account_subtitle')}
       </p>
 
       <form onSubmit={handleDelete} className="mt-6 space-y-4">
         <div>
           <label htmlFor="delete-password" className="mb-2 block text-sm font-medium text-landing-fg">
-            Current password
+            {t('current_password')}
           </label>
           <input
             id="delete-password"
@@ -56,13 +58,13 @@ export function DeleteAccountSection() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             className="auth-input"
-            placeholder="Enter your password"
+            placeholder={t('enter_your_password')}
           />
         </div>
 
         <div>
           <label htmlFor="delete-confirm" className="mb-2 block text-sm font-medium text-landing-fg">
-            Type <span className="font-mono text-red-700">{CONFIRM_TEXT}</span> to confirm
+            {t('type_delete_to_confirm')}
           </label>
           <input
             id="delete-confirm"
@@ -87,7 +89,7 @@ export function DeleteAccountSection() {
           disabled={!canSubmit}
           className="rounded-xl bg-red-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
         >
-          {pending ? 'Deleting account…' : 'Delete my account'}
+          {pending ? t('deleting_account') : t('delete_my_account')}
         </button>
       </form>
     </section>

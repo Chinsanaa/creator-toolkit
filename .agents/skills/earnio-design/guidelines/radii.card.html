@@ -1,0 +1,25 @@
+<!-- @dsCard group="Spacing" viewport="700x180" name="Corner radii" subtitle="8px base → full pills" -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<link rel="stylesheet" href="../styles.css">
+<style>
+  *{box-sizing:border-box}
+  body{margin:0;font-family:var(--font-sans);background:var(--surface);padding:24px}
+  .grid{display:flex;gap:16px;align-items:flex-end}
+  .item{display:flex;flex-direction:column;gap:8px;align-items:center}
+  .box{width:74px;height:74px;background:var(--blue-50);border:1.5px solid var(--primary);border-bottom:none}
+  .lbl{font-family:var(--font-mono);font-size:10px;color:var(--text-muted);text-align:center}
+</style>
+</head>
+<body>
+  <div class="grid" id="grid"></div>
+  <script>
+    const r=[['sm',8],['md',12],['lg',16],['xl',20],['2xl',28],['full',37]];
+    document.getElementById('grid').innerHTML=r.map(([n,px])=>`
+      <div class="item"><div class="box" style="border-radius:${px}px ${px}px 0 0"></div>
+      <span class="lbl">--radius-${n}<br>${n==='full'?'999':px}px</span></div>`).join('');
+  </script>
+</body>
+</html>

@@ -1,6 +1,8 @@
 import { randomInt } from 'node:crypto';
 import { User } from '@supabase/supabase-js';
 import { getAuthenticatedClient, supabase, supabaseAdmin } from '../database/supabase';
+import { validatePassword, getPasswordErrorMessage } from '../utils/passwords';
+import notificationService from './notificationService';
 
 export interface SignupPayload {
   email: string;
@@ -136,6 +138,7 @@ class AuthService {
       preferredUserType &&
       isNewUser &&
       !meta.user_type &&
+      profile.userType === 'creator' &&
       profile.userType !== preferredUserType
     ) {
       updates.user_type = preferredUserType;
@@ -202,7 +205,7 @@ class AuthService {
     return profile;
   }
 
-  private async isUsernameTaken(username: string): Promise<boolean> {
+  public async isUsernameTaken(username: string): Promise<boolean> {
     const { data, error } = await supabase.rpc('is_username_available', {
       check_username: username,
     });
@@ -269,8 +272,10 @@ class AuthService {
       throw new Error('You must accept the Terms and Conditions and Privacy Policy');
     }
 
-    if (password.length < 8) {
-      throw new Error('Password must be at least 8 characters');
+    const passwordStrength = validatePassword(password);
+    if (!passwordStrength.isValid) {
+      const errorMessage = getPasswordErrorMessage(password);
+      throw new Error(errorMessage || 'Password does not meet security requirements');
     }
 
     if (userType !== 'creator' && userType !== 'sponsor') {
@@ -315,6 +320,14 @@ class AuthService {
     } catch {
       user = this.mapUserFromMetadata(data.user);
     }
+
+    await notificationService.create(
+      user.id,
+      'welcome_signup',
+      'Welcome to Earnio',
+      `Your ${user.userType} account is ready. Start by exploring your dashboard and completing your profile.`,
+      { userType: user.userType }
+    );
 
     return {
       user,
