@@ -28,6 +28,7 @@ interface AuthFormProps {
   alternateLabel: string;
   onSubmit: (values: Record<string, string>) => Promise<void>;
   beforeForm?: React.ReactNode;
+  afterPassword?: React.ReactNode;
   legalConsentMode?: 'signup' | 'login';
   oauthUserType?: UserType;
 }
@@ -42,6 +43,7 @@ export function AuthForm({
   alternateLabel,
   onSubmit,
   beforeForm,
+  afterPassword,
   legalConsentMode,
   oauthUserType,
 }: AuthFormProps) {
@@ -156,6 +158,9 @@ export function AuthForm({
               )}
               {field.type === 'password' && isSignupForm && (
                 <PasswordRequirements password={passwordValue} showRequirements={true} />
+              )}
+              {field.type === 'password' && afterPassword && (
+                <div className="mt-2">{afterPassword}</div>
               )}
             </div>
           ))}

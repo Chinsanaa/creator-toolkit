@@ -1,6 +1,8 @@
 import express, { Response } from 'express';
 import { ipKeyGenerator, rateLimit } from 'express-rate-limit';
 import authService from '../services/authService';
+import passwordResetService from '../services/passwordResetService';
+import emailVerificationService from '../services/emailVerificationService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
 import { logServerError } from '../utils/serverLog';
 
@@ -26,6 +28,24 @@ const authRateLimiter = rateLimit({
   message: { error: 'Too many auth attempts. Please try again later.' },
 });
 
+const forgotPasswordRateLimiter = rateLimit({
+  windowMs: 30 * 60 * 1000,
+  limit: 3,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip ?? '')}:${req.method}:${req.path}`,
+  message: { error: 'Too many password reset requests. Please try again later.' },
+});
+
+const resetPasswordRateLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  limit: 2,
+  standardHeaders: true,
+  legacyHeaders: false,
+  keyGenerator: (req) => `${ipKeyGenerator(req.ip ?? '')}:${req.method}:${req.path}:${(req.body as { email?: string }).email || ''}`,
+  message: { error: 'Too many password reset attempts. Please try again later.' },
+});
+
 const SAFE_AUTH_ERRORS = new Set([
   'Missing required fields',
   'You must accept the Terms and Conditions and Privacy Policy',
@@ -45,6 +65,17 @@ const SAFE_AUTH_ERRORS = new Set([
   'Account deletion is temporarily unavailable. Please contact support or try again later.',
   'Could not delete account data. Remove active campaigns or pending payouts, then try again.',
   'Failed to delete account. Please try again or contact support.',
+  'Email is required',
+  'Password reset link has expired or is invalid. Please request a new one.',
+  'Invalid password reset request',
+  'Password does not meet security requirements',
+  'Failed to reset password. Please try again.',
+  'Password reset successful, but automatic login failed. Please log in manually.',
+  'Password reset service is temporarily unavailable',
+  'Invalid or expired verification code',
+  'Email verification service is temporarily unavailable',
+  'Email is already verified',
+  'User not found',
 ]);
 
 function authErrorMessage(error: unknown, fallback: string): string {
@@ -194,6 +225,160 @@ router.delete('/account', verifyToken, async (req: AuthRequest, res: Response) =
       logServerError('Delete account error', error);
     }
     res.status(status).json({ error: message });
+  }
+});
+
+router.post('/forgot-password', forgotPasswordRateLimiter, async (req: AuthRequest, res: Response) => {
+  try {
+    const { email } = req.body as { email?: string };
+
+    await passwordResetService.initiatePasswordReset({
+      email: email ?? '',
+    });
+
+    res.json({
+      message: 'If an account exists for this email, you will receive a password reset link shortly.',
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Failed to initiate password reset');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/verify-reset-token', async (req: AuthRequest, res: Response) => {
+  try {
+    const { token, email } = req.body as { token?: string; email?: string };
+
+    const verification = await passwordResetService.verifyResetToken(
+      token ?? '',
+      email ?? ''
+    );
+
+    if (!verification.valid) {
+      res.status(400).json({
+        error: 'Password reset link has expired or is invalid. Please request a new one.',
+      });
+      return;
+    }
+
+    res.json({
+      valid: true,
+      expiresIn: verification.expiresIn,
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Token verification failed');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/reset-password', resetPasswordRateLimiter, async (req: AuthRequest, res: Response) => {
+  try {
+    const { token, email, newPassword } = req.body as {
+      token?: string;
+      email?: string;
+      newPassword?: string;
+    };
+
+    const result = await passwordResetService.resetPassword({
+      token: token ?? '',
+      email: email ?? '',
+      newPassword: newPassword ?? '',
+    });
+
+    setRefreshTokenCookie(res, result.refreshToken);
+
+    res.json({
+      message: 'Password reset successful. You are now logged in.',
+      user: result.user,
+      accessToken: result.accessToken,
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Password reset failed');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/check-username', async (req: AuthRequest, res: Response) => {
+  try {
+    const { username } = req.body as { username?: string };
+
+    if (!username?.trim()) {
+      res.status(400).json({ error: 'Username is required' });
+      return;
+    }
+
+    const isTaken = await authService.isUsernameTaken(username.trim());
+
+    res.json({
+      available: !isTaken,
+      username: username.trim(),
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Failed to check username availability');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/send-verification-email', authRateLimiter, async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId, email } = req.body as { userId?: string; email?: string };
+
+    if (!userId?.trim() || !email?.trim()) {
+      res.status(400).json({ error: 'User ID and email are required' });
+      return;
+    }
+
+    await emailVerificationService.sendVerificationEmail({
+      userId: userId.trim(),
+      email: email.trim(),
+    });
+
+    res.json({
+      message: 'Verification email sent',
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Failed to send verification email');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/verify-email', authRateLimiter, async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId, code } = req.body as { userId?: string; code?: string };
+
+    if (!userId?.trim() || !code?.trim()) {
+      res.status(400).json({ error: 'User ID and verification code are required' });
+      return;
+    }
+
+    await emailVerificationService.confirmEmailVerification(userId.trim(), code.trim());
+
+    res.json({
+      message: 'Email verified successfully',
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Email verification failed');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/resend-verification-email', authRateLimiter, async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId } = req.body as { userId?: string };
+
+    if (!userId?.trim()) {
+      res.status(400).json({ error: 'User ID is required' });
+      return;
+    }
+
+    await emailVerificationService.resendVerificationEmail(userId.trim());
+
+    res.json({
+      message: 'Verification email resent',
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Failed to resend verification email');
+    res.status(400).json({ error: message });
   }
 });
 
