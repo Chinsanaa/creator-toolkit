@@ -45,6 +45,9 @@ export const metadata: Metadata = {
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
     icon: [{ url: "/icons/icon-512.png", sizes: "512x512", type: "image/png" }],
   },
+  other: {
+    'tiktok-developers-site-verification': 'akfWgxdDMgxSGHl48nI4wf231VYm4XLd',
+  },
 };
 
 export const viewport: Viewport = {
