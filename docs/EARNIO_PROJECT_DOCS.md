@@ -208,10 +208,10 @@ One-click sync pulls fake earnings data and displays on dashboard.
 Minimal, clean, modern. Dark mode primary. Like Linear or Vercel.
 
 ### Color Palette
-- **Primary Color:** `#0048BB` (Earnio blue)
+- **Primary Color:** `#2E5BFF` (Earnio blue)
 - **Background:** `#0D0D0D` (dark), `#FFFFFF` (light optional)
 - **Text:** `#F5F5F7` (light text on dark)
-- **Accent/CTA:** `#0048BB` (blue buttons, links)
+- **Accent/CTA:** `#2E5BFF` (blue buttons, links)
 
 ### Typography
 - **Headings:** Poppins (24px–14px)

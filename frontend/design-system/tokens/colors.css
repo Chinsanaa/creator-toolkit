@@ -1,18 +1,18 @@
 /* ============================================================
    Earnio — Color tokens
-   Primary blue identity: Earnio Blue #0048BB,
+   Single electric-blue identity: Earnio Blue #2E5BFF (azure),
    cool slate ink ramp, cyan "spark" highlight, money-green.
    ============================================================ */
 
 :root {
   /* --- Earnio Blue ramp --- */
-  --blue-50:  #F0F7FF;
-  --blue-100: #E0EEFF;
-  --blue-200: #C1DDFF;
-  --blue-400: #4080D9;
-  --blue-500: #0048BB; /* Earnio Blue — primary */
-  --blue-600: #0040A0;
-  --blue-700: #003080;
+  --blue-50:  #EEF3FF;
+  --blue-100: #DCE6FF;
+  --blue-200: #B9CCFF;
+  --blue-400: #5C7DFF;
+  --blue-500: #2E5BFF; /* Earnio Blue — primary */
+  --blue-600: #1F45E5;
+  --blue-700: #1736B8;
 
   /* --- Spark cyan accent (highlight only) --- */
   --spark-500: #12C2F3;
@@ -36,8 +36,8 @@
   --mesh-3: #E6ECFF;
 
   /* --- Brand gradients --- */
-  --gradient-brand: linear-gradient(135deg, #4080D9 0%, #0048BB 45%, #003080 100%); /* @kind color */
-  --gradient-spark: linear-gradient(115deg, #0048BB 0%, #12C2F3 100%); /* @kind color */
+  --gradient-brand: linear-gradient(135deg, #4D74FF 0%, #2E5BFF 45%, #1736B8 100%); /* @kind color */
+  --gradient-spark: linear-gradient(115deg, #2E5BFF 0%, #12C2F3 100%); /* @kind color */
   --gradient-ink:   linear-gradient(160deg, #161E2E 0%, #0B1220 100%); /* @kind color */
 
   /* === Semantic aliases (light) === */
@@ -49,9 +49,9 @@
   --border:            #D7DEEA;
   --muted:             #5A6A85;
   --muted-foreground:  #8492A8;
-  --primary:           #0048BB;
-  --primary-hover:     #0040A0;
-  --primary-soft:      #F0F7FF;
+  --primary:           #2E5BFF;
+  --primary-hover:     #1F45E5;
+  --primary-soft:      #EEF3FF;
   --primary-foreground:#FFFFFF;
   --accent:            #12C2F3;
   --accent-soft:       #E0F9FF;
@@ -61,7 +61,7 @@
   --warning-soft:      #FEF3C7;
   --destructive:       #F0455A;
   --destructive-soft:  #FEE2E2;
-  --ring:              #0048BB;
+  --ring:              #2E5BFF;
 
   /* Landing palette — airy blue/white */
   --landing-fg:        #0B1220;
@@ -82,14 +82,14 @@
   --border:            #27324A;
   --muted:             #8492A8;
   --muted-foreground:  #AEB9CC;
-  --primary:           #4080D9;
-  --primary-hover:     #6BA0FF;
-  --primary-soft:      #0D1F3A;
+  --primary:           #5C7DFF;
+  --primary-hover:     #8DA8FF;
+  --primary-soft:      #18233E;
   --accent:            #3FD6FF;
   --accent-soft:       #0D2A3A;
   --success:           #34D399;
   --destructive:       #F87171;
-  --ring:              #4080D9;
+  --ring:              #5C7DFF;
 
   --mesh-1: #16214A;
   --mesh-2: #102A3F;

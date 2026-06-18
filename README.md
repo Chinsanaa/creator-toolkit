@@ -6,7 +6,7 @@ Earnio is a full-stack UGC (User-Generated Content) monetization platform for **
 
 This repository is a **monorepo** with a Next.js 16 website (frontend) and an Express 5 API (backend), backed by **Supabase** (PostgreSQL + authentication). The project is designed as an MVP with comprehensive features, responsive design, dark mode support, and mobile-ready interfaces.
 
-**Design System:** Modern dark-mode interface with blue (`#0048BB`) as the primary brand color, Poppins & Montserrat typography, and 8px border radius for all components.
+**Design System:** Modern dark-mode interface with Earnio Blue (`#2E5BFF`) as the primary brand color, cool slate ink ramp, cyan spark accents, and 8px border radius for all components.
 
 **Current Status:** Active development (June 2026) · **Platform Support:** Web + iOS (Capacitor)
 
