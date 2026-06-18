@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { AuthForm } from '@/components/auth/AuthForm';
 import { AuthTypeBackLink } from '@/components/auth/AuthTypeBackLink';
 import { useAuth } from '@/contexts/AuthContext';
@@ -31,6 +32,13 @@ export default function SponsorLoginPage() {
       onSubmit={async (values) => {
         await login({ email: values.email, password: values.password });
       }}
+      afterPassword={
+        <div className="text-right">
+          <Link href={appendNextParam('/forgot-password', nextPath)} className="text-sm text-blue-600 hover:text-blue-700">
+            {t('forgot_password')}
+          </Link>
+        </div>
+      }
     />
   );
 }

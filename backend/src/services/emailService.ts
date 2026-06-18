@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { buildNotificationEmail } from '../emails/templates';
+import { buildNotificationEmail, buildPasswordResetEmail, buildPasswordChangedEmail } from '../emails/templates';
 
 class EmailService {
   private resend: Resend | null = null;
@@ -52,6 +52,55 @@ class EmailService {
 
     if (error) {
       console.error('Resend send failed:', error.message);
+    }
+  }
+
+  public async sendPasswordResetEmail(params: {
+    to: string;
+    userName: string;
+    resetLink: string;
+    expiresInMinutes: number;
+  }): Promise<void> {
+    if (!this.resend) return;
+
+    const from = process.env.EMAIL_FROM?.trim();
+    if (!from) return;
+
+    const html = buildPasswordResetEmail(params);
+
+    const { error } = await this.resend.emails.send({
+      from,
+      to: params.to,
+      subject: 'Reset your password',
+      html,
+    });
+
+    if (error) {
+      console.error('Password reset email send failed:', error.message);
+    }
+  }
+
+  public async sendPasswordChangedEmail(params: {
+    to: string;
+    userName: string;
+    changedAt: string;
+  }): Promise<void> {
+    if (!this.resend) return;
+
+    const from = process.env.EMAIL_FROM?.trim();
+    if (!from) return;
+
+    const html = buildPasswordChangedEmail(params);
+
+    const { error } = await this.resend.emails.send({
+      from,
+      to: params.to,
+      subject: 'Your password was changed',
+      html,
+    });
+
+    if (error) {
+      console.error('Password changed notification email send failed:', error.message);
     }
   }
 }

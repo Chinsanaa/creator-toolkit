@@ -209,6 +209,28 @@ export const translations: Record<string, string> = {
   delete_my_account: 'Delete my account',
   deleting_account: 'Deleting account…',
 
+  // Auth — Password Reset
+  forgot_password: 'Forgot password?',
+  reset_password: 'Reset password',
+  new_password: 'New password',
+  confirm_password: 'Confirm password',
+  passwords_do_not_match: 'Passwords do not match',
+  all_fields_required: 'All fields are required',
+  password_reset_link_expired: 'Password reset link expired',
+  invalid_password_reset_link: 'Invalid password reset link',
+  password_reset_expires_in: 'This link expires in',
+  verifying_password_reset_link: 'Verifying password reset link…',
+  request_new_password_reset: 'Please request a new password reset link.',
+  request_new_link: 'Request a new link',
+  forgot_password_subtitle: 'Enter your email address and we\'ll send you a link to reset your password.',
+  check_your_email: 'Check your email',
+  password_reset_email_sent: 'We sent a password reset link to',
+  password_reset_instructions: 'Click the link in the email to reset your password. The link expires in 1 hour.',
+  back_to_login: 'Back to login',
+  try_different_email: 'Try a different email',
+  remember_password: 'Remember your password?',
+  send_reset_link: 'Send reset link',
+
   // Sponsorships
   sponsorships_subtitle: 'Browse sponsorship opportunities from Mongolian brands.',
   my_applications: 'My applications',
