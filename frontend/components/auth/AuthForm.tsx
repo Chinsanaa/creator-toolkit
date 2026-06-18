@@ -4,8 +4,10 @@ import Link from 'next/link';
 import { FormEvent, useState } from 'react';
 import { LegalConsent } from '@/components/auth/LegalConsent';
 import { OAuthProviderButtons } from '@/components/auth/OAuthProviderButtons';
+import { PasswordRequirements } from '@/components/auth/PasswordRequirements';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
+import { validatePassword, getPasswordErrorMessage } from '@/lib/passwords';
 import type { UserType } from '@/lib/types/auth';
 
 interface Field {
@@ -46,11 +48,17 @@ export function AuthForm({
   const [error, setError] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const [acceptedTerms, setAcceptedTerms] = useState(false);
+  const [passwordValue, setPasswordValue] = useState('');
+  const [passwordError, setPasswordError] = useState<string | null>(null);
   const { t } = useLanguage();
+
+  const hasPasswordField = fields.some((f) => f.type === 'password');
+  const isSignupForm = legalConsentMode === 'signup';
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+    setPasswordError(null);
     setPending(true);
 
     const formData = new FormData(e.currentTarget);
@@ -65,6 +73,18 @@ export function AuthForm({
       return;
     }
 
+    // Validate password on signup
+    if (isSignupForm && values.password) {
+      const strength = validatePassword(values.password);
+      if (!strength.isValid) {
+        const errorMessage = getPasswordErrorMessage(values.password);
+        setPasswordError(errorMessage);
+        setError(null);
+        setPending(false);
+        return;
+      }
+    }
+
     if (legalConsentMode === 'signup') {
       values.acceptedTerms = 'true';
     }
@@ -75,6 +95,18 @@ export function AuthForm({
       setError(err instanceof ApiError ? err.message : t('something_went_wrong'));
     } finally {
       setPending(false);
+    }
+  }
+
+  function handlePasswordChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const password = e.currentTarget.value;
+    setPasswordValue(password);
+    // Only show error message on signup if password field is not empty
+    if (isSignupForm && password) {
+      const errorMessage = getPasswordErrorMessage(password);
+      setPasswordError(errorMessage);
+    } else {
+      setPasswordError(null);
     }
   }
 
@@ -112,8 +144,19 @@ export function AuthForm({
                 type={field.type ?? 'text'}
                 required={field.required ?? true}
                 placeholder={field.placeholder}
-                className="auth-input"
+                className={`auth-input ${
+                  field.type === 'password' && isSignupForm && passwordError
+                    ? 'border-red-500 focus:border-red-500 focus:ring-red-500'
+                    : ''
+                }`}
+                onChange={field.type === 'password' && isSignupForm ? handlePasswordChange : undefined}
               />
+              {field.type === 'password' && isSignupForm && passwordError && (
+                <p className="mt-2 text-sm text-red-600">{passwordError}</p>
+              )}
+              {field.type === 'password' && isSignupForm && (
+                <PasswordRequirements password={passwordValue} showRequirements={true} />
+              )}
             </div>
           ))}
 
@@ -141,7 +184,11 @@ export function AuthForm({
             <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
           )}
 
-          <button type="submit" disabled={pending} className="btn-primary">
+          <button
+            type="submit"
+            disabled={pending || (isSignupForm && hasPasswordField && passwordError !== null && passwordValue !== '')}
+            className="btn-primary disabled:opacity-50 disabled:cursor-not-allowed"
+          >
             {pending ? t('please_wait') : submitLabel}
           </button>
         </form>

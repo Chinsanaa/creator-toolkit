@@ -32,7 +32,7 @@ export default function SponsorSignupPage() {
           name: 'password',
           label: t('password'),
           type: 'password',
-          placeholder: t('at_least_8_chars'),
+          placeholder: 'Must include uppercase, lowercase, number, and special character',
         },
       ]}
       onSubmit={async (values) => {
