@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import { ipKeyGenerator, rateLimit } from 'express-rate-limit';
 import authService from '../services/authService';
 import passwordResetService from '../services/passwordResetService';
+import emailVerificationService from '../services/emailVerificationService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
 import { logServerError } from '../utils/serverLog';
 
@@ -71,6 +72,10 @@ const SAFE_AUTH_ERRORS = new Set([
   'Failed to reset password. Please try again.',
   'Password reset successful, but automatic login failed. Please log in manually.',
   'Password reset service is temporarily unavailable',
+  'Invalid or expired verification code',
+  'Email verification service is temporarily unavailable',
+  'Email is already verified',
+  'User not found',
 ]);
 
 function authErrorMessage(error: unknown, fallback: string): string {
@@ -310,6 +315,69 @@ router.post('/check-username', async (req: AuthRequest, res: Response) => {
     });
   } catch (error: unknown) {
     const message = authErrorMessage(error, 'Failed to check username availability');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/send-verification-email', authRateLimiter, async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId, email } = req.body as { userId?: string; email?: string };
+
+    if (!userId?.trim() || !email?.trim()) {
+      res.status(400).json({ error: 'User ID and email are required' });
+      return;
+    }
+
+    await emailVerificationService.sendVerificationEmail({
+      userId: userId.trim(),
+      email: email.trim(),
+    });
+
+    res.json({
+      message: 'Verification email sent',
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Failed to send verification email');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/verify-email', authRateLimiter, async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId, code } = req.body as { userId?: string; code?: string };
+
+    if (!userId?.trim() || !code?.trim()) {
+      res.status(400).json({ error: 'User ID and verification code are required' });
+      return;
+    }
+
+    await emailVerificationService.confirmEmailVerification(userId.trim(), code.trim());
+
+    res.json({
+      message: 'Email verified successfully',
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Email verification failed');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/resend-verification-email', authRateLimiter, async (req: AuthRequest, res: Response) => {
+  try {
+    const { userId } = req.body as { userId?: string };
+
+    if (!userId?.trim()) {
+      res.status(400).json({ error: 'User ID is required' });
+      return;
+    }
+
+    await emailVerificationService.resendVerificationEmail(userId.trim());
+
+    res.json({
+      message: 'Verification email resent',
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Failed to resend verification email');
     res.status(400).json({ error: message });
   }
 });

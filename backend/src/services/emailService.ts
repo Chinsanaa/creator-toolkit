@@ -1,5 +1,10 @@
 import { Resend } from 'resend';
-import { buildNotificationEmail, buildPasswordResetEmail, buildPasswordChangedEmail } from '../emails/templates';
+import {
+  buildNotificationEmail,
+  buildPasswordResetEmail,
+  buildPasswordChangedEmail,
+  buildVerificationEmail,
+} from '../emails/templates';
 
 class EmailService {
   private resend: Resend | null = null;
@@ -101,6 +106,31 @@ class EmailService {
 
     if (error) {
       console.error('Password changed notification email send failed:', error.message);
+    }
+  }
+
+  public async sendVerificationEmail(params: {
+    to: string;
+    userName: string;
+    verificationCode: string;
+    expiresInMinutes: number;
+  }): Promise<void> {
+    if (!this.resend) return;
+
+    const from = process.env.EMAIL_FROM?.trim();
+    if (!from) return;
+
+    const html = buildVerificationEmail(params);
+
+    const { error } = await this.resend.emails.send({
+      from,
+      to: params.to,
+      subject: 'Verify your email address',
+      html,
+    });
+
+    if (error) {
+      console.error('Verification email send failed:', error.message);
     }
   }
 }

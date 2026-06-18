@@ -236,3 +236,42 @@ export async function checkUsernameAvailability(username: string): Promise<{
     false
   );
 }
+
+export async function sendVerificationEmail(payload: {
+  userId: string;
+  email: string;
+}): Promise<void> {
+  await apiFetch(
+    '/api/auth/send-verification-email',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    false
+  );
+}
+
+export async function verifyEmail(payload: {
+  userId: string;
+  code: string;
+}): Promise<void> {
+  await apiFetch(
+    '/api/auth/verify-email',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    false
+  );
+}
+
+export async function resendVerificationEmail(payload: { userId: string }): Promise<void> {
+  await apiFetch(
+    '/api/auth/resend-verification-email',
+    {
+      method: 'POST',
+      body: JSON.stringify(payload),
+    },
+    false
+  );
+}
