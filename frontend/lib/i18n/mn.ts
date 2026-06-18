@@ -183,6 +183,33 @@ export const translations: Record<string, string> = {
   type_delete_to_confirm: 'Баталгаажуулахын тулд DELETE гэж бичнэ үү',
   delete_my_account: 'Миний бүртгэлийг устгах',
   deleting_account: 'Бүртгэлийг устгаж байна…',
+
+  // Нууц үг сэргээх
+  forgot_password: 'Нууц үгээ мартсан уу?',
+  reset_password: 'Нууц үгийг сэргээх',
+  new_password: 'Шинэ нууц үг',
+  confirm_password: 'Нууц үгийг баталгаалах',
+  passwords_do_not_match: 'Нууц үгүүд таарахгүй байна',
+  all_fields_required: 'Бүх талбарыг бөглөнө үү',
+  password_reset_link_expired: 'Нууц үг сэргээх холбоос хүчингүй болсон',
+  invalid_password_reset_link: 'Буруу нууц үг сэргээх холбоос',
+  password_reset_expires_in: 'Энэ холбоос дараах хугацаанд хүчинтэй:',
+  verifying_password_reset_link: 'Нууц үг сэргээх холбоосыг шалгаж байна…',
+  request_new_password_reset: 'Шинэ нууц үг сэргээх холбоос хүссэнэ үү.',
+  request_new_link: 'Шинэ холбоос хүсэх',
+  forgot_password_subtitle: 'Та и-мэйл хаягаа оруулаарай, бид танд нууц үгийг сэргээх холбоос илгээнэ.',
+  check_your_email: 'И-мэйлээ шалгаарай',
+  password_reset_email_sent: 'Нууц үг сэргээх холбоосыг дараах хаягт илгээлээ',
+  password_reset_instructions: 'И-мэйл дээрх холбоосыг дарж нууц үгээ сэргээнэ үү. Холбоос 1 цагийн турш хүчинтэй байна.',
+  back_to_login: 'Нэвтрэх хүүхэл рүү буцах',
+  try_different_email: 'Өөр и-мэйл ашиглах',
+  remember_password: 'Нууц үгээ санаж байна уу?',
+  send_reset_link: 'Сэргээх холбоос илгээх',
+
+  // Хэрэглэгчийн нэрийн баталгаажуулалт
+  username_available: 'Хэрэглэгчийн нэр сайн',
+  username_already_taken: 'Энэ хэрэглэгчийн нэр аль хэдийн авагдсан',
+
   sponsorships_subtitle: 'Монгол брэндүүдийн ивээн тэтгэлтийн боломжуудыг үзэх.',
   my_applications: 'Миний өргөдлүүд',
   search_sponsorships: 'Ивээн тэтгэлтүүд хайх…',
