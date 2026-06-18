@@ -13,14 +13,15 @@ Before deploying to production:
   - [ ] Backend: `npm test` (8 tests pass)
   - [ ] Frontend: `npm run lint && npm run build`
 - [ ] Supabase project created
-  - [ ] All migrations applied to database
+  - [ ] All migrations applied to database (including password reset & email verification tables)
   - [ ] RLS policies reviewed and enabled
   - [ ] Auth users table with proper constraints
   - [ ] Service role key generated and secure
-- [ ] Resend account (for email notifications)
+- [ ] Resend account (for email notifications, password reset, email verification)
   - [ ] Domain verified for production sending
   - [ ] API key generated
-  - [ ] Email templates tested
+  - [ ] Email templates tested (signup, password reset, verification code)
+  - [ ] Sender email (`EMAIL_FROM`) verified and configured
 - [ ] Domain names registered
   - [ ] Frontend domain (e.g., `earnio.app`)
   - [ ] API domain (e.g., `api.earnio.app`)
@@ -252,6 +253,103 @@ Should return email provider status in health check.
 
 ---
 
+## 🔐 Step 4.5: Configure Password Reset & Email Verification
+
+### 4.5.1 Password Reset Configuration
+
+Password reset tokens have configurable expiry via environment variables:
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `PASSWORD_RESET_TOKEN_EXPIRY_MINUTES` | `60` | How long reset link remains valid |
+| `FRONTEND_URL` | (required) | Used in reset link; must match your frontend domain |
+
+**Email template:** Backend sends password reset email from `EMAIL_FROM` with:
+- Reset link: `https://yourfrontend.com/reset-password?token=...&email=...`
+- Token expiry countdown
+- Security notice: "If you didn't request this, ignore it."
+
+**Rate limit:** 3 forgot-password requests per 30 minutes per IP
+
+### 4.5.2 Email Verification Configuration
+
+Email verification uses 6-digit codes sent via Resend:
+
+| Variable | Default | Purpose |
+|----------|---------|---------|
+| `EMAIL_VERIFICATION_CODE_EXPIRY_MINUTES` | `15` | Code validity period |
+| `EMAIL_VERIFICATION_MAX_ATTEMPTS` | `3` | Failed verification attempts before lockout |
+
+**Email template:** Backend sends verification code with:
+- Large 6-digit code (easy to read)
+- Code expiry time
+- Resend link for new code
+- Security notice about not sharing code
+
+**Rate limits:**
+- 5 verification email sends per 15 minutes per IP
+- 5 verification attempts per 15 minutes per IP
+- Unlimited resends (resets attempt counter)
+
+### 4.5.3 Database Tables
+
+Ensure Supabase migrations include:
+
+```sql
+-- Password reset tokens
+CREATE TABLE password_reset_tokens (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id),
+  token_hash TEXT NOT NULL,
+  expires_at TIMESTAMP WITH TIME ZONE,
+  used_at TIMESTAMP WITH TIME ZONE,
+  created_at TIMESTAMP WITH TIME ZONE
+);
+
+-- Email verification
+CREATE TABLE email_verification (
+  id UUID PRIMARY KEY,
+  user_id UUID NOT NULL REFERENCES users(id),
+  email TEXT NOT NULL,
+  code TEXT NOT NULL,
+  expires_at TIMESTAMP WITH TIME ZONE,
+  attempts INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE
+);
+```
+
+Run migrations:
+```bash
+supabase db push
+```
+
+### 4.5.4 Test Password Reset
+
+After deployment:
+
+```bash
+# Request password reset
+curl -X POST https://api.earnio.app/api/auth/forgot-password \
+  -H "Content-Type: application/json" \
+  -d '{"email":"test@example.com"}'
+
+# Check Resend logs for reset email
+```
+
+### 4.5.5 Test Email Verification
+
+```bash
+# Send verification code (requires authenticated request)
+curl -X POST https://api.earnio.app/api/auth/send-verification-email \
+  -H "Authorization: Bearer <access-token>" \
+  -H "Content-Type: application/json" \
+  -d '{"userId":"<user-id>","email":"test@example.com"}'
+
+# Check Resend logs for verification email
+```
+
+---
+
 ## 🔄 Step 5: Set Up Platform Sync (External Cron)
 
 ### Option A: GitHub Actions Cron
@@ -340,6 +438,28 @@ Verify in Supabase dashboard:
 Check Resend dashboard:
 - **Logs** should show email sent to test account
 - Email received in inbox (check spam if needed)
+
+### 6.6 Password Reset Flow
+
+1. Go to `/login/creator`
+2. Click **Forgot password?**
+3. Enter test email; click **Send reset link**
+4. Check email for reset link (Resend logs should show delivery)
+5. Click link; should show password form with countdown timer
+6. Enter new password; submit
+7. Should auto-login and redirect to `/dashboard`
+
+### 6.7 Email Verification Flow
+
+1. Sign up with new email at `/signup/creator`
+2. Should see "Verify your email" prompt
+3. Click **Send code**
+4. Check email for 6-digit code (Resend logs)
+5. Enter code in form (6 digits)
+6. On success, should show "Email verified" message
+7. Try wrong code 3 times; should see "Too many attempts"
+8. Click **Resend code** to unlock
+9. Enter new code; should verify successfully
 
 ---
 

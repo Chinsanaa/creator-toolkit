@@ -20,6 +20,8 @@ This repository is a **monorepo** with a Next.js 16 website (frontend) and an Ex
 - [Architecture](#architecture)
 - [Tech stack](#tech-stack)
 - [Repository layout](#repository-layout)
+- [Core Features](#core-features)
+- [Security Features](#security-features)
 - [Frontend](#frontend)
 - [Backend](#backend)
 - [Database & auth](#database--auth)
@@ -207,6 +209,75 @@ creator-toolkit/          # monorepo root (npm scripts delegate to frontend/back
 
 ---
 
+## Security Features
+
+Earnio implements comprehensive security controls to protect user accounts and data:
+
+### Password Reset Flow
+✅ **Forgot Password** — Secure token-based password recovery  
+- Users submit their email address; endpoint returns security-friendly message regardless of email existence (prevents email enumeration)  
+- Backend generates **32-byte cryptographic tokens** and stores SHA256 hash in database with 1-hour expiry  
+- Reset links sent via email include token as URL parameter  
+- Tokens validated with expiry checking before allowing password reset  
+- **Rate limit:** 3 requests per 30 minutes per IP address
+
+### Email Verification 2FA
+✅ **Email Verification** — Two-factor authentication using time-based 6-digit codes  
+- Users receive 6-digit numeric codes (000000–999999) with 15-minute expiry  
+- Auto-lockout after 3 failed verification attempts  
+- Codes valid for single use; new resend generates fresh code  
+- Prevents account takeover through additional verification layer  
+- **Rate limits:** 5 verification requests per 15 minutes; unlimited resends  
+
+### Username Availability Validation
+✅ **Real-time Username Check** — Debounced client-side validation  
+- 300ms debounce prevents excessive API calls while user types  
+- Returns availability status with visual indicators (checkmark/X)  
+- Prevents duplicate usernames in database via unique constraint + RLS policy  
+- Allows signup form to guide user immediately without form submission  
+
+### Session Token Security
+✅ **HTTP-Only Cookies** — Tokens stored securely, inaccessible to JavaScript  
+- Access token (`ct-access-token`): Short-lived JWT (1 hour) in httpOnly cookie  
+- Refresh token: Long-lived httpOnly cookie for silent token refresh  
+- Flags: `Secure` (HTTPS only), `SameSite=Strict` (CSRF protection)  
+- **Never stored in localStorage** to prevent XSS attacks  
+- Client memory cache for fast access without exposing to DOM  
+
+### Client-Side Route Protection
+✅ **ProtectedRoute Component** — TypeScript-aware route wrapping  
+- Enforces authentication on protected pages  
+- Role-based access control (`requiredUserType` prop) — creator vs. sponsor  
+- Auto-redirects to login with optional custom fallback routes  
+- Centralized middleware (`proxy.ts`) double-checks auth at edge  
+
+### Rate Limiting & DDoS Protection
+✅ **IP-Based Rate Limiting** — Multi-tier protection via express-rate-limit  
+
+| Endpoint | Limit | Window |
+|----------|-------|--------|
+| Forgot Password | 3 requests | 30 minutes |
+| Reset Password | 2 requests | 60 minutes |
+| Login / Signup | 5 requests | 15 minutes |
+| Email Verification | 5 requests | 15 minutes |
+| Global API | 300 requests | 15 minutes |
+
+- Attacks from single IP hit 429 (Too Many Requests) after threshold  
+- Prevents brute force, credential stuffing, and account enumeration  
+- Configurable per endpoint without blocking legitimate users  
+
+### Additional Security Measures
+✅ **Row-Level Security (RLS)** — PostgreSQL policies ensure data isolation  
+- Users can only read/write their own records  
+- Supabase enforces policies at database level (cannot be bypassed)  
+✅ **CORS & HTTPS** — Only trusted origins allowed; redirects enforce encrypted connections  
+✅ **JWT Validation** — All protected endpoints verify token signature & expiry  
+✅ **Error Handling** — Generic error messages prevent information leakage (no "user not found" on login)  
+
+For detailed test results and implementation notes, see [SECURITY_AUDIT.md](SECURITY_AUDIT.md).
+
+---
+
 ## Frontend
 
 The frontend is a **Next.js App Router** application in `frontend/`. It serves both marketing pages and the logged-in product.
@@ -275,7 +346,7 @@ The backend is an **Express 5** TypeScript API in `backend/`. It does not serve 
 | Prefix | Endpoints (summary) | Auth |
 |--------|---------------------|------|
 | `/api/health` | Service health + DB connectivity | Public |
-| `/api/auth` | `signup`, `login`, `logout`, `refresh`, `me` | Mixed |
+| `/api/auth` | `signup`, `login`, `logout`, `refresh`, `me`, `forgot-password`, `verify-reset-token`, `reset-password`, `check-username`, `send-verification-email`, `verify-email`, `resend-verification-email` | Mixed |
 | `/api/legal` | `privacy-policy`, `terms-and-conditions` (markdown) | Public |
 | `/api/dashboard` | Creator earnings summary & trends | Required |
 | `/api/platforms` | List/connect platforms, sync earnings, sync history | Required |
@@ -284,6 +355,23 @@ The backend is an **Express 5** TypeScript API in `backend/`. It does not serve 
 | `/api/sponsor` | Dashboard, campaigns CRUD, application review | Required |
 | `/api/notifications` | List, mark read | Required |
 | `/api/sync` | Cron trigger for platform sync jobs | Secret header |
+
+**Auth endpoints (detailed)**
+
+| Endpoint | Method | Rate Limit | Purpose |
+|----------|--------|-----------|---------|
+| `/api/auth/signup` | POST | 5/15min | Create account with email, password, username |
+| `/api/auth/login` | POST | 5/15min | Authenticate with email/password; returns access token |
+| `/api/auth/logout` | POST | — | Clear server session |
+| `/api/auth/refresh` | POST | — | Refresh expired access token using refresh cookie |
+| `/api/auth/me` | GET | — | Get current user profile |
+| `/api/auth/forgot-password` | POST | 3/30min | Request password reset; sends email with reset link |
+| `/api/auth/verify-reset-token` | POST | — | Validate reset token & check expiry; returns remaining time |
+| `/api/auth/reset-password` | POST | 2/60min | Complete password reset with token; auto-logs in user |
+| `/api/auth/check-username` | POST | — | Check if username is available for signup |
+| `/api/auth/send-verification-email` | POST | 5/15min | Send 6-digit verification code to email |
+| `/api/auth/verify-email` | POST | 5/15min | Verify email using code; marks account verified |
+| `/api/auth/resend-verification-email` | POST | 5/15min | Resend verification code; resets attempt counter |
 
 ### Backend structure
 
@@ -417,6 +505,9 @@ Runs frontend on `:3000` and backend on `:3001` with linked env.
 | `SUPABASE_SERVICE_ROLE_KEY` | Server-side admin operations |
 | `RESEND_API_KEY` | Email delivery (optional in dev) |
 | `EMAIL_FROM` | Sender address for notifications |
+| `PASSWORD_RESET_TOKEN_EXPIRY_MINUTES` | Reset token expiry (default `60` minutes) |
+| `EMAIL_VERIFICATION_CODE_EXPIRY_MINUTES` | Verification code expiry (default `15` minutes) |
+| `EMAIL_VERIFICATION_MAX_ATTEMPTS` | Failed verification attempts before lockout (default `3`) |
 | `ENABLE_SYNC_CRON` | Enable in-process sync scheduler |
 | `SYNC_CRON_SECRET` | Protects manual cron endpoint |
 
