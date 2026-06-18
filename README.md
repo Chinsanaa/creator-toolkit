@@ -152,7 +152,7 @@ Earnio follows a classic **SPA + REST API** pattern with edge middleware protect
 - Product name: **Earnio**
 - Slogan: *Earn more, create more*
 - Typography: Poppins (headings), Montserrat (body)
-- Primary color: `#6336F1` (purple gradient in logo and CTAs)
+- Primary color: `#2E5BFF` 
 - **Dark mode support** — Toggle in navigation; theme persisted in localStorage
 - **Design tokens** — Centralized color, spacing, and typography in Tailwind config
 - **Responsive design** — Mobile-first approach; sidebar (desktop) + bottom tab bar (mobile)
