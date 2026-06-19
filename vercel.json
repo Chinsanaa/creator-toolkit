@@ -1,5 +1,1 @@
-{
-  "buildCommand": "npm run build:frontend",
-  "installCommand": "npm install --prefix frontend",
-  "outputDirectory": "frontend/.next/standalone"
-}
+{}
