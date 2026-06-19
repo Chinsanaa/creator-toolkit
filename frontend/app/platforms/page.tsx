@@ -13,7 +13,7 @@ import {
   getYouTubeAuthUrl,
   getInstagramAuthUrl,
 } from '@/lib/api/platforms';
-import { formatHandle } from '@/lib/format';
+import { formatDate, formatHandle, platformLabel } from '@/lib/format';
 import type { PlatformAccount, SyncHistoryEntry } from '@/lib/types/platforms';
 
 const PLATFORMS = [
