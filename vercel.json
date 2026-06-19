@@ -3,8 +3,7 @@
         "frontend": {
             "entrypoint": "frontend",
             "routePrefix": "/",
-            "framework": "nextjs",
-            "outputDirectory": "frontend/.next/standalone"
+            "framework": "nextjs"
         },
         "backend": {
             "entrypoint": "backend",
