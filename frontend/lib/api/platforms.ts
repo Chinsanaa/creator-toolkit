@@ -38,3 +38,29 @@ export async function completeTikTokOAuth(code: string): Promise<{ account: Plat
   });
   return data;
 }
+
+export async function getYouTubeAuthUrl(): Promise<{ authUrl: string }> {
+  const data = await apiFetch<{ authUrl: string }>('/api/auth/youtube/authorize');
+  return data;
+}
+
+export async function completeYouTubeOAuth(code: string): Promise<{ account: PlatformAccount }> {
+  const data = await apiFetch<{ account: PlatformAccount }>('/api/auth/youtube/callback', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+  return data;
+}
+
+export async function getInstagramAuthUrl(): Promise<{ authUrl: string }> {
+  const data = await apiFetch<{ authUrl: string }>('/api/auth/instagram/authorize');
+  return data;
+}
+
+export async function completeInstagramOAuth(code: string): Promise<{ account: PlatformAccount }> {
+  const data = await apiFetch<{ account: PlatformAccount }>('/api/auth/instagram/callback', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
+  return data;
+}

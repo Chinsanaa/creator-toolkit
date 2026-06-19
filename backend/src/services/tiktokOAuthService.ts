@@ -85,10 +85,18 @@ class TikTokOAuthService {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(
-        `TikTok token exchange failed: ${error.error_description || error.message || response.statusText}`
-      );
+      let errorMsg = response.statusText;
+      try {
+        const errorData = (await response.json()) as Record<string, unknown>;
+        if (typeof errorData.error_description === 'string') {
+          errorMsg = errorData.error_description;
+        } else if (typeof errorData.message === 'string') {
+          errorMsg = errorData.message;
+        }
+      } catch {
+        // Ignore JSON parse errors
+      }
+      throw new Error(`TikTok token exchange failed: ${errorMsg}`);
     }
 
     const data = (await response.json()) as TokenExchangeResponse;
@@ -232,10 +240,18 @@ class TikTokOAuthService {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(
-        `TikTok token refresh failed: ${error.error_description || error.message || response.statusText}`
-      );
+      let errorMsg = response.statusText;
+      try {
+        const errorData = (await response.json()) as Record<string, unknown>;
+        if (typeof errorData.error_description === 'string') {
+          errorMsg = errorData.error_description;
+        } else if (typeof errorData.message === 'string') {
+          errorMsg = errorData.message;
+        }
+      } catch {
+        // Ignore JSON parse errors
+      }
+      throw new Error(`TikTok token refresh failed: ${errorMsg}`);
     }
 
     const tokenData = (await response.json()) as TokenExchangeResponse;

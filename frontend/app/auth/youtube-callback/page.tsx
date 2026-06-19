@@ -2,14 +2,14 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { completeTikTokOAuth } from '@/lib/api/platforms';
+import { completeYouTubeOAuth } from '@/lib/api/platforms';
 import { ApiError } from '@/lib/api/client';
 
-export default function TikTokCallbackPage() {
+export default function YouTubeCallbackPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [status, setStatus] = useState<'processing' | 'success' | 'error'>('processing');
-  const [message, setMessage] = useState('Connecting your TikTok account...');
+  const [message, setMessage] = useState('Connecting your YouTube account...');
 
   useEffect(() => {
     async function handleCallback() {
@@ -19,23 +19,21 @@ export default function TikTokCallbackPage() {
 
         if (error) {
           setStatus('error');
-          setMessage(`TikTok connection failed: ${error}`);
+          setMessage(`YouTube connection failed: ${error}`);
           return;
         }
 
         if (!code) {
           setStatus('error');
-          setMessage('No authorization code received from TikTok');
+          setMessage('No authorization code received from YouTube');
           return;
         }
 
-        // Exchange code for tokens and create platform account
-        await completeTikTokOAuth(code);
+        await completeYouTubeOAuth(code);
 
         setStatus('success');
-        setMessage('TikTok account connected successfully!');
+        setMessage('YouTube account connected successfully!');
 
-        // Redirect back to platforms page after 2 seconds
         setTimeout(() => {
           router.push('/platforms');
         }, 2000);
@@ -46,7 +44,7 @@ export default function TikTokCallbackPage() {
             ? err.message
             : err instanceof Error
               ? err.message
-              : 'Failed to connect TikTok account';
+              : 'Failed to connect YouTube account';
         setMessage(`Error: ${errorMsg}`);
       }
     }
@@ -57,7 +55,7 @@ export default function TikTokCallbackPage() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-landing-bg px-4">
       <div className="w-full max-w-md rounded-2xl border border-landing-border bg-landing-panel p-8 text-center">
-        <h1 className="mb-4 text-2xl font-bold text-landing-fg">TikTok Connection</h1>
+        <h1 className="mb-4 text-2xl font-bold text-landing-fg">YouTube Connection</h1>
 
         {status === 'processing' && (
           <div className="space-y-4">

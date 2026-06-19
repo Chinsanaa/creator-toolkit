@@ -4,6 +4,8 @@ import authService from '../services/authService';
 import passwordResetService from '../services/passwordResetService';
 import emailVerificationService from '../services/emailVerificationService';
 import tiktokOAuthService from '../services/tiktokOAuthService';
+import youtubeOAuthService from '../services/youtubeOAuthService';
+import instagramOAuthService from '../services/instagramOAuthService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
 import { logServerError } from '../utils/serverLog';
 import crypto from 'crypto';
@@ -436,6 +438,110 @@ router.post('/tiktok/callback', verifyToken, async (req: AuthRequest, res: Respo
     });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Failed to connect TikTok account';
+    res.status(400).json({ error: message });
+  }
+});
+
+// YouTube OAuth routes
+router.get('/youtube/authorize', async (req: AuthRequest, res: Response) => {
+  try {
+    const state = crypto.randomBytes(16).toString('hex');
+    res.cookie('youtube_oauth_state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 10 * 60 * 1000,
+    });
+
+    const authUrl = youtubeOAuthService.generateAuthorizationUrl(state);
+    res.json({ authUrl });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to generate YouTube auth URL';
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/youtube/callback', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const { code } = req.body as { code?: string };
+
+    if (!code?.trim()) {
+      res.status(400).json({ error: 'Authorization code is required' });
+      return;
+    }
+
+    const state = req.cookies.youtube_oauth_state;
+    if (!state) {
+      res.status(400).json({ error: 'Invalid OAuth session. Please try again.' });
+      return;
+    }
+
+    res.clearCookie('youtube_oauth_state');
+
+    const account = await youtubeOAuthService.connectAccount(
+      req.userId!,
+      req.token!,
+      code.trim()
+    );
+
+    res.json({
+      message: 'YouTube account connected successfully',
+      account,
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to connect YouTube account';
+    res.status(400).json({ error: message });
+  }
+});
+
+// Instagram OAuth routes
+router.get('/instagram/authorize', async (req: AuthRequest, res: Response) => {
+  try {
+    const state = crypto.randomBytes(16).toString('hex');
+    res.cookie('instagram_oauth_state', state, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax',
+      maxAge: 10 * 60 * 1000,
+    });
+
+    const authUrl = instagramOAuthService.generateAuthorizationUrl(state);
+    res.json({ authUrl });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to generate Instagram auth URL';
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/instagram/callback', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const { code } = req.body as { code?: string };
+
+    if (!code?.trim()) {
+      res.status(400).json({ error: 'Authorization code is required' });
+      return;
+    }
+
+    const state = req.cookies.instagram_oauth_state;
+    if (!state) {
+      res.status(400).json({ error: 'Invalid OAuth session. Please try again.' });
+      return;
+    }
+
+    res.clearCookie('instagram_oauth_state');
+
+    const account = await instagramOAuthService.connectAccount(
+      req.userId!,
+      req.token!,
+      code.trim()
+    );
+
+    res.json({
+      message: 'Instagram account connected successfully',
+      account,
+    });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to connect Instagram account';
     res.status(400).json({ error: message });
   }
 });
