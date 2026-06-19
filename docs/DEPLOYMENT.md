@@ -496,7 +496,8 @@ GET https://api.earnio.app/api/health → Expect 200, status="ok"
 | Issue | Cause | Solution |
 |-------|-------|----------|
 | `No Output Directory named "build" found` | Root Directory is repo root (`.`) instead of `frontend`, or Output Directory is set to `build` | In Vercel → **Settings** → **General**: set **Root Directory** to `frontend`, set **Framework Preset** to **Next.js**, and clear **Output Directory** (leave blank) |
-| `Cannot find module '@tailwindcss/postcss'` | Tailwind is in `devDependencies`; Vercel production installs skip dev deps | Keep `@tailwindcss/postcss` and `tailwindcss` in `dependencies` (not `devDependencies`) |
+| `Cannot find module '@tailwindcss/postcss'` | Tailwind is in `devDependencies`; Vercel production installs skip dev deps | Keep `@tailwindcss/postcss` and `tailwindcss` in `dependencies`, or set `installCommand` to `npm install --include=dev` in `frontend/vercel.json` |
+| TypeScript missing during build | `typescript` / `@types/*` in `devDependencies` skipped by production install | Keep `typescript` and `@types/*` in `dependencies`, or use `npm install --include=dev` |
 | Frontend build fails | Missing env vars | Verify `NEXT_PUBLIC_API_URL` in Vercel |
 | 502 Bad Gateway | Backend not running | Check Railway/Render logs; restart service |
 | 401 on all API calls | Wrong `FRONTEND_URL` | Ensure no trailing slash; matches Vercel domain |
