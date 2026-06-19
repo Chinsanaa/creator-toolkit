@@ -4,6 +4,8 @@ import {
   type SupportedPlatform,
 } from '../platforms/mockPlatformProvider';
 import { getAuthenticatedClient, supabaseAdmin } from '../database/supabase';
+import tiktokApiService from './tiktokApiService';
+import tiktokOAuthService from './tiktokOAuthService';
 import notificationService from './notificationService';
 
 export interface PlatformAccount {
@@ -217,7 +219,49 @@ class PlatformService {
     const earningsClient = supabaseAdmin;
 
     try {
-      const payload = fetchPlatformData(platform, platformUserId);
+      // Fetch account with OAuth tokens
+      const { data: accountData } = await earningsClient
+        .from('platform_accounts')
+        .select('oauth_access_token, platform_username, follower_count')
+        .eq('id', accountId)
+        .single();
+
+      let payload;
+      let updatedFollowerCount = 0;
+      let profileUpdated = false;
+
+      // Check if this is an OAuth-connected TikTok account with valid token
+      if (platform === 'tiktok' && accountData?.oauth_access_token) {
+        try {
+          // Fetch real data from TikTok API
+          const profile = await tiktokApiService.fetchCreatorProfile(accountData.oauth_access_token);
+          const videos = await tiktokApiService.fetchRecentVideos(accountData.oauth_access_token, 10);
+
+          // Calculate earnings from engagement
+          const earningsMnt = tiktokApiService.calculateEarnings(videos, profile.follower_count);
+
+          updatedFollowerCount = profile.follower_count;
+          profileUpdated = true;
+
+          // Create payload in mock format for consistency
+          payload = {
+            earningsMnt,
+            amountUsd: Math.round(earningsMnt / 1200), // Rough MNT to USD (1 USD ≈ 1200 MNT)
+            followerCount: profile.follower_count,
+            periodStart: new Date(new Date().setDate(new Date().getDate() - 30))
+              .toISOString()
+              .split('T')[0],
+            periodEnd: new Date().toISOString().split('T')[0],
+          };
+        } catch (oauthErr) {
+          console.warn('OAuth fetch failed, falling back to mock:', oauthErr);
+          // If OAuth fetch fails, fall back to mock
+          payload = fetchPlatformData(platform, platformUserId);
+        }
+      } else {
+        // Use mock data for non-OAuth accounts or other platforms
+        payload = fetchPlatformData(platform, platformUserId);
+      }
 
       const { data: existingEarning } = await earningsClient
         .from('earnings')
@@ -264,15 +308,25 @@ class PlatformService {
         earningsMnt = payload.earningsMnt;
       }
 
-      await client
-        .from('platform_accounts')
-        .update({
-          follower_count: payload.followerCount,
-          last_synced_at: new Date().toISOString(),
-          status: 'connected',
-          updated_at: new Date().toISOString(),
-        })
-        .eq('id', accountId);
+      // Update platform account with latest data
+      const updateData: Record<string, unknown> = {
+        follower_count: profileUpdated ? updatedFollowerCount : payload.followerCount,
+        last_synced_at: new Date().toISOString(),
+        status: 'connected',
+        updated_at: new Date().toISOString(),
+      };
+
+      // If OAuth, also update platform_username if we got it from the API
+      if (profileUpdated && platform === 'tiktok') {
+        const profile = await tiktokApiService.fetchCreatorProfile(
+          accountData?.oauth_access_token as string
+        );
+        if (profile.display_name) {
+          updateData.platform_username = `@${profile.display_name}`;
+        }
+      }
+
+      await client.from('platform_accounts').update(updateData).eq('id', accountId);
 
       const { error: syncLogError } = await client.from('api_syncs').insert({
         user_id: userId,
