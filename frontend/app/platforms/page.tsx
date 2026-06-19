@@ -43,8 +43,6 @@ export default function PlatformsPage() {
       if (!isCancelled()) {
         setError(err instanceof ApiError ? err.message : t('failed_to_load_platforms'));
       }
-    } finally {
-      if (!isCancelled()) setLoading(false);
     }
   }, [t]);
 
