@@ -6,6 +6,8 @@ const frontendDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.join(frontendDir, "..");
 
 const nextConfig: NextConfig = {
+  output: "standalone",
+  outputFileTracingRoot: repoRoot,
   async headers() {
     return [
       {
