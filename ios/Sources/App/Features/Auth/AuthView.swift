@@ -6,45 +6,64 @@ struct AuthView: View {
 
     var body: some View {
         ZStack {
-            LinearGradient(
-                gradient: Gradient(colors: [Color(#colorLiteral(red: 0.2, green: 0.1, blue: 0.5, alpha: 1)), Color(#colorLiteral(red: 0.1, green: 0.2, blue: 0.4, alpha: 1))]),
-                startPoint: .topLeading,
-                endPoint: .bottomTrailing
-            )
-            .ignoresSafeArea()
+            EarnioTheme.authGradient.ignoresSafeArea()
 
-            VStack(spacing: 0) {
-                // Header with Logo
-                VStack(spacing: 20) {
-                    Text("earnio")
-                        .font(.system(size: 44, weight: .bold, design: .rounded))
-                        .foregroundColor(.white)
+            ScrollView {
+                VStack(spacing: 24) {
+                    VStack(spacing: 8) {
+                        Text("Earnio")
+                            .font(.system(size: 42, weight: .bold, design: .rounded))
+                            .foregroundStyle(.white)
+                        Text("Earn more, create more.")
+                            .font(.subheadline.weight(.medium))
+                            .foregroundStyle(.white.opacity(0.85))
+                    }
+                    .padding(.top, 48)
 
-                    Text("Connect. Create. Earn.")
-                        .font(.system(size: 16, weight: .medium))
-                        .foregroundColor(.white.opacity(0.8))
+                    demoSection
+
+                    Picker("Auth Type", selection: $showLoginTab) {
+                        Text("Login").tag(true)
+                        Text("Sign Up").tag(false)
+                    }
+                    .pickerStyle(.segmented)
+                    .padding(.horizontal, 24)
+
+                    if showLoginTab {
+                        LoginFormView()
+                    } else {
+                        SignupFormView()
+                    }
                 }
-                .padding(.top, 60)
-                .padding(.bottom, 40)
-
-                // Tab Selection
-                Picker("Auth Type", selection: $showLoginTab) {
-                    Text("Login").tag(true)
-                    Text("Sign Up").tag(false)
-                }
-                .pickerStyle(.segmented)
-                .padding(.horizontal, 30)
-                .padding(.bottom, 30)
-
-                // Content
-                if showLoginTab {
-                    LoginFormView()
-                } else {
-                    SignupFormView()
-                }
-
-                Spacer()
+                .padding(.bottom, 32)
             }
+        }
+    }
+
+    private var demoSection: some View {
+        VStack(spacing: 12) {
+            Text("Try without a server")
+                .font(.caption.weight(.semibold))
+                .foregroundStyle(.white.opacity(0.7))
+
+            HStack(spacing: 12) {
+                Button("Demo Creator") {
+                    authContext.enterDemo(asCreator: true)
+                }
+                .buttonStyle(EarnioSecondaryButtonStyle())
+
+                Button("Demo Sponsor") {
+                    authContext.enterDemo(asCreator: false)
+                }
+                .buttonStyle(EarnioSecondaryButtonStyle())
+            }
+            .padding(.horizontal, 24)
+
+            Text("Uses sample MNT data — ideal for UI testing before App Store.")
+                .font(.caption2)
+                .foregroundStyle(.white.opacity(0.65))
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 32)
         }
     }
 }
@@ -55,202 +74,120 @@ struct LoginFormView: View {
     @EnvironmentObject var authContext: AuthContext
 
     var body: some View {
-        VStack(spacing: 20) {
-            // Email Field
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Email")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
-
+        VStack(spacing: 16) {
+            authField(title: "Email", content: {
                 TextField("your@email.com", text: $email)
-                    .textContentType(.emailAddress)
                     .keyboardType(.emailAddress)
-                    .autocorrectionDisabled()
                     .textInputAutocapitalization(.never)
-                    .padding(12)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(10)
-                    .foregroundColor(.white)
-            }
+                    .autocorrectionDisabled()
+            })
 
-            // Password Field
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Password")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
-
+            authField(title: "Password", content: {
                 SecureField("••••••••", text: $password)
-                    .textContentType(.password)
-                    .padding(12)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(10)
-                    .foregroundColor(.white)
-            }
+            })
 
-            // Error Message
             if let error = authContext.error {
-                Text(error)
-                    .font(.system(size: 13))
-                    .foregroundColor(.red)
-                    .padding(10)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.red.opacity(0.1))
-                    .cornerRadius(8)
+                errorBanner(error)
             }
 
-            // Login Button
-            Button(action: {
-                Task {
-                    await authContext.login(email: email, password: password)
-                }
-            }) {
+            Button {
+                Task { await authContext.login(email: email, password: password) }
+            } label: {
                 if authContext.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(.white)
+                    ProgressView().tint(.white)
                 } else {
-                    Text("Login")
-                        .font(.system(size: 16, weight: .semibold))
+                    Text("Log in with API")
                 }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Color.white)
-            .foregroundColor(.black)
-            .cornerRadius(10)
+            .buttonStyle(EarnioPrimaryButtonStyle(isDisabled: authContext.isLoading))
             .disabled(authContext.isLoading)
-
-            Spacer()
         }
-        .padding(.horizontal, 30)
+        .padding(.horizontal, 24)
     }
 }
 
 struct SignupFormView: View {
     @State private var email = ""
     @State private var password = ""
-    @State private var firstName = ""
-    @State private var lastName = ""
+    @State private var name = ""
+    @State private var username = ""
     @State private var selectedUserType = "creator"
     @EnvironmentObject var authContext: AuthContext
 
     var body: some View {
-        VStack(spacing: 20) {
-            // User Type Selection
+        VStack(spacing: 16) {
             Picker("Account Type", selection: $selectedUserType) {
                 Text("Creator").tag("creator")
                 Text("Sponsor").tag("sponsor")
             }
             .pickerStyle(.segmented)
-            .padding(.horizontal, 10)
 
-            // First Name Field
-            VStack(alignment: .leading, spacing: 8) {
-                Text("First Name")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
-
-                TextField("John", text: $firstName)
-                    .textContentType(.givenName)
-                    .textInputAutocapitalization(.words)
-                    .padding(12)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(10)
-                    .foregroundColor(.white)
-            }
-
-            // Last Name Field
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Last Name")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
-
-                TextField("Doe", text: $lastName)
-                    .textContentType(.familyName)
-                    .textInputAutocapitalization(.words)
-                    .padding(12)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(10)
-                    .foregroundColor(.white)
-            }
-
-            // Email Field
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Email")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
-
-                TextField("your@email.com", text: $email)
-                    .textContentType(.emailAddress)
-                    .keyboardType(.emailAddress)
-                    .autocorrectionDisabled()
+            authField(title: "Full name", content: { TextField("Bold Erdene", text: $name) })
+            authField(title: "Username", content: {
+                TextField("bold_erdene", text: $username)
                     .textInputAutocapitalization(.never)
-                    .padding(12)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(10)
-                    .foregroundColor(.white)
-            }
+                    .autocorrectionDisabled()
+            })
+            authField(title: "Email", content: {
+                TextField("your@email.com", text: $email)
+                    .keyboardType(.emailAddress)
+                    .textInputAutocapitalization(.never)
+                    .autocorrectionDisabled()
+            })
+            authField(title: "Password", content: { SecureField("••••••••", text: $password) })
 
-            // Password Field
-            VStack(alignment: .leading, spacing: 8) {
-                Text("Password")
-                    .font(.system(size: 14, weight: .semibold))
-                    .foregroundColor(.white)
-
-                SecureField("••••••••", text: $password)
-                    .textContentType(.newPassword)
-                    .padding(12)
-                    .background(Color.white.opacity(0.1))
-                    .cornerRadius(10)
-                    .foregroundColor(.white)
-            }
-
-            // Error Message
             if let error = authContext.error {
-                Text(error)
-                    .font(.system(size: 13))
-                    .foregroundColor(.red)
-                    .padding(10)
-                    .frame(maxWidth: .infinity, alignment: .leading)
-                    .background(Color.red.opacity(0.1))
-                    .cornerRadius(8)
+                errorBanner(error)
             }
 
-            // Signup Button
-            Button(action: {
+            Button {
                 Task {
                     await authContext.signup(
                         email: email,
                         password: password,
                         userType: selectedUserType,
-                        firstName: firstName,
-                        lastName: lastName
+                        name: name,
+                        username: username
                     )
                 }
-            }) {
+            } label: {
                 if authContext.isLoading {
-                    ProgressView()
-                        .progressViewStyle(.circular)
-                        .tint(.white)
+                    ProgressView().tint(.white)
                 } else {
-                    Text("Create Account")
-                        .font(.system(size: 16, weight: .semibold))
+                    Text("Create account")
                 }
             }
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, 14)
-            .background(Color.white)
-            .foregroundColor(.black)
-            .cornerRadius(10)
+            .buttonStyle(EarnioPrimaryButtonStyle(isDisabled: authContext.isLoading))
             .disabled(authContext.isLoading)
-
-            Spacer()
         }
-        .padding(.horizontal, 30)
+        .padding(.horizontal, 24)
     }
 }
 
+@ViewBuilder
+private func authField<Content: View>(title: String, @ViewBuilder content: () -> Content) -> some View {
+    VStack(alignment: .leading, spacing: 6) {
+        Text(title)
+            .font(.caption.weight(.semibold))
+            .foregroundStyle(.white.opacity(0.9))
+        content()
+            .padding(12)
+            .background(Color.white.opacity(0.12))
+            .cornerRadius(EarnioTheme.buttonRadius)
+            .foregroundStyle(.white)
+    }
+}
+
+private func errorBanner(_ message: String) -> some View {
+    Text(message)
+        .font(.caption)
+        .foregroundStyle(EarnioTheme.dangerRed)
+        .padding(10)
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.white.opacity(0.95))
+        .cornerRadius(8)
+}
+
 #Preview {
-    AuthView()
-        .environmentObject(AuthContext())
+    AuthView().environmentObject(AuthContext())
 }

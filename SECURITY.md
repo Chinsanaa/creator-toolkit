@@ -1,21 +1,22 @@
 # Security Policy
 
-## Supported Versions
+## Supported versions
 
-Use this section to tell people about which versions of your project are
-currently being supported with security updates.
+| Component | Supported |
+|-----------|-----------|
+| Earnio (main branch) | Active development — security fixes as reported |
+| Dependencies | Updated via npm; report critical CVEs |
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 5.1.x   | :white_check_mark: |
-| 5.0.x   | :x:                |
-| 4.0.x   | :white_check_mark: |
-| < 4.0   | :x:                |
+## Reporting a vulnerability
 
-## Reporting a Vulnerability
+**Do not** open public GitHub issues for security problems.
 
-Use this section to tell people how to report a vulnerability.
+1. Email the maintainers with a description, steps to reproduce, and impact assessment.
+2. Allow up to 7 business days for an initial response.
+3. Coordinate disclosure timing before public discussion.
 
-Tell them where to go, how often they can expect to get an update on a
-reported vulnerability, what to expect if the vulnerability is accepted or
-declined, etc.
+## Security documentation
+
+Implementation details and test results: [SECURITY_AUDIT.md](./SECURITY_AUDIT.md).
+
+Architecture-level security: [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md#-security-architecture).

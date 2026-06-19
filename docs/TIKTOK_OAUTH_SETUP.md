@@ -1,5 +1,7 @@
 # TikTok OAuth Setup Guide
 
+→ Implementation in repo: [TIKTOK_OAUTH_IMPLEMENTATION.md](./TIKTOK_OAUTH_IMPLEMENTATION.md) · Map: [../context.md](../context.md)
+
 This guide walks you through setting up TikTok OAuth authentication for the Creator Toolkit platform connection feature.
 
 ## Overview

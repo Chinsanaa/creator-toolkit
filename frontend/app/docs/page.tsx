@@ -11,8 +11,8 @@ export default function DocsIndexPage() {
     <div className="page-enter">
       <h1 className="text-3xl font-semibold text-foreground">Documentation</h1>
       <p className="mt-3 max-w-2xl text-muted">
-        Launch guides and checklists for deploying and shipping Earnio. Same content as
-        the repo markdown files, formatted for the web.
+        Launch guides and checklists loaded from the repo{' '}
+        <code className="text-sm">docs/</code> folder — single source of truth.
       </p>
 
       <ul className="mt-10 space-y-4">

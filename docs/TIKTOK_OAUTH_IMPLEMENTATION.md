@@ -1,5 +1,7 @@
 # TikTok OAuth Implementation Summary
 
+→ Portal setup: [TIKTOK_OAUTH_SETUP.md](./TIKTOK_OAUTH_SETUP.md) · Map: [../context.md](../context.md)
+
 ## What Was Built
 
 This document summarizes the TikTok OAuth integration built for the Creator Toolkit. This is **Option B: Full Flow** (backend + frontend) with infrastructure ready for real API integration.

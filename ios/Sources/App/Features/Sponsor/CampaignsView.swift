@@ -200,7 +200,7 @@ struct CampaignListCard: View {
                             .foregroundColor(statusColor(campaign.status))
                     }
 
-                    Text("$\(Int(campaign.amountPerCreator))/creator")
+                    Text(EarnioFormat.mnt(Double(campaign.amountPerCreator)) + "/creator")
                         .font(.system(size: 12))
                         .foregroundColor(.secondary)
                 }
@@ -260,7 +260,7 @@ struct CreateCampaignView: View {
             }
 
             Section("Payment") {
-                TextField("Amount per Creator (USD)", text: $amountPerCreator)
+                TextField("Amount per creator (MNT)", text: $amountPerCreator)
                     .keyboardType(.decimalPad)
             }
 
@@ -396,7 +396,7 @@ struct CampaignDetailView: View {
                             .font(.system(size: 12, weight: .semibold))
                             .foregroundColor(.secondary)
 
-                        Text("$\(Int(campaign.amountPerCreator))")
+                        Text(EarnioFormat.mnt(campaign.amountPerCreator))
                             .font(.system(size: 20, weight: .bold))
                             .foregroundColor(.green)
                     }
@@ -434,11 +434,11 @@ struct CampaignDetailView: View {
                 }
 
                 // Applications Button
-                if !(campaign.applications?.isEmpty ?? true) {
+                if (campaign.applicationCount ?? 0) > 0 {
                     NavigationLink(destination: CampaignApplicationsView(campaign: campaign)) {
                         HStack {
                             Image(systemName: "person.fill")
-                            Text("View \(campaign.applications?.count ?? 0) Applications")
+                            Text("View \(campaign.applicationCount ?? 0) Applications")
                             Spacer()
                             Image(systemName: "chevron.right")
                         }
@@ -452,25 +452,12 @@ struct CampaignDetailView: View {
 
                 // Action Buttons
                 HStack(spacing: 12) {
-                    if campaign.status == "draft" {
-                        Button(action: {
-                            publishCampaign()
-                        }) {
-                            Label("Publish", systemImage: "paperplane.fill")
-                                .frame(maxWidth: .infinity)
-                                .padding()
-                                .background(Color.green)
-                                .foregroundColor(.white)
-                                .cornerRadius(8)
-                        }
-                    } else if campaign.status == "published" {
-                        Button(action: {
-                            closeCampaign()
-                        }) {
+                    if campaign.status == "active" {
+                        Button(action: { closeCampaign() }) {
                             Label("Close", systemImage: "xmark.circle.fill")
                                 .frame(maxWidth: .infinity)
                                 .padding()
-                                .background(Color.red)
+                                .background(EarnioTheme.dangerRed)
                                 .foregroundColor(.white)
                                 .cornerRadius(8)
                         }
@@ -500,7 +487,7 @@ struct CampaignDetailView: View {
         isLoading = true
         Task {
             do {
-                _ = try await apiService.updateCampaignStatus(id: campaign.id, status: "published")
+                _ = try await apiService.updateCampaignStatus(id: campaign.id, status: "closed")
                 onStatusChange()
                 dismiss()
             } catch {
@@ -590,28 +577,62 @@ struct DeadlineItem: View {
 struct CampaignApplicationsView: View {
     let campaign: Campaign
     @State private var applications: [CampaignApplication] = []
+    @State private var isLoading = false
+    @State private var error: String?
+    private let apiService = APIService.shared
 
     var body: some View {
         ScrollView {
             VStack(spacing: 12) {
-                if let apps = campaign.applications {
-                    ForEach(apps) { application in
-                        ApplicationDetailCard(application: application)
-                    }
+                if isLoading {
+                    ProgressView()
+                } else if applications.isEmpty {
+                    Text("No applications yet")
+                        .foregroundStyle(.secondary)
                 } else {
-                    Text("No applications")
-                        .foregroundColor(.secondary)
+                    ForEach(applications) { application in
+                        ApplicationDetailCard(application: application) { status in
+                            updateStatus(applicationId: application.id, status: status)
+                        }
+                    }
                 }
             }
             .padding()
         }
         .navigationTitle("Applications")
         .navigationBarTitleDisplayMode(.inline)
+        .onAppear { loadApplications() }
+    }
+
+    private func loadApplications() {
+        isLoading = true
+        Task {
+            do {
+                let detail = try await apiService.getCampaignDetail(id: campaign.id)
+                applications = detail.applications
+                isLoading = false
+            } catch {
+                error = error.localizedDescription
+                isLoading = false
+            }
+        }
+    }
+
+    private func updateStatus(applicationId: String, status: String) {
+        Task {
+            do {
+                _ = try await apiService.updateApplicationStatus(applicationId: applicationId, status: status, notes: nil)
+                loadApplications()
+            } catch {
+                self.error = error.localizedDescription
+            }
+        }
     }
 }
 
 struct ApplicationDetailCard: View {
     let application: CampaignApplication
+    var onDecision: ((String) -> Void)?
 
     var body: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -627,42 +648,24 @@ struct ApplicationDetailCard: View {
 
                 Spacer()
 
-                HStack(spacing: 4) {
-                    Image(systemName: "circle.fill")
-                        .font(.system(size: 6))
-                        .foregroundColor(statusColor(application.status))
-
-                    Text(application.status.capitalized)
-                        .font(.system(size: 11, weight: .semibold))
-                        .foregroundColor(statusColor(application.status))
-                }
+                Text(application.status.capitalized)
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(statusColor(application.status))
             }
 
-            Divider()
+            if !application.response.isEmpty {
+                Text(application.response)
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+            }
 
-            HStack(spacing: 16) {
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(String(format: "%.1f%%", application.engagementRate))
-                        .font(.system(size: 14, weight: .semibold))
-
-                    Text("Engagement")
-                        .font(.system(size: 11))
-                        .foregroundColor(.secondary)
+            if application.status == "pending", let onDecision {
+                HStack(spacing: 12) {
+                    Button("Approve") { onDecision("approved") }
+                        .buttonStyle(EarnioPrimaryButtonStyle())
+                    Button("Reject") { onDecision("rejected") }
+                        .buttonStyle(EarnioSecondaryButtonStyle())
                 }
-
-                Divider()
-                    .frame(height: 32)
-
-                VStack(alignment: .leading, spacing: 4) {
-                    Text(formatNumber(application.followerCount))
-                        .font(.system(size: 14, weight: .semibold))
-
-                    Text("Followers")
-                        .font(.system(size: 11))
-                        .foregroundColor(.secondary)
-                }
-
-                Spacer()
             }
         }
         .padding()

@@ -1,400 +1,107 @@
-# Earnio — Application Overview
+# Earnio — Application Status & Operations
 
-> **Audience:** Anyone new to the project (investors, collaborators, QA, future you).  
-> **Last updated:** June 2026 · **Repo:** monorepo (`frontend/` + `backend/` + `supabase/migrations/`)  
-> **Status:** Active development · MVP with comprehensive features ready for QA and deployment
+> **Audience:** QA, operators, future maintainers.  
+> **Not duplicated here:** architecture, features list, env setup, or quick start — see [context.md](../context.md).
 
----
-
-## 1. What is this app?
-
-**Creator Toolkit** is a web platform for **Mongolian content creators** (especially Gen Z on TikTok and YouTube) to:
-
-- See **earnings** from connected platforms in one place  
-- Find and apply for **brand sponsorships** (paid in **MNT** — Mongolian Tugrik)  
-- Manage a **wallet**, link **local bank accounts**, and request **payouts**  
-
-**Brands / sponsors** use a separate experience to post campaigns, review applications, and approve or reject creators.
-
-The product tagline on the landing page: *“One dashboard for TikTok, YouTube, and brand deals.”*
+**Last updated:** June 2026 · **Status:** MVP with comprehensive features; mock platform sync and payouts.
 
 ---
 
-## 2. Who is it for?
+## What is this app?
 
-| Persona | Goal | Main screens |
-|--------|------|----------------|
-| **Creator** | Track money, grow via sponsorships, get paid | `/dashboard`, `/platforms`, `/sponsorships`, `/wallet` |
-| **Sponsor (brand)** | Run campaigns, pick creators | `/sponsor/dashboard`, `/sponsor/campaigns` |
-| **Operator / dev** | Deploy, monitor health, run QA | `/api/health`, `/docs`, CI, Supabase |
+**Earnio** helps Mongolian creators track earnings, find brand sponsorships (MNT), and manage payouts. Brands post campaigns and review applications. Two roles: **creator** and **sponsor**, with separate landing pages and app shells.
 
-**Geographic focus:** Mongolia — MNT currency, Mongolian bank names (Khan Bank, Golomt, etc.) in the wallet UI.
-
----
-
-## 3. High-level architecture
-
-```
-┌─────────────────┐     HTTPS + cookies      ┌─────────────────┐
-│  Next.js 16      │  ──────────────────────► │  Express 5 API   │
-│  (frontend)      │     Bearer access token   │  (backend)       │
-│  port 3000       │     + httpOnly refresh    │  port 3001       │
-└────────┬────────┘                           └────────┬────────┘
-         │                                              │
-         │  Middleware: cookie present?                 │  Supabase JS client
-         │  (no role check at edge)                   │  (anon + user JWT)
-         ▼                                              ▼
-   React UI + AuthContext                         ┌─────────────────┐
-                                                 │  Supabase        │
-                                                 │  Postgres + Auth │
-                                                 │  + RLS policies  │
-                                                 └─────────────────┘
-                                                         │
-                                                         ▼
-                                                 Optional: Resend (email)
-```
-
-| Layer | Tech | Role |
-|-------|------|------|
-| **Frontend** | Next.js 16 (App Router), React 19, Tailwind 4 | UI, client auth state, API calls |
-| **Backend** | Express 5, TypeScript | Auth proxy, business logic, cron-friendly sync endpoint |
-| **Database** | Supabase (PostgreSQL + Auth) | Users, earnings, sponsorships, wallet, notifications |
-| **Email** | Resend (optional) | Notification emails when configured |
-| **CI** | GitHub Actions | Backend tests + frontend production build |
-| **Docker** | `docker-compose.yml` | Optional local full stack |
+| Persona | Main screens |
+|---------|--------------|
+| Creator | `/dashboard`, `/platforms`, `/sponsorships`, `/wallet` |
+| Sponsor | `/sponsor/dashboard`, `/sponsor/campaigns` |
 
 ---
 
-## 4. Core features (what works today)
+## Honest triage — what is not production-ready
 
-### 4.1 Authentication
-
-- **Sign up / log in** as **creator** or **sponsor** (separate flows under `/signup/creator`, `/signup/sponsor`, etc.).
-- Backend uses **Supabase Auth**; profile row in `users` table (trigger on signup).
-- **Access token** stored in a browser cookie (`ct-access-token`, ~1 hour).
-- **Refresh token** in **httpOnly** cookie; `/api/auth/refresh` renews access.
-- **Logout** clears refresh cookie and client access token.
-- Generic error messages for bad login (no email enumeration).
-
-### 4.2 Creator dashboard (`/dashboard`)
-
-- Aggregated stats: totals, monthly trend, per-platform breakdown, recent earnings, connected platforms.
-- Data comes from Supabase via authenticated API (`/api/dashboard/*`).
-- Demo seed migrations can prepopulate sample earnings for new environments.
-
-### 4.3 Platform connections (`/platforms`)
-
-- Connect **TikTok** or **YouTube** by username (no OAuth yet).
-- **“Sync now”** pulls earnings into the database.
-- **Important:** sync uses a **mock provider** (`backend/src/platforms/mockPlatformProvider.ts`) — deterministic fake followers/earnings from a hash of platform + user id. UI states this is simulated and production should use real OAuth/API keys.
-- Background job: if `ENABLE_SYNC_CRON=true`, server runs sync every **6 hours** (in-process `setInterval`, not a separate worker).
-
-### 4.4 Sponsorship marketplace (creators)
-
-- Browse active campaigns (`/sponsorships`).
-- View detail, submit application with pitch text (`/sponsorships/[id]`).
-- Track applications (`/sponsorships/applications`).
-
-### 4.5 Sponsor tools
-
-- Dashboard stats: active campaigns, applications, budget (`/sponsor/dashboard`).
-- Create campaigns (`/sponsor/campaigns/new`).
-- List and manage campaigns; approve/reject applications with optional notes (`/sponsor/campaigns/[id]`).
-- Backend enforces **sponsor role** via `assertSponsor()` on sponsor API routes.
-
-### 4.6 Wallet & payouts (`/wallet`)
-
-- Balance summary (available, pending payout, earned, fees).
-- Transaction history.
-- Add **Mongolian bank accounts** (stored in DB; account numbers masked in API responses).
-- **Request payout** (min **50,000 MNT**); creates a `pending` payout transaction and sends in-app (+ email if Resend configured) notification.
-- **Platform fee rate** (20%) is exposed in summary; fee rows depend on completed `platform_fee` transactions in DB (not auto-deducted on every sync in code reviewed).
-
-### 4.7 Notifications
-
-- In-app bell with polling (60s).
-- Email via Resend when `RESEND_API_KEY` + `EMAIL_FROM` are set.
-
-### 4.8 Design & UX (June 2026 updates)
-
-- **Dark mode** — Theme toggle in header, system preference detection, localStorage persistence
-- **Design system** — Centralized Earnio design tokens (colors, spacing, typography) in `.agents/skills/earnio-design`
-- **Navigation improvements** — Single-tab navigation system (creator), profile dropdown in header
-- **Visual consistency** — Updated dashboard colors, hero illustrations, explore/wallet page styling
-- **Responsive layout** — Sidebar (desktop) + bottom tab bar (mobile) with adaptive design
-- **Color system** — Earnio purple (#6336F1) with consistent gradients and accent colors
-
-### 4.9 Docs & ops
-
-- In-app docs at `/docs` (deployment, launch plan, QA checklist markdown).
-- Health: `GET /api/health` — database ping, service role / email / cron flags.
-- Deployment guide: `docs/DEPLOYMENT.md` (Vercel + Railway/Render + Supabase).
-
-### 4.10 UX polish & resilience
-
-- **Persistent login** — Session/localStorage maintain login state across browser restarts
-- **PKCE auth** — Secure OAuth-style code flow for enhanced authentication
-- **Offline detection** — Offline banner (`navigator.onLine`).
-- **Global error boundary** — Catches and displays errors gracefully
-- **API resilience** — Timeouts (30s), automatic token refresh, retry on 401 via refresh flow
-
----
-
-## 5. Repository layout (where to look)
-
-```
-creator-toolkit/
-├── frontend/          # Next.js app (pages, components, lib/api)
-├── backend/           # Express API (routes, services, jobs)
-├── supabase/migrations/  # SQL schema, RLS, seeds
-├── docs/              # DEPLOYMENT.md, QA_MANUAL_CHECKLIST.md, this file
-├── .github/workflows/ci.yml
-└── docker-compose.yml
-```
-
-**Key backend routes**
-
-| Prefix | Purpose |
-|--------|---------|
-| `/api/auth` | signup, login, logout, refresh, me |
-| `/api/dashboard` | creator analytics |
-| `/api/platforms` | connect, list, sync |
-| `/api/sponsorships` | marketplace & applications (creator) |
-| `/api/sponsor` | campaigns & application review |
-| `/api/wallet` | balance, banks, payouts |
-| `/api/notifications` | list, mark read |
-| `/api/sync` | manual/cron platform sync trigger |
-| `/api/health` | readiness |
-
----
-
-## 6. Environment & running locally
-
-### Backend (`backend/.env`)
-
-| Variable | Required | Notes |
-|----------|----------|--------|
-| `SUPABASE_URL` | Yes | |
-| `SUPABASE_ANON_KEY` | Yes | |
-| `SUPABASE_SERVICE_ROLE_KEY` | Strongly recommended | Username checks, admin writes; warns if missing |
-| `FRONTEND_URL` | No | CORS default `http://localhost:3000` |
-| `RESEND_API_KEY` / `EMAIL_FROM` | No | Email off if unset |
-| `ENABLE_SYNC_CRON` | No | `true` enables 6h in-process sync |
-| `SYNC_CRON_SECRET` | For `/api/sync/cron` | Protect external cron calls |
-
-### Frontend (`frontend/.env.local`)
-
-| Variable | Notes |
-|----------|--------|
-| `NEXT_PUBLIC_API_URL` | Default `http://localhost:3001` |
-
-### Commands
-
-```bash
-# Terminal 1
-cd backend && npm install && npm run dev    # :3001
-
-# Terminal 2
-cd frontend && npm install && npm run dev   # :3000
-
-# Tests
-cd backend && npm test                      # 3 API tests
-cd frontend && npm run lint && npm run build
-```
-
----
-
-## 7. Diagnosis — what is **not** production-ready / logic gaps
-
-This section is for **honest triage**: what an outsider might assume works but does not yet, or works only partially.
-
-### 7.1 Simulated / stubbed business logic
+### Simulated / stubbed logic
 
 | Area | Current behavior | Risk |
 |------|------------------|------|
-| **Platform sync** | Mock hash-based earnings, not TikTok/YouTube APIs | Dashboard numbers are **demo data** after sync |
-| **Instagram** | Supported in mock provider | **Not** in frontend connect dropdown (only TikTok, YouTube) |
-| **Bank payouts** | Inserts `pending` row in `wallet_transactions` | **No** integration with Mongolian payment rails; no automatic `completed` payout |
-| **Bank verification** | `verified: false` on insert | No KYC / micro-deposit flow |
-| **OAuth** | Username-only connect | No token refresh from platforms, no revoked-access handling |
+| **Platform sync** | Mock hash-based earnings | Dashboard numbers are demo data |
+| **Bank payouts** | Inserts `pending` transaction | No Mongolian payment rail integration |
+| **Bank verification** | `verified: false` on insert | No KYC flow |
+| **OAuth** | Username connect + partial OAuth infra | Real tokens not required for MVP |
 
-### 7.2 Security & access control gaps
+### Security & access (mostly addressed)
 
-| Issue | Detail |
-|-------|--------|
-| **Edge middleware** | ~~Token-only~~ **Fixed:** `proxy.ts` reads `ct-user-type` and redirects wrong-role routes. Cookie must be set (login/signup/`getMe`); legacy sessions fall back to client shells. |
-| **Role redirects** | `CreatorShell` / `SponsorShell` still redirect in `useEffect` as a backup. |
-| **Sponsor APIs** | Backend **does** call `assertSponsor()` — good. Creator calling sponsor API gets error, not UI block at edge. |
-| **Service role** | Optional; some admin paths degraded without it. |
-| **RLS** | Security depends on Supabase policies + correct JWT; must be verified per migration in production. |
+| Item | Status |
+|------|--------|
+| Edge role routing (`ct-user-type` cookie) | Fixed — `proxy.ts` redirects wrong-role routes |
+| Sponsor API enforcement | Backend `assertSponsor()` on sponsor routes |
+| RLS | Must be verified per migration in production |
 
-### 7.3 Auth & session edge cases
+### Quality gaps
 
-| Issue | Detail |
-|-------|--------|
-| **Access token TTL** | Cookie `max-age` 1 hour; relies on refresh flow. |
-| **Logged-in redirect** | Middleware sends any authed user from `/login` → `/dashboard` (not sponsor home). |
-| **Email confirmation** | Supabase may require confirmed email; error mapped in auth service but depends on project settings. |
-| **Supabase in frontend** | Packages exist at repo root; **not** wired in Next.js app — all data via REST API. |
+| Item | Detail |
+|------|--------|
+| Test coverage | Backend integration tests only; no frontend/E2E |
+| Sync scheduler | In-process cron off in production; use `POST /api/sync/cron` |
+| Lighthouse / mobile QA | Not automated — use [QA_MANUAL_CHECKLIST.md](./QA_MANUAL_CHECKLIST.md) |
 
-### 7.4 Operations & quality
-
-| Issue | Detail |
-|-------|--------|
-| **Test coverage** | Only **3** backend integration tests; **no** frontend tests, **no** E2E. |
-| **CI** | Runs backend tests, frontend **lint** + build. |
-| **Sync scheduler** | In-process cron **disabled in production** by default; use `POST /api/sync/cron` with `x-cron-secret`. |
-| **Cron** | Prefer external cron hitting `/api/sync/cron` with secret in multi-instance deploys. |
-| **Hydration** | Theme read from `localStorage` on client init — possible brief light/dark flash. |
-
-### 7.5 QA checklist vs reality (manual gaps)
-
-From `frontend/content/docs/qa-checklist.md` — treat as **aspirational** until repeatedly verified each release:
-
-- Mobile Lighthouse ≥ 80 — **not automated**
-- Sticky apply button on mobile — **verify manually**
-- Token auto-refresh on expiry — implemented in `apiFetch` but **needs manual test**
-- Sponsor/creator route isolation — **partial** (client redirect + API assert)
-
-### 7.6 Recently fixed (May–June 2026)
-
-- Frontend **ESLint** `react-hooks/set-state-in-effect` errors (9 files) — resolved; `npm run lint` passes.
-- **Persistent login** — SessionStorage + localStorage maintain auth across browser restarts (June 2026)
-- **Dark mode** — Theme toggle in navigation with system preference detection (June 2026)
-- **Design system** — Centralized Earnio design tokens applied across UI (June 2026)
-- **Navigation refactor** — Single-tab system, profile dropdown in header (June 2026)
-- **Visual consistency** — Dashboard colors, hero illustration, explore/wallet page styling (June 2026)
-- **PKCE auth** — Secure code flow implementation (June 2026)
-- **Middleware role checks** — `ct-user-type` cookie redirects at edge (May 2026)
-- Backend tests and production build pass in CI/local runs.
+Full feature checklist: [FEATURES.md](./FEATURES.md). Architecture: [ARCHITECTURE.md](./ARCHITECTURE.md).
 
 ---
 
-## 8. Troubleshooting guide
+## Troubleshooting
 
-| Symptom | Likely cause | What to do |
-|---------|--------------|------------|
-| Backend won’t start | Missing `SUPABASE_URL` / `SUPABASE_ANON_KEY` | Copy `backend/.env.example` → `.env` |
-| Health `database: error` | Wrong Supabase URL/key or migrations not applied | Run migrations; check dashboard |
-| Signup fails username | No service role key | Set `SUPABASE_SERVICE_ROLE_KEY` |
-| Sponsor signup fails | RLS or trigger | Check `supabase/migrations` applied |
-| 401 on all API calls | Expired/missing token | Log in again; check refresh cookie + CORS `credentials` |
-| CORS errors | `FRONTEND_URL` mismatch | Match exact origin (no trailing slash) |
-| No emails | Resend not configured | Set `RESEND_API_KEY`, `EMAIL_FROM`; verify domain |
-| Sync does nothing | Cron disabled | `ENABLE_SYNC_CRON=true` or manual sync on Platforms page |
-| Earnings don’t change much | Mock uses monthly seed | Same user+platform → similar range; new month changes bounds |
-| Creator sees sponsor UI briefly | Client-only redirect | See to-do: middleware role check |
-| `npm run build` warning | Multiple `package-lock.json` | Cosmetic; set `turbopack.root` in `next.config.ts` if desired |
-
-**Health check**
+| Symptom | Likely cause | Fix |
+|---------|--------------|-----|
+| Backend won't start | Missing Supabase env | Copy `backend/.env.example` → `.env` |
+| Health `database: error` | Wrong keys or migrations | Apply `supabase/migrations/` |
+| Signup fails username check | No service role key | Set `SUPABASE_SERVICE_ROLE_KEY` |
+| 401 on API calls | Expired/missing token | Re-login; check CORS + cookies |
+| CORS errors | Origin mismatch | Match `FRONTEND_URL` exactly |
+| No emails | Resend not configured | Set `RESEND_API_KEY`, `EMAIL_FROM` |
+| Sync idle | Cron disabled | `ENABLE_SYNC_CRON=true` or manual sync on Platforms |
 
 ```bash
 curl http://localhost:3001/api/health
+# Expect status: "ok", checks.database: "ok"
 ```
 
-Expect `status: "ok"` and `checks.database: "ok"` when Supabase is reachable.
-
 ---
 
-## 9. Data model (conceptual)
-
-| Domain | Main tables (Supabase) |
-|--------|-------------------------|
-| Users | `users` (profile; linked to `auth.users`) |
-| Platforms | platform accounts, sync history, platform earnings |
-| Sponsorships | `sponsorships`, applications |
-| Wallet | `wallet_transactions`, `bank_accounts` |
-| Notifications | notifications table + optional email |
-
-Exact columns and RLS: see `supabase/migrations/*.sql`.
-
----
-
-## 10. Future to-do list (prioritized)
-
-Use this as a living backlog for editing and improving the product.
+## Backlog (prioritized)
 
 ### P0 — Before real users / money
 
-- [ ] Replace **mock platform provider** with TikTok/YouTube/Instagram OAuth + real earnings APIs (or official partner APIs).
-- [ ] Integrate **real payout provider** (Khan Bank, Golomt APIs or payment partner); admin flow to mark payouts `completed` / `failed`.
-- [ ] **Bank account verification** flow (KYC, micro-deposits, or manual).
-- [x] **Middleware role checks** — `ct-user-type` cookie + `proxy.ts` redirects at the edge (May 2026).
-- [ ] Audit **Supabase RLS** on all tables; add automated policy tests.
-- [ ] **Automated Supabase RLS policy tests** — formal test suite for security policies.
-- [x] Require `SUPABASE_SERVICE_ROLE_KEY` in production; API fails startup if missing (May 2026).
-- [ ] **Security audit** (penetration testing).
+- [ ] Replace mock platform provider with real OAuth + earnings APIs
+- [ ] Real payout provider + admin completion flow
+- [ ] Bank account verification
+- [ ] Audit Supabase RLS; add policy tests
 
-### P1 — Reliability & quality
+### P1 — Reliability
 
-- [x] Add **frontend lint** to CI (`.github/workflows/ci.yml`) (May 2026).
-- [x] Expand **backend tests** — 8 tests including 401 guards + cron auth (May 2026).
-- [ ] Add **Playwright E2E tests** — signup → dashboard → apply → sponsor approve flow.
-- [ ] Add **frontend component tests** (Jest/React Testing Library).
-- [ ] Expand **backend test coverage** to 50%+.
-- [ ] **E2E refresh token** test (expire access, confirm silent refresh).
-- [ ] **E2E concurrent request handling** tests.
-- [x] Move platform sync to **external cron** in production — in-process scheduler skipped unless `ENABLE_IN_PROCESS_SYNC_CRON=true` (May 2026).
-- [ ] Migrate sync scheduler to **external job queue** (BullMQ, AWS Lambda, Google Cloud Tasks).
-- [ ] Add **Sentry error tracking** integration.
-- [ ] Add **PostHog or Plausible analytics**.
-- [ ] Set up **Lighthouse CI budget**.
-- [x] Fix login redirect: authed **sponsor** → `/sponsor/dashboard` via proxy + cookies (May 2026).
+- [ ] Playwright E2E (signup → apply → approve → payout)
+- [ ] External job queue for sync
+- [ ] Sentry / analytics
 
-### P2 — Product completeness
+### P2 — Product
 
-- [x] Add **Instagram** to Platforms UI (May 2026).
-- [ ] **Campaign filters/search** with saved preferences.
-- [ ] **Campaign drafts** (save without publishing).
-- [x] **Dark mode** support with toggle and system preference (June 2026).
-- [x] **Persistent login** across browser sessions (June 2026).
-- [x] **Design system** with centralized Earnio tokens (June 2026).
-- [ ] **Creator public profiles** for sponsors (`@username` pages).
-- [ ] **Password reset** flow (email link).
-- [ ] **Email verification** flow (if Supabase requires confirmation).
-- [ ] **Admin panel** for dispute handling, pending payouts, and user management.
-- [ ] **Payment dispute / chargeback handling**.
-- [ ] **Platform fee** automation — document when fees are charged; implement on payout or credit if intended.
-- [ ] **Mobile navigation** (bottom tab bar) verified on iOS via Capacitor.
+- [ ] Campaign drafts, filters, creator public profiles
+- [ ] Admin panel for payouts and disputes
 
-### P3 — Polish & growth
-
-- [ ] i18n support (**Mongolian** UI copy, localized currency formatting).
-- [ ] **Mobile app launch** — iOS via Capacitor, test on real devices.
-- [ ] **Mobile app push notifications** (Capacitor).
-- [ ] Creator **messaging / DM system**.
-- [ ] Creator **portfolio/reel showcase**.
-- [ ] **Brand discovery recommendations**.
-- [ ] Creator **tier/badge system** (verified, top performer, etc.).
-- [ ] **Referral program** (creator → creator, brand → creator).
-- [ ] **SMS notifications** (if market demands).
-- [ ] Creator **content calendar / scheduling**.
-- [ ] **API public endpoint** for creator stats (embeddable widgets).
-- [ ] **Lighthouse performance budget** in CI.
-- [ ] Remove unused root `package.json` Supabase deps or wire SSR auth properly.
-- [ ] **Accessibility audit** — WCAG 2.1 AA compliance.
+See [FEATURES.md](./FEATURES.md) for the full implemented/planned list.
 
 ---
 
-## 11. How this document stays useful
+## Pre-release checks
 
-1. After any major feature, update **§4** (features) and **§7** (diagnosis).  
-2. When closing a to-do, move it to a **Changelog** subsection with date.  
-3. Before launch, run `docs/QA_MANUAL_CHECKLIST.md` and tick items in the in-app `/docs/qa-checklist`.  
-4. Keep `docs/DEPLOYMENT.md` in sync with real hosting URLs and secrets naming.
-
----
-
-## 12. Quick reference — “Is it working?”
-
-| Check | Command / URL | Pass criteria |
-|-------|----------------|---------------|
-| Backend tests | `cd backend && npm test` | 8/8 pass |
+| Check | Command / URL | Pass |
+|-------|----------------|------|
+| Backend tests | `cd backend && npm test` | All pass |
 | Frontend lint | `cd frontend && npm run lint` | 0 errors |
 | Frontend build | `cd frontend && npm run build` | Success |
-| API health | `GET /api/health` | `status: ok`, `database: ok` |
-| App smoke | Login as creator + sponsor | Dashboards load, no 401 loops |
+| API health | `GET /api/health` | `status: ok` |
+| Manual QA | [QA_MANUAL_CHECKLIST.md](./QA_MANUAL_CHECKLIST.md) | All critical paths |
 
 ---
 
-*For deployment steps see [DEPLOYMENT.md](./DEPLOYMENT.md). For manual QA see [QA_MANUAL_CHECKLIST.md](./QA_MANUAL_CHECKLIST.md) or `/docs/qa-checklist` in the running app.*
+*Deploy: [DEPLOYMENT.md](./DEPLOYMENT.md) · Specs: [EARNIO_PROJECT_DOCS.md](./EARNIO_PROJECT_DOCS.md)*

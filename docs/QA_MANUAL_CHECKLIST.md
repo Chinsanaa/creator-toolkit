@@ -1,5 +1,7 @@
 # Manual QA checklist (Phase 13)
 
+→ Also rendered at `/docs/qa-checklist` · Map: [../context.md](../context.md)
+
 Run before each release. Use test accounts for creator and sponsor roles.
 
 ## Creator

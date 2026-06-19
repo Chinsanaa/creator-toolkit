@@ -123,11 +123,7 @@ struct NotificationsView: View {
         Task {
             do {
                 try await apiService.markAllNotificationsAsRead()
-                notifications = notifications.map { notification in
-                    var notif = notification
-                    notif.read = true
-                    return notif
-                }
+                loadNotifications()
             } catch {
                 self.error = error.localizedDescription
             }

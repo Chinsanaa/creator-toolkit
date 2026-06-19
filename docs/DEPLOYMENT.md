@@ -1,7 +1,8 @@
 # Earnio — Deployment Guide
 
-> Comprehensive guide for deploying Earnio to production.
-> Last updated: June 2026 · Status: Tested and ready for deployment
+> Production deploy: Vercel + Railway/Render + Supabase. Also rendered at `/docs/deployment`.  
+> Quick start (local): [../README.md](../README.md) · Map: [../context.md](../context.md)  
+> Last updated: June 2026
 
 ---
 

@@ -1,7 +1,8 @@
 # Earnio — Feature Checklist
 
-> A comprehensive list of implemented, in-progress, and planned features as of June 2026.
-> Last updated: June 18, 2026
+> Implemented vs. planned features. No architecture or setup here.  
+> Map: [../context.md](../context.md) · Gaps: [APP_OVERVIEW.md](./APP_OVERVIEW.md)  
+> Last updated: June 2026
 
 ---
 

@@ -36,22 +36,22 @@ struct WalletView: View {
                             VStack(spacing: 12) {
                                 WalletBalanceCard(
                                     title: "Available Balance",
-                                    amount: String(format: "$%.2f", wallet.availableBalance),
-                                    color: .green,
-                                    icon: "dollarsign.circle.fill"
+                                    amount: EarnioFormat.mnt(wallet.availableBalance),
+                                    color: EarnioTheme.successGreen,
+                                    icon: "banknote.fill"
                                 )
 
                                 WalletBalanceCard(
                                     title: "Pending Payouts",
-                                    amount: String(format: "$%.2f", wallet.pendingPayouts),
-                                    color: .orange,
+                                    amount: EarnioFormat.mnt(wallet.pendingPayouts),
+                                    color: EarnioTheme.warningOrange,
                                     icon: "clock.fill"
                                 )
 
                                 WalletBalanceCard(
                                     title: "Total Earned",
-                                    amount: String(format: "$%.2f", wallet.totalEarned),
-                                    color: .blue,
+                                    amount: EarnioFormat.mnt(wallet.totalEarned),
+                                    color: EarnioTheme.brandBlue,
                                     icon: "chart.line.uptrend.xyaxis"
                                 )
                             }
@@ -231,9 +231,8 @@ struct WalletView: View {
     private func requestPayout(bankAccountId: String, amount: Double) {
         Task {
             do {
-                let transaction = try await apiService.requestPayout(bankAccountId: bankAccountId, amount: amount)
-                self.transactions.insert(transaction, at: 0)
-                self.walletData?.availableBalance -= amount
+                _ = try await apiService.requestPayout(bankAccountId: bankAccountId, amountMnt: Int(amount))
+                await loadWalletAsync()
                 self.error = "Payout request submitted"
             } catch {
                 self.error = error.localizedDescription
@@ -330,7 +329,7 @@ struct TransactionRow: View {
             Spacer()
 
             VStack(alignment: .trailing, spacing: 4) {
-                Text(String(format: "$%.2f", transaction.amount))
+                Text(EarnioFormat.mnt(transaction.amount))
                     .font(.system(size: 14, weight: .semibold))
 
                 Text(transaction.status.capitalized)
@@ -373,7 +372,7 @@ struct PayoutRequestSheet: View {
                 }
 
                 Section("Amount") {
-                    TextField("Amount in USD", text: $amount)
+                    TextField("Amount in MNT (min ₮50,000)", text: $amount)
                         .keyboardType(.decimalPad)
                 }
 

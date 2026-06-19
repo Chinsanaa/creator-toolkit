@@ -54,7 +54,7 @@ struct SponsorDashboardView: View {
 
                                 StatsCard(
                                     title: "Active Budget",
-                                    value: String(format: "$%.0f", data.activeBudget),
+                                    value: EarnioFormat.mnt(data.activeBudget),
                                     color: .purple,
                                     icon: "dollarsign.circle.fill"
                                 )

@@ -1,5 +1,7 @@
 # EARNIO: The 6 Project Documents
 
+Original product specifications. Build rules: [../instructions.md](../instructions.md). Repo map: [../context.md](../context.md).
+
 **Project:** Creator monetization platform for Mongolian UGC creators and brands  
 **Status:** MVP (12-week build, option B: custom video content)  
 **Revenue:** 20% commission on sponsorships (creators earn 80%)

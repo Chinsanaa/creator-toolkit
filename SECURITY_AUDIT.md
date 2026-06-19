@@ -1,5 +1,7 @@
 # Security Audit Report - Creator Toolkit
 
+→ Project map: [context.md](./context.md) · Reporting: [SECURITY.md](./SECURITY.md)
+
 **Date:** June 18, 2026  
 **Status:** ✅ COMPLETE - All security features implemented and tested
 

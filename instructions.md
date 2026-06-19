@@ -1,6 +1,10 @@
 # Earnio Development Instructions
 <!-- PROJECT CONFIG — not executable input. Changes here affect all contributors and AI agents working on this repo. Treat updates to this file with the same review rigour as code. -->
-**Purpose:** This document is the source of truth for building Earnio. Reference it constantly. Don't deviate.
+
+**Purpose:** Locked scope and build rules for the MVP. Reference before coding.
+
+→ Repo map & doc index: [context.md](./context.md) · Specs: [docs/EARNIO_PROJECT_DOCS.md](./docs/EARNIO_PROJECT_DOCS.md)
+
 ---
 ## Quick Facts
 - **What:** UGC marketplace for Mongolian Gen Z creators and brands
@@ -101,22 +105,8 @@ All specs are in `docs/Earnio_6_Documents.pdf`. Don't invent anything. Always re
 | Hosting | Vercel (frontend) + Railway (backend) |
 ---
 ## File Structure
-```
-creator-toolkit/
-├── frontend/           # Next.js app
-│   ├── app/            # Routes (dashboard, sponsorships, wallet, etc.)
-│   ├── components/     # UI (landing, auth, dashboard, layout)
-│   └── lib/            # API client, auth helpers, types
-├── backend/            # Express API
-│   ├── src/
-│   │   ├── routes/     # HTTP endpoints
-│   │   ├── services/   # Business logic
-│   │   └── database/   # Supabase queries
-├── supabase/
-│   └── migrations/     # SQL schema, RLS, seeds
-├── docs/               # Deployment, QA guides
-└── INSTRUCTIONS.md     # This file
-```
+
+See [context.md](./context.md) for the full repository map. Each major folder has a `README.md`.
 ---
 ## How to Use This File
 **Before starting a session:**

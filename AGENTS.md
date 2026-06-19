@@ -1,27 +1,29 @@
 ## Cursor Cloud specific instructions
 
+→ Full project map: [context.md](./context.md)
+
 ### Project structure
 
-Monorepo with three `package.json` files (root, `frontend/`, `backend/`). Each has its own `package-lock.json`; use `npm install` in each directory.
+Monorepo with three `package.json` files (root, `frontend/`, `backend/`). Run `npm install` in each directory.
 
 ### Services
 
-| Service | Directory | Dev command | Port | Notes |
-|---------|-----------|-------------|------|-------|
-| Frontend (Next.js 16) | `frontend/` | `npm run dev` | 3000 | Turbopack-based dev server |
-| iOS app (Capacitor) | `ios/` | `npm run ios:open` | — | Requires macOS + Xcode; set `CAPACITOR_SERVER_URL` before `npm run cap:sync` |
-| Backend (Express 5) | `backend/` | `npm run dev` | 3001 | Uses nodemon + ts-node for hot reload |
+| Service | Directory | Dev command | Port |
+|---------|-----------|-------------|------|
+| Frontend (Next.js 16) | `frontend/` | `npm run dev` | 3000 |
+| Backend (Express 5) | `backend/` | `npm run dev` | 3001 |
+| iOS (Capacitor) | `ios/` | `npm run ios:open` | — (macOS + Xcode) |
 
 ### Key commands
 
-- **Lint (frontend only):** `npm run lint` in `frontend/`
-- **Build frontend:** `npm run build` in `frontend/`
-- **Build backend:** `npm run build` in `backend/` (runs `tsc`)
-- **Backend health check:** `curl http://localhost:3001/api/health`
+- **Both servers:** `npm run dev` (root)
+- **Lint:** `npm run lint` (frontend only)
+- **Backend tests:** `cd backend && npm test`
+- **Health:** `curl http://localhost:3001/api/health`
 
 ### Gotchas
 
-- Next.js 16 warns about multiple lockfiles when building. The warning about `turbopack.root` is cosmetic and does not affect functionality.
-- Supabase client libraries (`@supabase/supabase-js`, `@supabase/ssr`) are declared in the root `package.json` but not yet wired into application code. No Supabase environment variables are needed to run the current app.
-- The backend has no lint script; only the frontend has ESLint configured.
-- The `frontend/AGENTS.md` contains Next.js-specific agent rules about API changes in v16 — read it before modifying frontend code.
+- Next.js 16 `turbopack.root` lockfile warning is cosmetic.
+- Backend has no lint script; frontend only.
+- Read [frontend/AGENTS.md](./frontend/AGENTS.md) before changing Next.js code.
+- MVP uses mock platform sync — see [instructions.md](./instructions.md).
