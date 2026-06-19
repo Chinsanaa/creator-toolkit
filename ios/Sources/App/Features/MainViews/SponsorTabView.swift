@@ -2,39 +2,28 @@ import SwiftUI
 
 struct SponsorTabView: View {
     @State private var selectedTab = 0
-    @EnvironmentObject var authContext: AuthContext
 
     var body: some View {
-        TabView(selection: $selectedTab) {
-            // Dashboard
-            SponsorDashboardView()
-                .tabItem {
-                    Label("Dashboard", systemImage: "chart.pie.fill")
-                }
-                .tag(0)
+        AuthenticatedShell {
+            TabView(selection: $selectedTab) {
+                SponsorDashboardView()
+                    .tabItem { Label("Dashboard", systemImage: "chart.pie.fill") }
+                    .tag(0)
 
-            // Campaigns
-            CampaignsView()
-                .tabItem {
-                    Label("Campaigns", systemImage: "megaphone.fill")
-                }
-                .tag(1)
+                CampaignsView()
+                    .tabItem { Label("Campaigns", systemImage: "megaphone.fill") }
+                    .tag(1)
 
-            // Notifications
-            NotificationsView()
-                .tabItem {
-                    Label("Notifications", systemImage: "bell.fill")
-                }
-                .tag(2)
+                NotificationsView()
+                    .tabItem { Label("Alerts", systemImage: "bell.fill") }
+                    .tag(2)
 
-            // Settings
-            SettingsView()
-                .tabItem {
-                    Label("Settings", systemImage: "gear")
-                }
-                .tag(3)
+                SettingsView()
+                    .tabItem { Label("Settings", systemImage: "gear") }
+                    .tag(3)
+            }
+            .tint(EarnioTheme.brandBlue)
         }
-        .tint(.blue)
     }
 }
 

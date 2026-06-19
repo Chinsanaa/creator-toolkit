@@ -194,7 +194,7 @@ struct SponsorshipCard: View {
                 Spacer()
 
                 VStack(alignment: .trailing, spacing: 4) {
-                    Text("$\(Int(sponsorship.amount))")
+                    Text(EarnioFormat.mnt(sponsorship.amount))
                         .font(.system(size: 18, weight: .bold))
                         .foregroundColor(.green)
 
@@ -287,7 +287,7 @@ struct SponsorshipDetailView: View {
                         .font(.system(size: 14, weight: .semibold))
                         .foregroundColor(.secondary)
 
-                    Text("$\(Int(sponsorship.amount))")
+                    Text(EarnioFormat.mnt(sponsorship.amount))
                         .font(.system(size: 28, weight: .bold))
                         .foregroundColor(.green)
                 }

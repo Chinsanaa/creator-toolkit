@@ -1,8 +1,8 @@
 # Frontend UI Guide
 
-This document explains the **landing pages**, auth flows, and **design system** for **Earnio**. Use it as the source of truth when changing marketing or auth UI.
+Landing pages, auth flows, and marketing UI for **Earnio**. Folder layout: [../frontend/README.md](../frontend/README.md). Design tokens: [../frontend/design-system/MASTER.md](../frontend/design-system/MASTER.md).
 
-**Brand:** Earnio — *Earn more, create more*. Logo, palette, and typography live in `frontend/lib/brand/earnio.ts` and `frontend/components/brand/EarnioLogo.tsx`.
+**Brand:** Earnio — *Earn more, create more*. Constants in `frontend/lib/brand/earnio.ts`.
 
 ---
 

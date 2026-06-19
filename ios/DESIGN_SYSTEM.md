@@ -1,5 +1,7 @@
 # Earnio iOS Design System
 
+→ Web design tokens: [../frontend/design-system/MASTER.md](../frontend/design-system/MASTER.md) · iOS app: [README.md](./README.md)
+
 ## Overview
 
 The Earnio iOS app follows modern iOS design principles and uses SwiftUI for a native, consistent experience across all screens. The design is inspired by iOS 17's Liquid Glass and modern glassmorphism design trends.

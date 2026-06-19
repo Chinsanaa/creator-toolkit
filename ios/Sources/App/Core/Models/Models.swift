@@ -1,52 +1,85 @@
 import Foundation
 
-// MARK: - Authentication Models
+// MARK: - Auth
 
-struct LoginRequest: Codable {
+struct LoginRequest: Encodable {
     let email: String
     let password: String
 }
 
-struct SignupRequest: Codable {
+struct SignupRequest: Encodable {
     let email: String
     let password: String
-    let userType: String // "creator" or "sponsor"
-    let firstName: String
-    let lastName: String
+    let name: String
+    let username: String
+    let userType: String
+    let acceptedTerms: Bool
 }
 
-struct AuthResponse: Codable {
+struct AuthSession: Codable {
     let accessToken: String
-    let refreshToken: String
     let user: User
 }
 
-struct User: Codable, Identifiable {
+struct User: Codable, Identifiable, Equatable {
     let id: String
     let email: String
-    let firstName: String
-    let lastName: String
-    let userType: String // "creator" or "sponsor"
-    let avatar: String?
-    let createdAt: String
+    let name: String
+    let username: String
+    let userType: String
+
+    var displayName: String { name.isEmpty ? username : name }
+    var isCreator: Bool { userType == "creator" }
+    var isSponsor: Bool { userType == "sponsor" }
 }
 
-// MARK: - Dashboard Models
+private struct LoginResponse: Decodable {
+    let user: User
+    let accessToken: String
+}
+
+private struct MeResponse: Decodable {
+    let user: User
+}
+
+private struct RefreshResponse: Decodable {
+    let accessToken: String
+}
+
+// MARK: - Dashboard
 
 struct DashboardSummary: Codable {
-    let totalEarnings: Double
-    let monthlyEarnings: Double
-    let monthChange: Double
+    let totalEarningsMnt: Double
+    let earningsThisMonth: Double
+    let monthOverMonthChange: Double?
     let connectedPlatforms: Int
-    let platformBreakdown: [PlatformEarning]
-    let monthlyTrends: [MonthlyTrend]
+    let byPlatform: [PlatformEarning]
+    let monthlyTrend: [MonthlyTrendPoint]
+
+    var totalEarnings: Double { totalEarningsMnt }
+    var monthlyEarnings: Double { earningsThisMonth }
+    var monthChange: Double { monthOverMonthChange ?? 0 }
+    var platformBreakdown: [PlatformEarning] { byPlatform }
+    var monthlyTrends: [MonthlyTrend] {
+        monthlyTrend.map { MonthlyTrend(id: $0.month, month: $0.label ?? $0.month, earnings: $0.amountMnt) }
+    }
 }
 
 struct PlatformEarning: Codable, Identifiable {
-    let id: String
-    let platform: String // "tiktok", "youtube", "instagram"
-    let earnings: Double
-    let percentage: Double
+    let platform: String
+    let totalMnt: Double
+    let share: Double
+
+    var id: String { platform }
+    var earningsMnt: Double { totalMnt }
+    var percentage: Double { share }
+    var earnings: Double { totalMnt }
+}
+
+struct MonthlyTrendPoint: Codable {
+    let month: String
+    let label: String?
+    let amountMnt: Double
 }
 
 struct MonthlyTrend: Codable, Identifiable {
@@ -55,33 +88,52 @@ struct MonthlyTrend: Codable, Identifiable {
     let earnings: Double
 }
 
-// MARK: - Platform Models
+// MARK: - Platforms
 
-struct Platform: Codable, Identifiable {
+struct PlatformAccount: Codable, Identifiable {
     let id: String
-    let type: String // "tiktok", "youtube", "instagram"
-    let handle: String
+    let platform: String
+    let platformUsername: String
     let followerCount: Int
-    let lastSync: String
-    let syncStatus: String // "synced", "syncing", "failed"
+    let status: String
+    let lastSyncedAt: String?
+
+    var type: String { platform }
+    var handle: String { platformUsername.replacingOccurrences(of: "@", with: "") }
+    var lastSync: String { lastSyncedAt.map { EarnioFormat.shortDate($0) } ?? "Never" }
+    var syncStatus: String { status }
 }
+
+typealias Platform = PlatformAccount
 
 struct PlatformSyncHistory: Codable, Identifiable {
     let id: String
     let platform: String
-    let timestamp: String
+    let syncedAt: String
     let status: String
-    let followerCount: Int
+    let recordsSynced: Int?
 }
 
-// MARK: - Wallet Models
+struct ConnectPlatformRequest: Encodable {
+    let platform: String
+    let platformUsername: String
+}
+
+// MARK: - Wallet
 
 struct WalletSummary: Codable {
-    let availableBalance: Double
-    let pendingPayouts: Double
-    let totalEarned: Double
+    let availableBalanceMnt: Double
+    let pendingPayoutMnt: Double
+    let totalEarnedMnt: Double
+    let totalFeesMnt: Double
+    let totalPaidOutMnt: Double
     let platformFeeRate: Double
-    let minimumPayout: Double
+    let minPayoutMnt: Double
+
+    var availableBalance: Double { availableBalanceMnt }
+    var pendingPayouts: Double { pendingPayoutMnt }
+    var totalEarned: Double { totalEarnedMnt }
+    var minimumPayout: Double { minPayoutMnt }
 }
 
 struct BankAccount: Codable, Identifiable {
@@ -90,125 +142,198 @@ struct BankAccount: Codable, Identifiable {
     let accountNumber: String
     let bankName: String
     let isDefault: Bool
-    let verificationStatus: String // "pending", "verified", "failed"
+    let verified: Bool
+
+    var verificationStatus: String { verified ? "verified" : "pending" }
 }
 
-struct Transaction: Codable, Identifiable {
+struct WalletTransaction: Codable, Identifiable {
     let id: String
-    let type: String // "sponsorship_credit", "earning_credit", "payout", "adjustment"
-    let amount: Double
-    let status: String // "pending", "completed", "failed"
-    let description: String
-    let timestamp: String
-    let relatedId: String?
+    let type: String
+    let amountMnt: Double
+    let status: String
+    let description: String?
+    let createdAt: String
+
+    var amount: Double { amountMnt }
+    var timestamp: String { createdAt }
 }
 
-struct PayoutRequest: Codable {
+typealias Transaction = WalletTransaction
+
+struct PayoutRequestBody: Encodable {
     let bankAccountId: String
-    let amount: Double
+    let amountMnt: Int
 }
 
-// MARK: - Sponsorship Models
+// MARK: - Sponsorships
 
-struct Sponsorship: Codable, Identifiable {
+struct SponsorshipListing: Codable, Identifiable {
     let id: String
     let title: String
     let description: String
-    let amount: Double
-    let contentType: String
-    let minFollowers: Int
-    let maxFollowers: Int
-    let minEngagementRate: Double
-    let applicationDeadline: String
-    let completionDeadline: String
-    let sponsorId: String
-    let applicantCount: Int
-    let createdAt: String
-    var applicationStatus: String? // "pending", "approved", "rejected", "completed", "paid"
+    let paymentAmountMnt: Double
+    let contentType: String?
+    let requiredFollowersMin: Int?
+    let requiredFollowersMax: Int?
+    let engagementRateMin: Double?
+    let deadlineApply: String?
+    let deadlineComplete: String?
+    let sponsorUserId: String?
+    let applicationCount: Int?
+    let applicationStatus: String?
+
+    var amount: Double { paymentAmountMnt }
+    var minFollowers: Int { requiredFollowersMin ?? 0 }
+    var maxFollowers: Int { requiredFollowersMax ?? 0 }
+    var minEngagementRate: Double { engagementRateMin ?? 0 }
+    var applicationDeadline: String { deadlineApply ?? "" }
+    var completionDeadline: String { deadlineComplete ?? "" }
+    var applicantCount: Int { applicationCount ?? 0 }
 }
+
+typealias Sponsorship = SponsorshipListing
 
 struct SponsorshipApplication: Codable, Identifiable {
     let id: String
     let sponsorshipId: String
-    let creatorId: String
-    let response: String
-    let status: String // "pending", "approved", "rejected", "completed", "paid"
-    let appliedAt: String
-    let sponsorship: Sponsorship?
+    let status: String
+    let responseText: String?
+    let appliedAt: String?
+    let sponsorship: SponsorshipListing?
+
+    var response: String { responseText ?? "" }
 }
 
-// MARK: - Campaign Models
+struct ApplySponsorshipRequest: Encodable {
+    let sponsorshipId: String
+    let responseText: String
+}
+
+// MARK: - Sponsor
+
+struct SponsorDashboardStats: Codable {
+    let activeCampaigns: Int
+    let totalCampaigns: Int
+    let pendingApplications: Int
+    let totalApplications: Int
+    let totalBudgetMnt: Double
+
+    var activeBudget: Double { totalBudgetMnt }
+}
+
+typealias SponsorDashboard = SponsorDashboardStats
 
 struct Campaign: Codable, Identifiable {
     let id: String
     let title: String
     let description: String
-    let amountPerCreator: Double
+    let paymentAmountMnt: Double
+    let contentType: String?
+    let requiredFollowersMin: Int?
+    let requiredFollowersMax: Int?
+    let engagementRateMin: Double?
+    let status: String
+    let deadlineApply: String?
+    let deadlineComplete: String?
+    let createdAt: String?
+    let applicationCount: Int?
+    let pendingCount: Int?
+
+    var amountPerCreator: Double { paymentAmountMnt }
+    var minFollowers: Int { requiredFollowersMin ?? 0 }
+    var maxFollowers: Int { requiredFollowersMax ?? 0 }
+    var minEngagementRate: Double { engagementRateMin ?? 0 }
+    var applicationDeadline: String { deadlineApply ?? "" }
+    var completionDeadline: String { deadlineComplete ?? "" }
+    var applications: [CampaignApplication]? { nil }
+}
+
+struct CreateCampaignRequest: Encodable {
+    let title: String
+    let description: String
+    let paymentAmountMnt: Int
     let contentType: String
-    let minFollowers: Int
-    let maxFollowers: Int
-    let minEngagementRate: Double
-    let applicationDeadline: String
-    let completionDeadline: String
-    let status: String // "draft", "published", "closed"
-    let createdAt: String
-    let applications: [CampaignApplication]?
+    let requiredFollowersMin: Int?
+    let requiredFollowersMax: Int?
+    let engagementRateMin: Double?
+    let deadlineApply: String?
+    let deadlineComplete: String?
+}
+
+struct CampaignDetailResponse: Decodable {
+    let campaign: Campaign
+    let applications: [CampaignApplication]
+}
+
+struct CampaignApplicationCreator: Codable {
+    let id: String
+    let name: String
+    let username: String
 }
 
 struct CampaignApplication: Codable, Identifiable {
     let id: String
-    let creatorId: String
-    let campaignId: String
-    let creatorName: String
-    let creatorHandle: String
-    let followerCount: Int
-    let engagementRate: Double
-    let response: String
-    let status: String // "pending", "approved", "rejected"
-    let appliedAt: String
+    let sponsorshipId: String
+    let status: String
+    let responseText: String?
+    let sponsorNotes: String?
+    let appliedAt: String?
+    let creator: CampaignApplicationCreator?
+
+    var campaignId: String { sponsorshipId }
+    var creatorId: String { creator?.id ?? "" }
+    var creatorName: String { creator?.name ?? "Creator" }
+    var creatorHandle: String { creator?.username ?? "" }
+    var response: String { responseText ?? "" }
+    var followerCount: Int { 0 }
+    var engagementRate: Double { 0 }
 }
 
-struct SponsorDashboard: Codable {
-    let activeCampaigns: Int
-    let totalCampaigns: Int
-    let pendingApplications: Int
-    let activeBudget: Double
+struct UpdateApplicationRequest: Encodable {
+    let status: String
+    let sponsorNotes: String?
 }
 
-// MARK: - Notification Models
+struct UpdateCampaignStatusRequest: Encodable {
+    let status: String
+}
 
-struct Notification: Codable, Identifiable {
+struct AddBankAccountRequest: Encodable {
+    let bankName: String
+    let accountNumber: String
+    let accountHolderName: String
+    let setAsDefault: Bool
+}
+
+// MARK: - Notifications
+
+struct AppNotification: Codable, Identifiable {
     let id: String
     let type: String
     let title: String
-    let message: String
-    let read: Bool
-    let relatedId: String?
+    let body: String
+    let readAt: String?
     let createdAt: String
+
+    var message: String { body }
+    var read: Bool { readAt != nil }
+    var relatedId: String? { nil }
 }
 
-// MARK: - Documentation Models
+typealias Notification = AppNotification
 
-struct DocPage: Codable, Identifiable {
-    let id: String
-    let slug: String
-    let title: String
-    let content: String
-    let category: String
+struct NotificationsListResponse: Decodable {
+    let notifications: [AppNotification]
+    let unreadCount: Int
 }
 
-// MARK: - API Response Models
+// MARK: - API envelope helpers
 
-struct ApiResponse<T: Codable>: Codable {
-    let success: Bool
-    let data: T?
-    let message: String?
+struct MessageResponse: Decodable {
+    let message: String
+}
+
+struct APIErrorBody: Decodable {
     let error: String?
-}
-
-struct PaginatedResponse<T: Codable>: Codable {
-    let items: [T]
-    let total: Int
-    let page: Int
-    let pageSize: Int
 }

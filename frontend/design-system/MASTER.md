@@ -1,5 +1,7 @@
 # Earnio Design System
 
+→ UI routes & landing: [../../docs/FRONTEND.md](../../docs/FRONTEND.md) · Frontend folder: [../README.md](../README.md)
+
 **Style:** Electric blue fintech-for-creators · Gen Z · Clean & airy  
 **Mode:** Light + dark (full parity)
 

@@ -1,30 +1,42 @@
 import SwiftUI
 
 @MainActor
-class AuthContext: ObservableObject {
-    @Published var user: User?
-    @Published var isAuthenticated = false
-    @Published var isLoading = false
-    @Published var error: String?
+public class AuthContext: ObservableObject {
+    @Published public var user: User?
+    @Published public var isAuthenticated = false
+    @Published public var isLoading = false
+    @Published public var error: String?
+    @Published public var isDemoMode = AppConfig.isDemoMode
 
     private let apiService = APIService.shared
     private let keychainService = KeychainService.shared
 
-    init() {
-        restoreSession()
+    public init() {
+        if !AppConfig.isDemoMode {
+            restoreSession()
+        }
+    }
+
+    public func enterDemo(asCreator: Bool) {
+        AppConfig.mode = .demo
+        isDemoMode = true
+        user = asCreator ? MockData.creator : MockData.sponsor
+        isAuthenticated = true
+        error = nil
     }
 
     func login(email: String, password: String) async {
         isLoading = true
         error = nil
+        AppConfig.mode = .live
+        isDemoMode = false
 
         do {
-            let response = try await apiService.login(email: email, password: password)
-            apiService.setTokens(access: response.accessToken, refresh: response.refreshToken)
-            try keychainService.saveTokens(access: response.accessToken, refresh: response.refreshToken)
-
-            self.user = response.user
-            self.isAuthenticated = true
+            let session = try await apiService.login(email: email, password: password)
+            apiService.setAccessToken(session.accessToken)
+            try keychainService.saveAccessToken(session.accessToken)
+            user = session.user
+            isAuthenticated = true
         } catch {
             self.error = error.localizedDescription
         }
@@ -32,23 +44,24 @@ class AuthContext: ObservableObject {
         isLoading = false
     }
 
-    func signup(email: String, password: String, userType: String, firstName: String, lastName: String) async {
+    func signup(email: String, password: String, userType: String, name: String, username: String) async {
         isLoading = true
         error = nil
+        AppConfig.mode = .live
+        isDemoMode = false
 
         do {
-            let response = try await apiService.signup(
+            let session = try await apiService.signup(
                 email: email,
                 password: password,
-                userType: userType,
-                firstName: firstName,
-                lastName: lastName
+                name: name,
+                username: username,
+                userType: userType
             )
-            apiService.setTokens(access: response.accessToken, refresh: response.refreshToken)
-            try keychainService.saveTokens(access: response.accessToken, refresh: response.refreshToken)
-
-            self.user = response.user
-            self.isAuthenticated = true
+            apiService.setAccessToken(session.accessToken)
+            try keychainService.saveAccessToken(session.accessToken)
+            user = session.user
+            isAuthenticated = true
         } catch {
             self.error = error.localizedDescription
         }
@@ -57,25 +70,35 @@ class AuthContext: ObservableObject {
     }
 
     func logout() async {
+        if isDemoMode {
+            user = nil
+            isAuthenticated = false
+            isDemoMode = false
+            return
+        }
+
         do {
             try await apiService.logout()
             try keychainService.deleteTokens()
-            self.user = nil
-            self.isAuthenticated = false
+            user = nil
+            isAuthenticated = false
         } catch {
             self.error = error.localizedDescription
         }
     }
 
     func refreshSession() async {
+        guard !isDemoMode else { return }
+
         do {
-            let response = try await apiService.refreshAccessToken()
-            apiService.setTokens(access: response.accessToken, refresh: response.refreshToken)
-            try keychainService.saveTokens(access: response.accessToken, refresh: response.refreshToken)
-            self.user = response.user
-            self.isAuthenticated = true
+            let token = try await apiService.refreshAccessToken()
+            apiService.setAccessToken(token)
+            try keychainService.saveAccessToken(token)
+            let user = try await apiService.getCurrentUser()
+            self.user = user
+            isAuthenticated = true
         } catch {
-            logout()
+            await logout()
         }
     }
 
@@ -84,8 +107,10 @@ class AuthContext: ObservableObject {
         error = nil
 
         do {
-            try await apiService.deleteAccount(password: password)
-            logout()
+            if !isDemoMode {
+                try await apiService.deleteAccount(password: password)
+            }
+            await logout()
         } catch {
             self.error = error.localizedDescription
         }
@@ -94,8 +119,8 @@ class AuthContext: ObservableObject {
     }
 
     private func restoreSession() {
-        if let tokens = try? keychainService.getTokens() {
-            apiService.setTokens(access: tokens.access, refresh: tokens.refresh)
+        if let access = try? keychainService.getAccessToken() {
+            apiService.setAccessToken(access)
             Task {
                 do {
                     let user = try await apiService.getCurrentUser()
@@ -116,16 +141,23 @@ class KeychainService {
     static let shared = KeychainService()
 
     private let accessTokenKey = "earnio_access_token"
-    private let refreshTokenKey = "earnio_refresh_token"
+
+    func saveAccessToken(_ access: String) throws {
+        try save(access, forKey: accessTokenKey)
+    }
+
+    func getAccessToken() throws -> String? {
+        try retrieve(forKey: accessTokenKey)
+    }
 
     func saveTokens(access: String, refresh: String) throws {
         try save(access, forKey: accessTokenKey)
-        try save(refresh, forKey: refreshTokenKey)
+        try save(refresh, forKey: "earnio_refresh_token")
     }
 
     func getTokens() throws -> (access: String, refresh: String)? {
         guard let access = try retrieve(forKey: accessTokenKey),
-              let refresh = try retrieve(forKey: refreshTokenKey) else {
+              let refresh = try retrieve(forKey: "earnio_refresh_token") else {
             return nil
         }
         return (access, refresh)
@@ -133,24 +165,24 @@ class KeychainService {
 
     func deleteTokens() throws {
         try delete(forKey: accessTokenKey)
-        try delete(forKey: refreshTokenKey)
+        try delete(forKey: "earnio_refresh_token")
     }
 
     private func save(_ value: String, forKey key: String) throws {
         guard let data = value.data(using: .utf8) else {
-            throw NSError(domain: "KeychainError", code: -1, userInfo: nil)
+            throw NSError(domain: "KeychainError", code: -1)
         }
 
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-            kSecValueData as String: data
+            kSecValueData as String: data,
         ]
 
         SecItemDelete(query as CFDictionary)
         let status = SecItemAdd(query as CFDictionary, nil)
         guard status == errSecSuccess else {
-            throw NSError(domain: "KeychainError", code: Int(status), userInfo: nil)
+            throw NSError(domain: "KeychainError", code: Int(status))
         }
     }
 
@@ -158,32 +190,20 @@ class KeychainService {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
             kSecAttrAccount as String: key,
-            kSecReturnData as String: true
+            kSecReturnData as String: true,
         ]
 
         var result: AnyObject?
         let status = SecItemCopyMatching(query as CFDictionary, &result)
-
-        guard status == errSecSuccess else {
-            return nil
-        }
-
-        guard let data = result as? Data else {
-            return nil
-        }
-
+        guard status == errSecSuccess, let data = result as? Data else { return nil }
         return String(data: data, encoding: .utf8)
     }
 
     private func delete(forKey key: String) throws {
         let query: [String: Any] = [
             kSecClass as String: kSecClassGenericPassword,
-            kSecAttrAccount as String: key
+            kSecAttrAccount as String: key,
         ]
-
-        let status = SecItemDelete(query as CFDictionary)
-        guard status == errSecSuccess || status == errSecItemNotFound else {
-            throw NSError(domain: "KeychainError", code: Int(status), userInfo: nil)
-        }
+        SecItemDelete(query as CFDictionary)
     }
 }

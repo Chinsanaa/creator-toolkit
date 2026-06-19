@@ -1,6 +1,7 @@
 # Earnio — System Architecture
 
-> A detailed guide to how Earnio is built and how all components interact.
+> Deep dive: components, data flows, database schema, security model.  
+> Quick map: [../context.md](../context.md) · Status & gaps: [APP_OVERVIEW.md](./APP_OVERVIEW.md)  
 > Last updated: June 2026
 
 ---
@@ -651,4 +652,4 @@ CREATE TRIGGER on_auth_user_created
 
 ---
 
-*For more details, see [FEATURES.md](./FEATURES.md), [DEPLOYMENT.md](./DEPLOYMENT.md), and [APP_OVERVIEW.md](./APP_OVERVIEW.md).*
+*For feature checklist see [FEATURES.md](./FEATURES.md). For ops see [APP_OVERVIEW.md](./APP_OVERVIEW.md). Master index: [../context.md](../context.md).*

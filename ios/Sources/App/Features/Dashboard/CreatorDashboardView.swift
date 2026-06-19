@@ -35,17 +35,17 @@ struct CreatorDashboardView: View {
                                 // Total Earnings
                                 EarningsCard(
                                     title: "Total Earnings",
-                                    amount: String(format: "$%.2f", data.totalEarnings),
+                                    amount: EarnioFormat.mnt(data.totalEarnings),
                                     subtitle: "All time",
-                                    color: .blue
+                                    color: EarnioTheme.brandBlue
                                 )
 
                                 // Monthly Earnings
                                 EarningsCard(
                                     title: "This Month",
-                                    amount: String(format: "$%.2f", data.monthlyEarnings),
+                                    amount: EarnioFormat.mnt(data.monthlyEarnings),
                                     subtitle: "Month-over-month \(data.monthChange > 0 ? "+" : "")\(String(format: "%.1f", data.monthChange))%",
-                                    color: .green
+                                    color: EarnioTheme.successGreen
                                 )
 
                                 // Connected Platforms
@@ -215,7 +215,7 @@ struct PlatformBreakdownRow: View {
 
                 Spacer()
 
-                Text(String(format: "$%.2f", platform.earnings))
+                Text(EarnioFormat.mnt(platform.earnings))
                     .font(.system(size: 14, weight: .semibold))
                     .foregroundColor(.primary)
             }
