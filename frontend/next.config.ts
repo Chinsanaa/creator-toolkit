@@ -6,9 +6,6 @@ const frontendDir = path.dirname(fileURLToPath(import.meta.url));
 const repoRoot = path.join(frontendDir, "..");
 
 const nextConfig: NextConfig = {
-  output: "standalone",
-  // Monorepo: trace files from repo root for standalone Docker/Vercel output.
-  outputFileTracingRoot: repoRoot,
   async headers() {
     return [
       {
