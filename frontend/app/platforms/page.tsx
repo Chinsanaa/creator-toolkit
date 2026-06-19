@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -14,7 +13,7 @@ import {
   getYouTubeAuthUrl,
   getInstagramAuthUrl,
 } from '@/lib/api/platforms';
-import { formatDate, formatHandle, platformLabel } from '@/lib/format';
+import { formatHandle } from '@/lib/format';
 import type { PlatformAccount, SyncHistoryEntry } from '@/lib/types/platforms';
 
 const PLATFORMS = [
@@ -101,10 +100,6 @@ export default function PlatformsPage() {
     }
   }
 
-  function accountFor(platformId: string) {
-    return accounts.find((a) => a.platform.toLowerCase() === platformId);
-  }
-
   return (
     <DashboardShell>
       <div className="mx-auto max-w-3xl">
@@ -119,43 +114,6 @@ export default function PlatformsPage() {
         {error && (
           <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         )}
-
-        <section className="creator-panel-lg">
-          <h2 className="text-base font-semibold text-landing-fg">{t('social_accounts')}</h2>
-          <p className="mt-1 text-sm text-landing-muted">{t('manage_platform_connections')}</p>
-
-          {loading ? (
-            <p className="mt-6 text-sm text-landing-muted">{t('loading')}</p>
-          ) : (
-            <ul className="mt-6 space-y-3">
-              {PLATFORMS.map((p) => {
-                const account = accountFor(p.id);
-                return (
-                  <li key={p.id} className="creator-platform-row">
-                    <div>
-                      <p className="font-medium text-landing-fg">{p.label}</p>
-                      <p className="text-sm text-landing-muted">
-                        {account ? formatHandle(account.platform_username) : t('not_connected')}
-                      </p>
-                    </div>
-                    {account ? (
-                      <button
-                        type="button"
-                        disabled={syncingId === account.id}
-                        onClick={() => handleSync(account.id)}
-                        className="landing-btn-light px-4 py-2 text-xs"
-                      >
-                        {syncingId === account.id ? t('syncing') : t('sync')}
-                      </button>
-                    ) : (
-                      <span className="text-xs text-landing-muted">{t('use_form_below')}</span>
-                    )}
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </section>
 
         <section className="creator-panel mt-6">
           <h2 className="text-base font-semibold text-landing-fg">Connect Your Platforms</h2>
