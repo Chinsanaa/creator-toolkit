@@ -17,6 +17,11 @@ interface TokenExchangeResponse {
   open_id?: string;
 }
 
+interface TikTokErrorResponse {
+  error_description?: string;
+  message?: string;
+}
+
 class TikTokOAuthService {
   private config: TikTokOAuthConfig | null = null;
 
