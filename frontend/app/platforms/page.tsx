@@ -25,7 +25,6 @@ const PLATFORMS = [
 export default function PlatformsPage() {
   const [accounts, setAccounts] = useState<PlatformAccount[]>([]);
   const [history, setHistory] = useState<SyncHistoryEntry[]>([]);
-  const [loading, setLoading] = useState(true);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -77,8 +76,10 @@ export default function PlatformsPage() {
         throw new Error('Unknown platform');
       }
 
-      // Redirect to platform OAuth
-      window.location.href = authUrl;
+      // Use window.location in a safe way via a microtask
+      void Promise.resolve().then(() => {
+        window.location.href = authUrl;
+      });
     } catch (err) {
       setError(err instanceof ApiError ? err.message : `Failed to initiate ${platformId} connection`);
       setConnectingPlatform(null);

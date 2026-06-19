@@ -15,7 +15,6 @@ export default function InstagramCallbackPage() {
     async function handleCallback() {
       try {
         const code = searchParams.get('code');
-        const state = searchParams.get('state');
         const error = searchParams.get('error');
 
         if (error) {
