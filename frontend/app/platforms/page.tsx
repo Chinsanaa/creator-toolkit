@@ -1,39 +1,36 @@
 'use client';
 
-import { FormEvent, useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import {
-  connectPlatform,
   listPlatforms,
   listSyncHistory,
   syncPlatform,
   getTikTokAuthUrl,
+  getYouTubeAuthUrl,
+  getInstagramAuthUrl,
 } from '@/lib/api/platforms';
 import { formatDate, formatHandle, platformLabel } from '@/lib/format';
 import type { PlatformAccount, SyncHistoryEntry } from '@/lib/types/platforms';
 
 const PLATFORMS = [
-  { id: 'tiktok', label: 'TikTok' },
-  { id: 'youtube', label: 'YouTube' },
-  { id: 'instagram', label: 'Instagram' },
+  { id: 'tiktok', label: 'TikTok', icon: '🎵' },
+  { id: 'youtube', label: 'YouTube', icon: '📺' },
+  { id: 'instagram', label: 'Instagram', icon: '📷' },
 ] as const;
 
 export default function PlatformsPage() {
-  const router = useRouter();
   const [accounts, setAccounts] = useState<PlatformAccount[]>([]);
   const [history, setHistory] = useState<SyncHistoryEntry[]>([]);
-  const [platform, setPlatform] = useState<string>('youtube');
-  const [username, setUsername] = useState('');
   const [loading, setLoading] = useState(true);
-  const [connecting, setConnecting] = useState(false);
   const [syncingId, setSyncingId] = useState<string | null>(null);
+  const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [oauthConnecting, setOAuthConnecting] = useState(false);
   const { t } = useLanguage();
 
   const load = useCallback(async (isCancelled: () => boolean = () => false) => {
@@ -61,36 +58,31 @@ export default function PlatformsPage() {
     };
   }, [load]);
 
-  async function handleConnect(e: FormEvent) {
-    e.preventDefault();
-    setConnecting(true);
+  async function handleOAuthConnect(platformId: string) {
+    setConnectingPlatform(platformId);
     setError(null);
     setMessage(null);
     try {
-      await connectPlatform(platform, username);
-      setUsername('');
-      setMessage(t('platform_connected').replace('{platform}', platformLabel(platform)));
-      await load();
-    } catch (err) {
-      setError(err instanceof ApiError ? err.message : t('failed_to_connect'));
-    } finally {
-      setConnecting(false);
-    }
-  }
+      let authUrl: string;
 
-  async function handleTikTokOAuth() {
-    setOAuthConnecting(true);
-    setError(null);
-    setMessage(null);
-    try {
-      const { authUrl } = await getTikTokAuthUrl();
-      // Store return URL in session storage so callback page knows where to redirect
-      sessionStorage.setItem('tiktok_return_url', window.location.href);
-      // Redirect to TikTok OAuth
+      if (platformId === 'tiktok') {
+        const response = await getTikTokAuthUrl();
+        authUrl = response.authUrl;
+      } else if (platformId === 'youtube') {
+        const response = await getYouTubeAuthUrl();
+        authUrl = response.authUrl;
+      } else if (platformId === 'instagram') {
+        const response = await getInstagramAuthUrl();
+        authUrl = response.authUrl;
+      } else {
+        throw new Error('Unknown platform');
+      }
+
+      // Redirect to platform OAuth
       window.location.href = authUrl;
     } catch (err) {
-      setError(err instanceof ApiError ? err.message : 'Failed to initiate TikTok connection');
-      setOAuthConnecting(false);
+      setError(err instanceof ApiError ? err.message : `Failed to initiate ${platformId} connection`);
+      setConnectingPlatform(null);
     }
   }
 
@@ -166,55 +158,51 @@ export default function PlatformsPage() {
         </section>
 
         <section className="creator-panel mt-6">
-          <h2 className="text-base font-semibold text-landing-fg">{t('connect_a_platform')}</h2>
+          <h2 className="text-base font-semibold text-landing-fg">Connect Your Platforms</h2>
+          <p className="mt-1 text-sm text-landing-muted">
+            Connect your social media accounts securely via OAuth to sync real earnings and analytics
+          </p>
 
-          {/* TikTok OAuth Connection */}
-          <div className="mt-4 space-y-3">
-            <button
-              type="button"
-              disabled={oauthConnecting}
-              onClick={handleTikTokOAuth}
-              className="landing-btn-dark w-full px-6 py-2.5 text-sm"
-            >
-              {oauthConnecting ? 'Connecting to TikTok...' : 'Connect with TikTok'}
-            </button>
-            <p className="text-xs text-landing-muted">
-              We'll request access to your TikTok analytics to sync earnings
-            </p>
-          </div>
+          <div className="mt-6 grid gap-3">
+            {PLATFORMS.map((platform) => {
+              const account = accounts.find((a) => a.platform.toLowerCase() === platform.id);
+              const isConnecting = connectingPlatform === platform.id;
 
-          {/* Username-based Connection */}
-          <div className="mt-6 border-t border-landing-border pt-6">
-            <p className="mb-4 text-sm font-medium text-landing-fg">Connect via username (YouTube, Instagram)</p>
-            <form onSubmit={handleConnect} className="space-y-4">
-              <div>
-                <label className="mb-2 block text-sm font-medium text-landing-fg">{t('platform')}</label>
-                <select
-                  value={platform}
-                  onChange={(e) => setPlatform(e.target.value)}
-                  className="auth-input"
+              return (
+                <div
+                  key={platform.id}
+                  className="flex items-center justify-between rounded-xl border border-landing-border bg-landing-surface px-4 py-3"
                 >
-                  {PLATFORMS.filter((p) => p.id !== 'tiktok').map((p) => (
-                    <option key={p.id} value={p.id}>
-                      {p.label}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label className="mb-2 block text-sm font-medium text-landing-fg">{t('username')}</label>
-                <input
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder={t('your_handle')}
-                  className="auth-input"
-                />
-              </div>
-              <button type="submit" disabled={connecting} className="landing-btn-light px-6 py-2.5 text-sm">
-                {connecting ? t('connecting') : t('connect')}
-              </button>
-            </form>
+                  <div>
+                    <p className="font-medium text-landing-fg">
+                      {platform.icon} {platform.label}
+                    </p>
+                    <p className="text-xs text-landing-muted">
+                      {account ? formatHandle(account.platform_username) : 'Not connected'}
+                    </p>
+                  </div>
+                  {account ? (
+                    <button
+                      type="button"
+                      disabled={syncingId === account.id}
+                      onClick={() => handleSync(account.id)}
+                      className="landing-btn-light px-4 py-2 text-xs"
+                    >
+                      {syncingId === account.id ? 'Syncing...' : 'Sync'}
+                    </button>
+                  ) : (
+                    <button
+                      type="button"
+                      disabled={isConnecting}
+                      onClick={() => handleOAuthConnect(platform.id)}
+                      className="landing-btn-dark px-4 py-2 text-xs"
+                    >
+                      {isConnecting ? 'Connecting...' : 'Connect'}
+                    </button>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </section>
 
