@@ -79,10 +79,19 @@ class InstagramOAuthService {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(
-        `Instagram token exchange failed: ${error.error?.message || error.error || response.statusText}`
-      );
+      let errorMsg = response.statusText;
+      try {
+        const errorData = (await response.json()) as Record<string, unknown>;
+        if (typeof errorData.error === 'object' && errorData.error !== null) {
+          const errorObj = errorData.error as Record<string, unknown>;
+          if (typeof errorObj.message === 'string') {
+            errorMsg = errorObj.message;
+          }
+        }
+      } catch {
+        // Ignore JSON parse errors
+      }
+      throw new Error(`Instagram token exchange failed: ${errorMsg}`);
     }
 
     const data = (await response.json()) as TokenExchangeResponse;

@@ -81,10 +81,18 @@ class YouTubeOAuthService {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({}));
-      throw new Error(
-        `YouTube token exchange failed: ${error.error_description || error.error || response.statusText}`
-      );
+      let errorMsg = response.statusText;
+      try {
+        const errorData = (await response.json()) as Record<string, unknown>;
+        if (typeof errorData.error_description === 'string') {
+          errorMsg = errorData.error_description;
+        } else if (typeof errorData.error === 'string') {
+          errorMsg = errorData.error;
+        }
+      } catch {
+        // Ignore JSON parse errors
+      }
+      throw new Error(`YouTube token exchange failed: ${errorMsg}`);
     }
 
     const data = (await response.json()) as TokenExchangeResponse;
