@@ -11,6 +11,7 @@ Production stack: **Vercel** (frontend), **Railway or Render** (backend), **Supa
 ## Frontend (Vercel)
 
 1. Import the repo in [Vercel](https://vercel.com) and set **Root Directory** to `frontend`.
+2. Confirm **Framework Preset** is **Next.js** and leave **Output Directory** blank (do not use `build` — that is for Create React App, not Next.js).
 2. Environment variables (see `frontend/.env.example`):
 
    | Variable | Example |

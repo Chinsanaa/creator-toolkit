@@ -121,8 +121,10 @@ From Supabase dashboard:
 1. Go to [vercel.com](https://vercel.com)
 2. Click **New Project** → **Import Git Repository**
 3. Select your Earnio repository
-4. Choose framework: **Next.js**
-5. Set **Root Directory** to `frontend`
+4. Set **Root Directory** to `frontend` (required — the Next.js app lives in this folder, not the repo root)
+5. Confirm framework is detected as **Next.js** (auto-detected from `frontend/package.json`)
+6. Leave **Output Directory** empty — do not set it to `build`. Next.js outputs to `.next`, which Vercel handles automatically
+7. Build command should be `npm run build` (default)
 
 ### 2.2 Configure Environment Variables
 
@@ -493,6 +495,7 @@ GET https://api.earnio.app/api/health → Expect 200, status="ok"
 
 | Issue | Cause | Solution |
 |-------|-------|----------|
+| `No Output Directory named "build" found` | Root Directory is repo root (`.`) instead of `frontend`, or Output Directory is set to `build` | In Vercel → **Settings** → **General**: set **Root Directory** to `frontend`, set **Framework Preset** to **Next.js**, and clear **Output Directory** (leave blank) |
 | Frontend build fails | Missing env vars | Verify `NEXT_PUBLIC_API_URL` in Vercel |
 | 502 Bad Gateway | Backend not running | Check Railway/Render logs; restart service |
 | 401 on all API calls | Wrong `FRONTEND_URL` | Ensure no trailing slash; matches Vercel domain |
