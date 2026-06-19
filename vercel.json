@@ -1,15 +1,5 @@
 {
-    "experimentalServices": {
-        "frontend": {
-            "entrypoint": "frontend",
-            "routePrefix": "/",
-            "framework": "nextjs",
-            "installCommand": "npm install"
-        },
-        "backend": {
-            "entrypoint": "backend",
-            "routePrefix": "/_/backend",
-            "installCommand": "npm install"
-        }
-    }
+    "buildCommand": "npm run build:frontend",
+    "outputDirectory": "frontend/.next/standalone",
+    "installCommand": "npm install && npm install --prefix frontend"
 }
