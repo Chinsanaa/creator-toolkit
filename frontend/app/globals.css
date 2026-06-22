@@ -354,7 +354,7 @@ html.apple-platform textarea {
 }
 
 .bg-landing-fg {
-  background: var(--landing-fg);
+  background: #0b1220;
 }
 
 .landing-footer {
@@ -610,7 +610,7 @@ html.apple-platform textarea {
 
 .landing-btn-dark {
   @apply inline-flex cursor-pointer items-center justify-center rounded-full font-semibold text-white transition;
-  background: var(--landing-fg);
+  background: #0b1220;
   box-shadow: var(--landing-btn-shadow);
 }
 
@@ -626,7 +626,7 @@ html.apple-platform textarea {
 .landing-btn-light {
   @apply inline-flex cursor-pointer items-center justify-center rounded-full font-semibold transition;
   background: #ffffff;
-  color: var(--landing-fg);
+  color: #0b1220;
   box-shadow: var(--landing-btn-light-shadow);
 }
 
@@ -911,7 +911,7 @@ html.apple-platform textarea {
 }
 
 .creator-sidebar-link-active {
-  background: var(--landing-fg);
+  background: #0b1220;
   color: #fff;
   box-shadow: var(--landing-btn-shadow);
 }
@@ -1139,7 +1139,7 @@ html.apple-platform textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: var(--landing-fg);
+  background: #0b1220;
   font-size: 0.875rem;
   font-weight: 600;
   color: #fff;
@@ -1323,7 +1323,7 @@ html.apple-platform textarea {
   right: 0.75rem;
   z-index: 1;
   border-radius: 9999px;
-  background: var(--landing-fg);
+  background: #0b1220;
   padding: 0.25rem 0.625rem;
   font-size: 0.75rem;
   font-weight: 600;

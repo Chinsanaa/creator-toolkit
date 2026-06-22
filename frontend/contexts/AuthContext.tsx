@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await clearSupabaseBrowserSession();
     clearSessionCookies();
     setUser(null);
-    router.push('/login');
+    router.push('/');
     router.refresh();
   }, [router]);
 
