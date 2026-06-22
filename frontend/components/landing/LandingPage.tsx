@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { LANDING_CONTENT } from '@/lib/landing/content';
 import { HeroIllustration } from '@/components/landing/HeroIllustration';
 import { HowItWorks } from '@/components/landing/HowItWorks';
+import { LandingFooter } from '@/components/landing/LandingFooter';
 import { LandingNav } from '@/components/landing/LandingNav';
 import { useLanguage } from '@/contexts/LanguageContext';
 
@@ -64,19 +65,7 @@ export function BrandLandingPage() {
         />
       </main>
 
-      <footer className="border-t border-sky-100/80 px-6 py-10 lg:px-10">
-        <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 sm:flex-row">
-          <p className="text-sm text-landing-muted">{t('footer_brands')}</p>
-          <div className="flex gap-6 text-sm">
-            <Link href={content.loginHref} className="text-landing-muted transition hover:text-landing-fg">
-              {t('log_in')}
-            </Link>
-            <Link href={content.signupHref} className="font-medium text-landing-fg">
-              {t('get_started')}
-            </Link>
-          </div>
-        </div>
-      </footer>
+      <LandingFooter content={content} />
     </div>
   );
 }

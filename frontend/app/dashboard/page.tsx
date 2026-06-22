@@ -3,15 +3,17 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
 import { MonthlyTrend } from '@/components/dashboard/MonthlyTrend';
 import { StatsCards } from '@/components/dashboard/StatsCards';
-import { PlatformBreakdown } from '@/components/dashboard/PlatformBreakdown';
-import { ConnectedPlatforms } from '@/components/dashboard/ConnectedPlatforms';
+import { PlatformsPanel } from '@/components/dashboard/PlatformsPanel';
 import { RecentEarnings } from '@/components/dashboard/RecentEarnings';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { getDashboardSummary } from '@/lib/api/dashboard';
+import { formatMnt, formatPercent } from '@/lib/format';
 import { PageHeader } from '@/components/ui/PageHeader';
 import type { AuthUser } from '@/lib/types/auth';
 import type { DashboardSummary } from '@/lib/types/dashboard';
@@ -52,22 +54,41 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
         description={t('creator_dashboard_subtitle')}
       />
 
-      {loading && (
-        <p className="text-sm font-medium text-[color:var(--muted-foreground)]">
-          {t('loading_analytics')}
-        </p>
-      )}
+      {loading && <DashboardSkeleton />}
 
       {error && <p className="alert-error">{error}</p>}
 
       {data && !loading && (
-        <div className="space-y-8">
+        <div className="space-y-6">
           <StatsCards data={data} />
-          <MonthlyTrend data={data.monthlyTrend} />
-          <div className="grid gap-6 lg:grid-cols-2">
-            <PlatformBreakdown data={data.byPlatform} />
-            <ConnectedPlatforms platforms={data.connectedPlatforms} />
+
+          <div className="grid gap-3 xl:grid-cols-4">
+            <Card className="py-4 xl:col-span-3">
+              <CardHeader>
+                <CardTitle>Earnings performance</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-semibold tracking-tight">
+                  {formatMnt(data.totalEarningsMnt)}
+                </div>
+                {data.monthOverMonthChange !== null && (
+                  <p
+                    className={`mt-1 text-sm font-medium ${
+                      data.monthOverMonthChange >= 0 ? 'text-success' : 'text-destructive'
+                    }`}
+                  >
+                    {formatPercent(data.monthOverMonthChange)} vs last month
+                  </p>
+                )}
+                <div className="mt-4">
+                  <MonthlyTrend data={data.monthlyTrend} />
+                </div>
+              </CardContent>
+            </Card>
+
+            <PlatformsPanel platforms={data.connectedPlatforms} earnings={data.byPlatform} />
           </div>
+
           <RecentEarnings data={data.recentEarnings} />
         </div>
       )}
@@ -77,7 +98,6 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
-  const { t } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
@@ -89,7 +109,7 @@ export default function DashboardPage() {
   if (authLoading || !user) {
     return (
       <DashboardShell>
-        <p className="text-sm text-zinc-500">{t('loading')}</p>
+        <DashboardSkeleton />
       </DashboardShell>
     );
   }

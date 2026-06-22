@@ -90,6 +90,10 @@ export const translations: Record<string, string> = {
   faq_multiple_brands_q: 'Can I work with multiple brands at once?',
   faq_multiple_brands_a: 'Yes. Apply to multiple sponsorships and manage each application from your dashboard.',
   footer_creators: '© Earnio — Built for Mongolian creators',
+  footer_description_creators: 'Earnio helps Mongolian creators track multi-platform earnings, find brand sponsorships, and get paid in MNT — all from one dashboard.',
+  footer_column_product: 'Product',
+  footer_column_account: 'Account',
+  footer_column_legal: 'Legal',
 
   // Landing — Brand
   reach_mongolian_creators: 'Reach Mongolian creators with sponsored campaigns',
@@ -106,6 +110,7 @@ export const translations: Record<string, string> = {
   track_results: 'Track results.',
   track_results_desc: 'Monitor campaign status and partnership outcomes in one place.',
   footer_brands: '© Earnio — Built for Mongolian brands',
+  footer_description_brands: 'Earnio helps Mongolian brands launch sponsorships, find the right creators, and manage payouts in MNT — all from one dashboard.',
 
   // Navigation / App Shell
   home: 'Home',
@@ -166,6 +171,7 @@ export const translations: Record<string, string> = {
   wallet_subtitle: 'Withdraw earnings to your Mongolian bank account. Platform fee: 20% on sponsorships.',
   loading_wallet: 'Loading wallet…',
   available_to_withdraw: 'Available to withdraw',
+  balance_trend: 'Balance trend',
   pending_payouts: 'Pending payouts',
   processing_transfers: 'Processing transfers',
   total_earned: 'Total earned',
