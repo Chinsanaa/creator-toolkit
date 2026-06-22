@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
 import { MonthlyTrend } from '@/components/dashboard/MonthlyTrend';
 import { StatsCards } from '@/components/dashboard/StatsCards';
 import { PlatformBreakdown } from '@/components/dashboard/PlatformBreakdown';
@@ -52,11 +53,7 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
         description={t('creator_dashboard_subtitle')}
       />
 
-      {loading && (
-        <p className="text-sm font-medium text-[color:var(--muted-foreground)]">
-          {t('loading_analytics')}
-        </p>
-      )}
+      {loading && <DashboardSkeleton />}
 
       {error && <p className="alert-error">{error}</p>}
 
@@ -77,7 +74,6 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
 
 export default function DashboardPage() {
   const { user, loading: authLoading } = useAuth();
-  const { t } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
@@ -89,7 +85,7 @@ export default function DashboardPage() {
   if (authLoading || !user) {
     return (
       <DashboardShell>
-        <p className="text-sm text-zinc-500">{t('loading')}</p>
+        <DashboardSkeleton />
       </DashboardShell>
     );
   }
