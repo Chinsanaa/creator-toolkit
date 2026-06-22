@@ -166,6 +166,7 @@ export const translations: Record<string, string> = {
   wallet_subtitle: 'Withdraw earnings to your Mongolian bank account. Platform fee: 20% on sponsorships.',
   loading_wallet: 'Loading wallet…',
   available_to_withdraw: 'Available to withdraw',
+  balance_trend: 'Balance trend',
   pending_payouts: 'Pending payouts',
   processing_transfers: 'Processing transfers',
   total_earned: 'Total earned',

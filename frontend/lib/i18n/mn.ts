@@ -143,6 +143,7 @@ export const translations: Record<string, string> = {
   wallet_subtitle: 'Монгол банкны дансандаа орлогоо татах. Платформын хураамж: ивээн тэтгэлтэд 20%.',
   loading_wallet: 'Хэтэвчийг ачаалж байна…',
   available_to_withdraw: 'Татахад боломжтой',
+  balance_trend: 'Үлдэгдлийн график',
   pending_payouts: 'Хүлээгдэж буй төлбөрүүд',
   processing_transfers: 'Шилжүүлгийг боловсруулж байна',
   total_earned: 'Нийт олсон',

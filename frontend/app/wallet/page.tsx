@@ -3,6 +3,8 @@
 import { FormEvent, useCallback, useEffect, useState } from 'react';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { BalanceTrend } from '@/components/wallet/BalanceTrend';
+import { WalletSkeleton } from '@/components/wallet/WalletSkeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import {
@@ -156,19 +158,27 @@ export default function WalletPage() {
           subtitle={t('wallet_subtitle')}
         />
 
-        {loading && <p className="text-sm text-landing-muted">{t('loading_wallet')}</p>}
+        {loading && <WalletSkeleton />}
         {error && (
           <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         )}
 
         {summary && !loading && (
           <div className="space-y-8">
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-              <BalanceCard
-                label={t('available_to_withdraw')}
-                value={formatMnt(summary.availableBalanceMnt)}
-                highlight
-              />
+            <div className="creator-hero-card">
+              <p className="creator-stat-label">{t('available_to_withdraw')}</p>
+              <p className="mt-2 text-3xl font-semibold tracking-tight text-landing-fg sm:text-4xl">
+                {formatMnt(summary.availableBalanceMnt)}
+              </p>
+              <div className="mt-6">
+                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-landing-muted">
+                  {t('balance_trend')}
+                </p>
+                <BalanceTrend transactions={transactions} />
+              </div>
+            </div>
+
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               <BalanceCard
                 label={t('pending_payouts')}
                 value={formatMnt(summary.pendingPayoutMnt)}
@@ -366,19 +376,9 @@ export default function WalletPage() {
   );
 }
 
-function BalanceCard({
-  label,
-  value,
-  hint,
-  highlight,
-}: {
-  label: string;
-  value: string;
-  hint?: string;
-  highlight?: boolean;
-}) {
+function BalanceCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
   return (
-    <div className={`creator-stat-card ${highlight ? 'creator-stat-card-highlight' : ''}`}>
+    <div className="creator-stat-card">
       <p className="creator-stat-label">{label}</p>
       <p className="creator-stat-value">{value}</p>
       {hint ? <p className="mt-1 text-xs text-landing-muted">{hint}</p> : null}
