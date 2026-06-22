@@ -357,6 +357,27 @@ html.apple-platform textarea {
   background: var(--landing-fg);
 }
 
+.landing-footer {
+  position: relative;
+  overflow: hidden;
+  background: var(--landing-bg-bottom);
+}
+
+.landing-footer-wordmark {
+  pointer-events: none;
+  user-select: none;
+  text-align: center;
+  font-weight: 700;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  color: var(--landing-fg);
+  opacity: 0.05;
+  font-size: clamp(4.5rem, 16vw, 11rem);
+  white-space: nowrap;
+  overflow: hidden;
+  padding: 0 0 0.05em;
+}
+
 /* Auth pages — landing visual continuity */
 .auth-card {
   border-radius: 1.25rem;
