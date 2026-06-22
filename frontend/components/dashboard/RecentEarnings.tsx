@@ -1,43 +1,45 @@
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { formatMnt, platformLabel, sourceLabel } from '@/lib/format';
 import type { EarningsEntry } from '@/lib/types/dashboard';
 
 export function RecentEarnings({ data }: { data: EarningsEntry[] }) {
   return (
-    <div className="glass-card p-6">
-      <h2 className="text-lg font-medium text-foreground">Recent earnings</h2>
-      {data.length === 0 ? (
-        <p className="mt-4 text-sm text-muted">
-          No earnings yet. Connect a platform or wait for your first sync.
-        </p>
-      ) : (
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead>
-              <tr className="border-b border-border text-muted">
-                <th className="pb-3 pr-4 font-medium">Period</th>
-                <th className="pb-3 pr-4 font-medium">Platform</th>
-                <th className="pb-3 pr-4 font-medium">Source</th>
-                <th className="pb-3 text-right font-medium">Amount</th>
-              </tr>
-            </thead>
-            <tbody>
+    <Card className="py-4">
+      <CardHeader>
+        <CardTitle>Recent earnings</CardTitle>
+      </CardHeader>
+      <CardContent>
+        {data.length === 0 ? (
+          <p className="text-sm text-muted">
+            No earnings yet. Connect a platform or wait for your first sync.
+          </p>
+        ) : (
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Period</TableHead>
+                <TableHead>Platform</TableHead>
+                <TableHead>Source</TableHead>
+                <TableHead className="text-right">Amount</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {data.map((row) => (
-                <tr key={row.id} className="border-b border-border/60 last:border-0">
-                  <td className="py-3 pr-4 text-foreground">
-                    {formatPeriod(row.period_start, row.period_end)}
-                  </td>
-                  <td className="py-3 pr-4">{platformLabel(row.platform)}</td>
-                  <td className="py-3 pr-4 text-muted">{sourceLabel(row.source_type)}</td>
-                  <td className="py-3 text-right font-medium text-foreground">
+                <TableRow key={row.id}>
+                  <TableCell>{formatPeriod(row.period_start, row.period_end)}</TableCell>
+                  <TableCell>{platformLabel(row.platform)}</TableCell>
+                  <TableCell className="text-muted">{sourceLabel(row.source_type)}</TableCell>
+                  <TableCell className="text-right font-medium">
                     {formatMnt(row.amount_mnt)}
-                  </td>
-                </tr>
+                  </TableCell>
+                </TableRow>
               ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
+            </TableBody>
+          </Table>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
