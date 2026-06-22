@@ -679,31 +679,53 @@ html.apple-platform textarea {
   }
 }
 
-@keyframes not-found-drift {
-  0%,
-  100% {
-    transform: translate(-50%, -50%) rotate(-8deg);
-  }
-  50% {
-    transform: translate(calc(-50% + 6px), calc(-50% - 8px)) rotate(4deg);
-  }
-}
-
 .not-found-card {
   animation: not-found-enter 0.5s ease-out both;
-}
-
-.not-found-plane {
-  animation: not-found-drift 5s ease-in-out infinite;
 }
 
 .not-found-page {
   min-height: 100%;
 }
 
+.not-found-hero {
+  background: radial-gradient(ellipse 70% 60% at 50% 40%, var(--primary-hover) 0%, transparent 70%);
+}
+
+.not-found-ghost-number {
+  pointer-events: none;
+  user-select: none;
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--primary-foreground);
+  opacity: 0.08;
+  font-size: clamp(8rem, 28vw, 22rem);
+  white-space: nowrap;
+}
+
+.not-found-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background: var(--primary-foreground);
+  color: var(--primary);
+  box-shadow: var(--landing-btn-light-shadow);
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.not-found-cta:hover {
+  background: #f4f6ff;
+  transform: translateY(-1px);
+}
+
 @media (prefers-reduced-motion: reduce) {
-  .landing-float,
-  .not-found-plane {
+  .landing-float {
     animation: none;
   }
 
