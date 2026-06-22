@@ -127,27 +127,64 @@ export default function PlatformsPage() {
           {PLATFORMS.map((platform) => {
             const account = accounts.find((a) => a.platform.toLowerCase() === platform.id);
             const isConnecting = connectingPlatform === platform.id;
+            const platformEarnings = earnings.find((e) => e.platform.toLowerCase() === platform.id);
+            const isSynced = account?.status === 'connected';
 
             return (
               <div key={platform.id} className="creator-panel-lg flex flex-col gap-4">
-                <div className="flex items-center gap-3">
-                  <PlatformBadge platform={platform.id} />
-                  <div>
-                    <p className="font-medium text-landing-fg">{platform.label}</p>
-                    <p className="text-xs text-landing-muted">
-                      {account ? formatHandle(account.platform_username) : 'Not connected'}
-                    </p>
+                <div className="flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <PlatformBadge platform={platform.id} />
+                    <div>
+                      <p className="font-medium text-landing-fg">{platform.label}</p>
+                      <p className="text-xs text-landing-muted">
+                        {account ? formatHandle(account.platform_username) : 'Not connected'}
+                      </p>
+                    </div>
                   </div>
+                  {account && (
+                    <span
+                      className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
+                        isSynced ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
+                      }`}
+                    >
+                      {isSynced ? t('synced') : t('off')}
+                    </span>
+                  )}
                 </div>
+
                 {account ? (
-                  <button
-                    type="button"
-                    disabled={syncingId === account.id}
-                    onClick={() => handleSync(account.id)}
-                    className="landing-btn-light px-4 py-2 text-xs"
-                  >
-                    {syncingId === account.id ? 'Syncing...' : 'Sync'}
-                  </button>
+                  <>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="creator-platform-stat">
+                        <p className="text-xs text-landing-muted">{t('followers')}</p>
+                        <p className="mt-1 font-mono text-sm font-semibold text-landing-fg">
+                          {(account.follower_count ?? 0).toLocaleString()}
+                        </p>
+                      </div>
+                      <div className="creator-platform-stat">
+                        <p className="text-xs text-landing-muted">{t('total_earned')}</p>
+                        <p className="mt-1 font-mono text-sm font-semibold text-landing-fg">
+                          {formatMnt(platformEarnings?.totalMnt ?? 0)}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-1 flex items-center justify-between gap-3 border-t border-sky-100 pt-3">
+                      <p className="text-xs text-landing-muted">
+                        {account.last_synced_at
+                          ? `${t('last_synced')}: ${formatDate(account.last_synced_at)}`
+                          : t('never_synced')}
+                      </p>
+                      <button
+                        type="button"
+                        disabled={syncingId === account.id}
+                        onClick={() => handleSync(account.id)}
+                        className="landing-btn-light px-4 py-2 text-xs"
+                      >
+                        {syncingId === account.id ? t('syncing') : t('sync_now')}
+                      </button>
+                    </div>
+                  </>
                 ) : (
                   <button
                     type="button"
@@ -155,7 +192,7 @@ export default function PlatformsPage() {
                     onClick={() => handleOAuthConnect(platform.id)}
                     className="landing-btn-dark px-4 py-2 text-xs"
                   >
-                    {isConnecting ? 'Connecting...' : 'Connect'}
+                    {isConnecting ? 'Connecting...' : `${t('connect')} ${platform.label}`}
                   </button>
                 )}
               </div>
