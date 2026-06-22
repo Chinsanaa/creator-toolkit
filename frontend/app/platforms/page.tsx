@@ -6,6 +6,7 @@ import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { PlatformBadge } from '@/components/dashboard/PlatformBadge';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
+import { getDashboardSummary } from '@/lib/api/dashboard';
 import {
   listPlatforms,
   listSyncHistory,
@@ -14,7 +15,8 @@ import {
   getYouTubeAuthUrl,
   getInstagramAuthUrl,
 } from '@/lib/api/platforms';
-import { formatDate, formatHandle, platformLabel } from '@/lib/format';
+import { formatDate, formatHandle, formatMnt, platformLabel } from '@/lib/format';
+import type { PlatformEarnings } from '@/lib/types/dashboard';
 import type { PlatformAccount, SyncHistoryEntry } from '@/lib/types/platforms';
 
 const PLATFORMS = [
@@ -26,6 +28,7 @@ const PLATFORMS = [
 export default function PlatformsPage() {
   const [accounts, setAccounts] = useState<PlatformAccount[]>([]);
   const [history, setHistory] = useState<SyncHistoryEntry[]>([]);
+  const [earnings, setEarnings] = useState<PlatformEarnings[]>([]);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -35,10 +38,15 @@ export default function PlatformsPage() {
   const load = useCallback(async (isCancelled: () => boolean = () => false) => {
     setError(null);
     try {
-      const [accs, hist] = await Promise.all([listPlatforms(), listSyncHistory()]);
+      const [accs, hist, summary] = await Promise.all([
+        listPlatforms(),
+        listSyncHistory(),
+        getDashboardSummary(),
+      ]);
       if (!isCancelled()) {
         setAccounts(accs);
         setHistory(hist);
+        setEarnings(summary.byPlatform);
       }
     } catch (err) {
       if (!isCancelled()) {

@@ -168,6 +168,11 @@ export const translations: Record<string, string> = {
   failed_to_load_platforms: 'Failed to load platforms',
   failed_to_connect: 'Failed to connect',
   sync_failed: 'Sync failed',
+  synced: 'Synced',
+  off: 'Off',
+  last_synced: 'Last synced',
+  never_synced: 'Never synced',
+  sync_now: 'Sync now',
 
   // Wallet
   wallet_subtitle: 'Withdraw earnings to your Mongolian bank account. Platform fee: 20% on sponsorships.',

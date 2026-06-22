@@ -787,6 +787,24 @@ html.apple-platform textarea {
   color: var(--landing-fg);
 }
 
+.dark .creator-profile-trigger {
+  border-color: rgb(51 65 85 / 0.7);
+  background: rgb(15 22 36 / 0.7);
+}
+
+.dark .creator-profile-trigger:hover {
+  background: rgb(20 28 45 / 0.9);
+}
+
+.dark .creator-profile-trigger[aria-expanded='true'] {
+  border-color: var(--primary-border, var(--primary));
+  background: rgb(20 28 45 / 0.9);
+}
+
+.dark .creator-avatar {
+  box-shadow: 0 0 0 2px rgb(10 15 26), 0 0 0 3.5px rgb(51 65 85 / 0.6);
+}
+
 .dark .creator-profile-dropdown {
   border-color: rgb(51 65 85 / 0.7);
   background: rgb(13 19 31 / 0.98);
@@ -962,7 +980,8 @@ html.apple-platform textarea {
   align-items: center;
   gap: 0.75rem;
   border-bottom: 1px solid var(--border);
-  background: #ffffff;
+  background: rgb(255 255 255 / 0.8);
+  backdrop-filter: blur(14px);
   padding: 0.875rem 1rem;
 }
 
@@ -987,8 +1006,9 @@ html.apple-platform textarea {
   justify-content: center;
   gap: 0.25rem;
   border-radius: 9999px;
+  border: 1px solid var(--border);
   background: var(--landing-sky-50);
-  padding: 0.25rem;
+  padding: 0.3125rem;
 }
 
 @media (min-width: 768px) {
@@ -1050,9 +1070,24 @@ html.apple-platform textarea {
   align-items: center;
   gap: 0.625rem;
   border-radius: 9999px;
-  padding: 0.125rem;
-  border: none;
-  background: transparent;
+  padding: 0.1875rem 0.75rem 0.1875rem 0.1875rem;
+  border: 1px solid var(--border);
+  background: #ffffff;
+  transition: background 0.15s, border-color 0.15s;
+}
+
+.creator-profile-trigger:hover {
+  background: rgb(240 249 255);
+}
+
+.creator-profile-trigger[aria-expanded='true'] {
+  border-color: var(--primary-border, var(--primary));
+  background: var(--landing-sky-50);
+}
+
+.creator-profile-chevron {
+  color: var(--landing-faint, var(--landing-muted));
+  flex-shrink: 0;
 }
 
 .creator-profile-dropdown {
@@ -1206,6 +1241,7 @@ html.apple-platform textarea {
   display: flex;
   height: 2.25rem;
   width: 2.25rem;
+  flex-shrink: 0;
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
@@ -1213,6 +1249,13 @@ html.apple-platform textarea {
   font-size: 0.875rem;
   font-weight: 600;
   color: #fff;
+  box-shadow: 0 0 0 2px #ffffff, 0 0 0 3.5px var(--landing-sky-100);
+}
+
+.creator-avatar-lg {
+  height: 3.5rem;
+  width: 3.5rem;
+  font-size: 1.25rem;
 }
 
 .creator-hero {
@@ -1425,6 +1468,18 @@ html.apple-platform textarea {
   border: 1px solid rgb(255 255 255 / 0.7);
   background: rgb(255 255 255 / 0.6);
   padding: 0.75rem 1rem;
+}
+
+.creator-platform-stat {
+  border-radius: 1rem;
+  border: 1px solid rgb(255 255 255 / 0.7);
+  background: rgb(255 255 255 / 0.6);
+  padding: 0.625rem 0.875rem;
+}
+
+.dark .creator-platform-stat {
+  border-color: rgb(255 255 255 / 0.08);
+  background: rgb(255 255 255 / 0.04);
 }
 
 /* Search input (explore page) */
