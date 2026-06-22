@@ -108,7 +108,7 @@ export function CreatorAppShell({
   }
 
   return (
-    <div className="creator-app flex min-h-full">
+    <div className="creator-app flex">
       <aside className="creator-sidebar flex w-56 shrink-0 flex-col">
         <Link href={homeHref} className="creator-sidebar-logo">
           <EarnioLogo iconClassName="h-7 w-7" />
@@ -132,7 +132,7 @@ export function CreatorAppShell({
         </nav>
       </aside>
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="creator-app-column flex min-w-0 flex-1 flex-col">
         <header className="creator-topbar">
           <div className="flex-1" />
 
