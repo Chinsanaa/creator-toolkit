@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
-import { CREATOR_SIDEBAR_NAV, isCreatorNavActive } from '@/components/layout/creator-nav';
+import { CREATOR_SIDEBAR_NAV, isCreatorNavActive, type CreatorNavItem } from '@/components/layout/creator-nav';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { useLanguage } from '@/contexts/LanguageContext';
@@ -17,6 +17,9 @@ interface CreatorAppShellProps {
   userName?: string;
   userHandle?: string;
   onLogout: () => void;
+  navItems?: CreatorNavItem[];
+  isNavActive?: (pathname: string, href: string) => boolean;
+  settingsHref?: string;
 }
 
 function SettingsIcon() {
@@ -78,6 +81,9 @@ export function CreatorAppShell({
   userName,
   userHandle,
   onLogout,
+  navItems = CREATOR_SIDEBAR_NAV,
+  isNavActive,
+  settingsHref = '/settings',
 }: CreatorAppShellProps) {
   const pathname = usePathname();
   const [accountOpen, setAccountOpen] = useState(false);
@@ -112,7 +118,7 @@ export function CreatorAppShell({
 
   function navActive(href: string, match?: (p: string) => boolean) {
     if (match) return match(pathname);
-    return isCreatorNavActive(pathname, href);
+    return (isNavActive ?? isCreatorNavActive)(pathname, href);
   }
 
   return (
@@ -124,7 +130,7 @@ export function CreatorAppShell({
           </Link>
 
           <nav className="creator-topbar-nav" aria-label="Creator navigation">
-            {CREATOR_SIDEBAR_NAV.map((item) => {
+            {navItems.map((item) => {
               const active = navActive(item.href, item.match);
               return (
                 <Link
@@ -179,7 +185,7 @@ export function CreatorAppShell({
                   )}
 
                   <Link
-                    href="/settings"
+                    href={settingsHref}
                     role="menuitem"
                     className="creator-sidebar-logout"
                     onClick={() => setAccountOpen(false)}
@@ -224,7 +230,7 @@ export function CreatorAppShell({
         <main className="creator-main creator-app-shell-content flex-1">{children}</main>
 
         <nav className="creator-bottom-nav" aria-label="Mobile navigation">
-          {CREATOR_SIDEBAR_NAV.map((item) => {
+          {navItems.map((item) => {
             const active = navActive(item.href, item.match);
             return (
               <Link

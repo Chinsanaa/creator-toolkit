@@ -32,6 +32,36 @@ function computeApprovalRate(breakdown: ApplicationStatusBreakdown): number | nu
   return decided > 0 ? breakdown.approved / decided : null;
 }
 
+export interface CampaignPaymentStatus {
+  approvedCount: number;
+  submittedCount: number;
+  amountDueMnt: number;
+  deadlinePassed: boolean;
+  allSubmitted: boolean;
+  readyToPay: boolean;
+  paidAt: string | null;
+}
+
+function computePaymentStatus(
+  campaign: SponsorCampaign,
+  applications: SponsorApplication[]
+): CampaignPaymentStatus {
+  const approved = applications.filter((a) => a.status === 'approved');
+  const submitted = approved.filter((a) => !!a.deliverable_url);
+  const deadlinePassed = !!campaign.deadline_complete && new Date(campaign.deadline_complete) < new Date();
+  const allSubmitted = approved.length > 0 && submitted.length === approved.length;
+
+  return {
+    approvedCount: approved.length,
+    submittedCount: submitted.length,
+    amountDueMnt: approved.length * campaign.payment_amount_mnt,
+    deadlinePassed,
+    allSubmitted,
+    readyToPay: !campaign.paymentMarkedPaidAt && deadlinePassed && allSubmitted,
+    paidAt: campaign.paymentMarkedPaidAt,
+  };
+}
+
 export interface SponsorCampaign {
   id: string;
   title: string;
@@ -47,6 +77,7 @@ export interface SponsorCampaign {
   created_at: string | null;
   applicationCount: number;
   pendingCount: number;
+  paymentMarkedPaidAt: string | null;
 }
 
 export interface SponsorApplication {
@@ -56,10 +87,13 @@ export interface SponsorApplication {
   response_text: string | null;
   sponsor_notes: string | null;
   applied_at: string | null;
+  deliverable_url: string | null;
+  deliverable_submitted_at: string | null;
   creator: {
     id: string;
     name: string;
     username: string;
+    email: string;
   } | null;
 }
 
@@ -88,7 +122,11 @@ type CampaignRow = {
   deadline_apply: string | null;
   deadline_complete: string | null;
   created_at: string | null;
+  payment_marked_paid_at?: string | null;
 };
+
+const CAMPAIGN_COLUMNS =
+  'id, title, description, payment_amount_mnt, content_type, required_followers_min, required_followers_max, engagement_rate_min, status, deadline_apply, deadline_complete, created_at, payment_marked_paid_at';
 
 function mapCampaignRow(
   row: CampaignRow,
@@ -110,6 +148,7 @@ function mapCampaignRow(
     created_at: row.created_at,
     applicationCount: counts.total,
     pendingCount: counts.pending,
+    paymentMarkedPaidAt: row.payment_marked_paid_at ?? null,
   };
 }
 
@@ -200,7 +239,7 @@ class SponsorService {
     const { data: campaigns, error } = await client
       .from('sponsorships')
       .select(
-        'id, title, description, payment_amount_mnt, content_type, required_followers_min, required_followers_max, engagement_rate_min, status, deadline_apply, deadline_complete, created_at'
+        CAMPAIGN_COLUMNS
       )
       .eq('sponsor_user_id', userId)
       .order('created_at', { ascending: false });
@@ -246,7 +285,7 @@ class SponsorService {
       .from('sponsorships')
       .insert(campaignInsertFromPayload(userId, payload))
       .select(
-        'id, title, description, payment_amount_mnt, content_type, required_followers_min, required_followers_max, engagement_rate_min, status, deadline_apply, deadline_complete, created_at'
+        CAMPAIGN_COLUMNS
       )
       .single();
 
@@ -359,6 +398,7 @@ class SponsorService {
     applications: SponsorApplication[];
     statusBreakdown: ApplicationStatusBreakdown;
     approvalRate: number | null;
+    payment: CampaignPaymentStatus;
   }> {
     await this.assertSponsor(userId, accessToken);
     const client = getAuthenticatedClient(accessToken);
@@ -366,7 +406,7 @@ class SponsorService {
     const { data: campaign, error: campError } = await client
       .from('sponsorships')
       .select(
-        'id, title, description, payment_amount_mnt, content_type, required_followers_min, required_followers_max, engagement_rate_min, status, deadline_apply, deadline_complete, created_at'
+        CAMPAIGN_COLUMNS
       )
       .eq('id', campaignId)
       .eq('sponsor_user_id', userId)
@@ -379,7 +419,7 @@ class SponsorService {
     const { data: apps, error: appsError } = await client
       .from('sponsorship_applications')
       .select(
-        'id, sponsorship_id, status, response_text, sponsor_notes, applied_at, creator_user_id'
+        'id, sponsorship_id, status, response_text, sponsor_notes, applied_at, creator_user_id, deliverable_url, deliverable_submitted_at'
       )
       .eq('sponsorship_id', campaignId)
       .order('applied_at', { ascending: false });
@@ -389,12 +429,12 @@ class SponsorService {
     }
 
     const creatorIds = [...new Set((apps ?? []).map((a) => a.creator_user_id))];
-    const creatorMap = new Map<string, { id: string; name: string; username: string }>();
+    const creatorMap = new Map<string, { id: string; name: string; username: string; email: string }>();
 
     if (creatorIds.length > 0 && supabaseAdmin) {
       const { data: creators } = await supabaseAdmin
         .from('users')
-        .select('id, name, username')
+        .select('id, name, username, email')
         .in('id', creatorIds);
       for (const c of creators ?? []) {
         creatorMap.set(c.id, c);
@@ -408,20 +448,81 @@ class SponsorService {
       response_text: app.response_text,
       sponsor_notes: app.sponsor_notes,
       applied_at: app.applied_at,
+      deliverable_url: app.deliverable_url,
+      deliverable_submitted_at: app.deliverable_submitted_at,
       creator: creatorMap.get(app.creator_user_id) ?? null,
     }));
 
     const statusBreakdown = buildStatusBreakdown(applications);
+    const mappedCampaign = mapCampaignRow(campaign, {
+      total: applications.length,
+      pending: statusBreakdown.pending,
+    });
 
     return {
-      campaign: mapCampaignRow(campaign, {
-        total: applications.length,
-        pending: statusBreakdown.pending,
-      }),
+      campaign: mappedCampaign,
       applications,
       statusBreakdown,
       approvalRate: computeApprovalRate(statusBreakdown),
+      payment: computePaymentStatus(mappedCampaign, applications),
     };
+  }
+
+  public async markCampaignPaid(
+    userId: string,
+    accessToken: string,
+    campaignId: string
+  ): Promise<SponsorCampaign> {
+    await this.assertSponsor(userId, accessToken);
+    const client = getAuthenticatedClient(accessToken);
+
+    const { data: campaign, error: findError } = await client
+      .from('sponsorships')
+      .select(CAMPAIGN_COLUMNS)
+      .eq('id', campaignId)
+      .eq('sponsor_user_id', userId)
+      .single();
+
+    if (findError || !campaign) {
+      throw new Error('Campaign not found');
+    }
+
+    if (campaign.payment_marked_paid_at) {
+      throw new Error('Payment has already been marked as paid');
+    }
+
+    const { data: apps, error: appsError } = await client
+      .from('sponsorship_applications')
+      .select('status, deliverable_url')
+      .eq('sponsorship_id', campaignId);
+
+    if (appsError) {
+      throw new Error(`Failed to load applications: ${appsError.message}`);
+    }
+
+    const approved = (apps ?? []).filter((a) => a.status === 'approved');
+    if (approved.length === 0) {
+      throw new Error('No approved applicants to pay');
+    }
+    if (approved.some((a) => !a.deliverable_url)) {
+      throw new Error('All approved applicants must submit their deliverable before paying');
+    }
+
+    const { data, error } = await client
+      .from('sponsorships')
+      .update({ payment_marked_paid_at: new Date().toISOString() })
+      .eq('id', campaignId)
+      .select(CAMPAIGN_COLUMNS)
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to mark campaign as paid: ${error.message}`);
+    }
+
+    return mapCampaignRow(data, {
+      total: apps?.length ?? 0,
+      pending: (apps ?? []).filter((a) => a.status === 'pending').length,
+    });
   }
 
   public async updateApplicationStatus(
@@ -473,7 +574,7 @@ class SponsorService {
       .update(updatePayload)
       .eq('id', applicationId)
       .select(
-        'id, sponsorship_id, status, response_text, sponsor_notes, applied_at, creator_user_id'
+        'id, sponsorship_id, status, response_text, sponsor_notes, applied_at, creator_user_id, deliverable_url, deliverable_submitted_at'
       )
       .single();
 
@@ -486,7 +587,7 @@ class SponsorService {
       const [{ data: c }, { data: camp }] = await Promise.all([
         supabaseAdmin
           .from('users')
-          .select('id, name, username')
+          .select('id, name, username, email')
           .eq('id', data.creator_user_id)
           .single(),
         supabaseAdmin
@@ -512,6 +613,8 @@ class SponsorService {
       response_text: data.response_text,
       sponsor_notes: data.sponsor_notes,
       applied_at: data.applied_at,
+      deliverable_url: data.deliverable_url,
+      deliverable_submitted_at: data.deliverable_submitted_at,
       creator,
     };
   }

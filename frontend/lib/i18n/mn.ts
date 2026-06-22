@@ -261,6 +261,7 @@ export const translations: Record<string, string> = {
   approval_rate: 'Зөвшөөрөлтийн хувь',
   applicants: 'Өргөдөл гаргагчид',
   application_status: 'Өргөдлийн төлөв',
+  total_applications: 'Нийт өргөдлүүд',
   pending_short: 'Хүлээгдэж буй',
   approved_short: 'Зөвшөөрсөн',
   rejected_short: 'Татгалзсан',
@@ -309,6 +310,22 @@ export const translations: Record<string, string> = {
   close_campaign: 'Кампанит ажлыг хаах',
   closing_campaign_note: 'Хаасны дараа шинэ өргөдөл ирэхгүй. Нийтлэгдсэн кампанит ажлыг засварлах боломжгүй.',
   delete: 'Устгах',
+
+  // Contact / deliverables / payment
+  contact: 'Холбоо барих',
+  submit: 'Илгээх',
+  deliverable_submitted: 'Илгээсэн контент:',
+  deliverable_pending: 'Контент хараахан илгээгээгүй байна.',
+  submit_deliverable_link: 'Контентын холбоосоо илгээнэ үү',
+  deliverables_submitted_label: 'контент илгээгдсэн',
+  payment_heading: 'Төлбөр',
+  payment_summary: 'Зөвшөөрөгдсөн {count} оролцогчид нийт {amount} төлнө.',
+  payment_waiting_deadline: 'Дуусгах хугацаа өнгөрөхийг хүлээж байна.',
+  payment_waiting_deliverables: 'Зөвшөөрөгдсөн бүх оролцогч контентоо илгээхийг хүлээж байна.',
+  process_payment: 'Төлбөр гүйцэтгэх',
+  mark_as_paid: 'Төлсөн гэж тэмдэглэх',
+  remind_me_later: 'Дараа сануулах',
+  payment_marked_paid: 'Төлбөрийг төлсөн гэж тэмдэглэсэн огноо',
 
   // Sponsorship detail
   back_to_explore: '← Судлах руу буцах',

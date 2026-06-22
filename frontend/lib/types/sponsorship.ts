@@ -28,6 +28,8 @@ export interface SponsorshipApplication {
   status: string;
   response_text: string | null;
   applied_at: string | null;
+  deliverable_url: string | null;
+  deliverable_submitted_at: string | null;
   sponsorship: {
     id: string;
     title: string;

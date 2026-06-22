@@ -6,7 +6,7 @@ import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
-import { listMyApplications } from '@/lib/api/sponsorships';
+import { listMyApplications, submitDeliverable } from '@/lib/api/sponsorships';
 import { applicationStatusLabel, formatDate, formatMnt } from '@/lib/format';
 import type { SponsorshipApplication } from '@/lib/types/sponsorship';
 
@@ -22,6 +22,8 @@ export default function MyApplicationsPage() {
   const [applications, setApplications] = useState<SponsorshipApplication[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deliverableDrafts, setDeliverableDrafts] = useState<Record<string, string>>({});
+  const [submittingId, setSubmittingId] = useState<string | null>(null);
   const { t } = useLanguage();
 
   useEffect(() => {
@@ -32,6 +34,26 @@ export default function MyApplicationsPage() {
       )
       .finally(() => setLoading(false));
   }, []);
+
+  async function handleSubmitDeliverable(applicationId: string) {
+    const url = deliverableDrafts[applicationId]?.trim();
+    if (!url) return;
+    setSubmittingId(applicationId);
+    try {
+      const deliverableUrl = await submitDeliverable(applicationId, url);
+      setApplications((prev) =>
+        prev.map((a) =>
+          a.id === applicationId
+            ? { ...a, deliverable_url: deliverableUrl, deliverable_submitted_at: new Date().toISOString() }
+            : a
+        )
+      );
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to submit deliverable');
+    } finally {
+      setSubmittingId(null);
+    }
+  }
 
   return (
     <DashboardShell>
@@ -89,6 +111,48 @@ export default function MyApplicationsPage() {
               )}
               {app.response_text && (
                 <p className="mt-3 line-clamp-3 text-sm text-landing-muted">{app.response_text}</p>
+              )}
+              {app.status === 'approved' && (
+                <div className="mt-4 rounded-xl border border-[color:var(--border)] p-4">
+                  {app.deliverable_url ? (
+                    <p className="text-sm text-landing-muted">
+                      {t('deliverable_submitted')}{' '}
+                      <a
+                        href={app.deliverable_url}
+                        target="_blank"
+                        rel="noreferrer"
+                        className="auth-link font-medium"
+                      >
+                        {app.deliverable_url}
+                      </a>
+                    </p>
+                  ) : (
+                    <div className="space-y-2">
+                      <label className="block text-sm font-semibold text-landing-fg">
+                        {t('submit_deliverable_link')}
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        <input
+                          type="url"
+                          placeholder="https://..."
+                          value={deliverableDrafts[app.id] ?? ''}
+                          onChange={(e) =>
+                            setDeliverableDrafts((prev) => ({ ...prev, [app.id]: e.target.value }))
+                          }
+                          className="auth-input flex-1"
+                        />
+                        <button
+                          type="button"
+                          disabled={submittingId === app.id || !deliverableDrafts[app.id]?.trim()}
+                          onClick={() => handleSubmitDeliverable(app.id)}
+                          className="btn-primary w-auto px-5 disabled:opacity-50"
+                        >
+                          {submittingId === app.id ? t('please_wait') : t('submit')}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               )}
               {app.sponsorship && (
                 <Link

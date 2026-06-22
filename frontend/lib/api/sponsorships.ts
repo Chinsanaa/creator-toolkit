@@ -26,3 +26,17 @@ export async function listMyApplications(): Promise<SponsorshipApplication[]> {
   );
   return data.applications;
 }
+
+export async function submitDeliverable(
+  applicationId: string,
+  deliverableUrl: string
+): Promise<SponsorshipApplication['deliverable_url']> {
+  const data = await apiFetch<{ application: { deliverable_url: string | null } }>(
+    `/api/sponsorships/applications/${applicationId}/deliverable`,
+    {
+      method: 'PATCH',
+      body: JSON.stringify({ deliverableUrl }),
+    }
+  );
+  return data.application.deliverable_url;
+}

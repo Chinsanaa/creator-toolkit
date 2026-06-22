@@ -110,6 +110,25 @@ router.patch('/campaigns/:id/status', verifyToken, async (req: AuthRequest, res:
   }
 });
 
+router.post('/campaigns/:id/payment', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const campaign = await sponsorService.markCampaignPaid(
+      req.userId!,
+      req.token!,
+      String(req.params.id)
+    );
+    res.json({ message: 'Payment marked as paid', campaign });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to mark payment';
+    const status = message.includes('Sponsor account')
+      ? 403
+      : message.includes('not found')
+        ? 404
+        : 400;
+    res.status(status).json({ error: message });
+  }
+});
+
 router.patch('/applications/:id', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
     const { status, sponsorNotes } = req.body;
