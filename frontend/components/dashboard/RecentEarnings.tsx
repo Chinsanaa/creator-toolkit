@@ -1,13 +1,23 @@
+import Link from 'next/link';
+import { ArrowUpRight } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
+import { buttonVariants } from '@/components/ui/button';
+import { PlatformBadge } from '@/components/dashboard/PlatformBadge';
 import { formatMnt, platformLabel, sourceLabel } from '@/lib/format';
 import type { EarningsEntry } from '@/lib/types/dashboard';
 
 export function RecentEarnings({ data }: { data: EarningsEntry[] }) {
   return (
     <Card className="py-4">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle>Recent earnings</CardTitle>
+        <Link
+          href="/wallet"
+          className={buttonVariants({ variant: 'ghost', size: 'sm', className: 'text-muted-foreground' })}
+        >
+          View all
+          <ArrowUpRight className="size-4" />
+        </Link>
       </CardHeader>
       <CardContent>
         {data.length === 0 ? (
@@ -15,28 +25,24 @@ export function RecentEarnings({ data }: { data: EarningsEntry[] }) {
             No earnings yet. Connect a platform or wait for your first sync.
           </p>
         ) : (
-          <Table>
-            <TableHeader>
-              <TableRow>
-                <TableHead>Period</TableHead>
-                <TableHead>Platform</TableHead>
-                <TableHead>Source</TableHead>
-                <TableHead className="text-right">Amount</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
-              {data.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell>{formatPeriod(row.period_start, row.period_end)}</TableCell>
-                  <TableCell>{platformLabel(row.platform)}</TableCell>
-                  <TableCell className="text-muted">{sourceLabel(row.source_type)}</TableCell>
-                  <TableCell className="text-right font-medium">
-                    {formatMnt(row.amount_mnt)}
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+          <div className="flex flex-col divide-y divide-border">
+            {data.map((row) => (
+              <div key={row.id} className="flex items-center justify-between gap-3 py-3 first:pt-0 last:pb-0">
+                <span className="inline-flex items-center gap-3">
+                  <PlatformBadge platform={row.platform} size="sm" />
+                  <span>
+                    <span className="block text-sm font-medium">{platformLabel(row.platform)}</span>
+                    <span className="block text-xs text-muted">
+                      {sourceLabel(row.source_type)} · {formatPeriod(row.period_start, row.period_end)}
+                    </span>
+                  </span>
+                </span>
+                <span className="text-sm font-semibold text-success">
+                  +{formatMnt(row.amount_mnt)}
+                </span>
+              </div>
+            ))}
+          </div>
         )}
       </CardContent>
     </Card>

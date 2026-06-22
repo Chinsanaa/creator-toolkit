@@ -108,35 +108,31 @@ export function CreatorAppShell({
   }
 
   return (
-    <div className="creator-app flex">
-      <aside className="creator-sidebar flex w-56 shrink-0 flex-col">
-        <Link href={homeHref} className="creator-sidebar-logo">
-          <EarnioLogo iconClassName="h-7 w-7" />
-        </Link>
-
-        <nav className="creator-sidebar-nav" aria-label="Creator navigation">
-          {CREATOR_SIDEBAR_NAV.map((item) => {
-            const active = navActive(item.href, item.match);
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`creator-sidebar-link ${active ? 'creator-sidebar-link-active' : ''}`}
-                aria-current={active ? 'page' : undefined}
-              >
-                {item.icon}
-                <span>{t(item.labelKey)}</span>
-              </Link>
-            );
-          })}
-        </nav>
-      </aside>
-
+    <div className="creator-app">
       <div className="creator-app-column flex min-w-0 flex-1 flex-col">
         <header className="creator-topbar">
-          <div className="flex-1" />
+          <Link href={homeHref} className="creator-topbar-logo">
+            <EarnioLogo iconClassName="h-7 w-7" />
+          </Link>
 
-          <div className="creator-topbar-actions flex items-center gap-3">
+          <nav className="creator-topbar-nav" aria-label="Creator navigation">
+            {CREATOR_SIDEBAR_NAV.map((item) => {
+              const active = navActive(item.href, item.match);
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`creator-topbar-nav-link ${active ? 'creator-topbar-nav-link-active' : ''}`}
+                  aria-current={active ? 'page' : undefined}
+                >
+                  {item.icon}
+                  <span>{t(item.labelKey)}</span>
+                </Link>
+              );
+            })}
+          </nav>
+
+          <div className="creator-topbar-actions">
             <LanguageSwitcher />
             <NotificationBell tone="creator" />
 
