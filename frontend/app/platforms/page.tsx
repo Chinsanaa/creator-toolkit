@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { PlatformBadge } from '@/components/dashboard/PlatformBadge';
+import { PlatformsSkeleton } from '@/components/platforms/PlatformsSkeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { getDashboardSummary } from '@/lib/api/dashboard';
@@ -11,6 +12,7 @@ import {
   listPlatforms,
   listSyncHistory,
   syncPlatform,
+  disconnectPlatform,
   getTikTokAuthUrl,
   getYouTubeAuthUrl,
   getInstagramAuthUrl,
@@ -31,8 +33,11 @@ export default function PlatformsPage() {
   const [earnings, setEarnings] = useState<PlatformEarnings[]>([]);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
+  const [disconnectingId, setDisconnectingId] = useState<string | null>(null);
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
 
   const load = useCallback(async (isCancelled: () => boolean = () => false) => {
@@ -44,13 +49,17 @@ export default function PlatformsPage() {
         getDashboardSummary(),
       ]);
       if (!isCancelled()) {
-        setAccounts(accs);
+        setAccounts(accs.filter((a) => a.status === 'connected'));
         setHistory(hist);
         setEarnings(summary.byPlatform);
       }
     } catch (err) {
       if (!isCancelled()) {
         setError(err instanceof ApiError ? err.message : t('failed_to_load_platforms'));
+      }
+    } finally {
+      if (!isCancelled()) {
+        setLoading(false);
       }
     }
   }, [t]);
@@ -93,6 +102,22 @@ export default function PlatformsPage() {
     }
   }
 
+  async function handleDisconnect(accountId: string) {
+    setDisconnectingId(accountId);
+    setError(null);
+    setMessage(null);
+    try {
+      await disconnectPlatform(accountId);
+      setConfirmRemoveId(null);
+      setMessage(t('disconnect_completed'));
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('disconnect_failed'));
+    } finally {
+      setDisconnectingId(null);
+    }
+  }
+
   async function handleSync(accountId: string) {
     setSyncingId(accountId);
     setError(null);
@@ -123,6 +148,9 @@ export default function PlatformsPage() {
           <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         )}
 
+        {loading ? (
+          <PlatformsSkeleton />
+        ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PLATFORMS.map((platform) => {
             const account = accounts.find((a) => a.platform.toLowerCase() === platform.id);
@@ -184,6 +212,37 @@ export default function PlatformsPage() {
                         {syncingId === account.id ? t('syncing') : t('sync_now')}
                       </button>
                     </div>
+
+                    {confirmRemoveId === account.id ? (
+                      <div className="creator-remove-confirm">
+                        <p className="text-xs text-landing-muted">{t('remove_account_confirm')}</p>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setConfirmRemoveId(null)}
+                            className="landing-btn-light px-3 py-1.5 text-xs"
+                          >
+                            {t('cancel')}
+                          </button>
+                          <button
+                            type="button"
+                            disabled={disconnectingId === account.id}
+                            onClick={() => handleDisconnect(account.id)}
+                            className="creator-remove-confirm-btn"
+                          >
+                            {disconnectingId === account.id ? t('removing') : t('confirm_remove')}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setConfirmRemoveId(account.id)}
+                        className="creator-remove-link"
+                      >
+                        {t('remove_account')}
+                      </button>
+                    )}
                   </>
                 ) : (
                   <button
@@ -199,6 +258,7 @@ export default function PlatformsPage() {
             );
           })}
         </div>
+        )}
 
         {history.length > 0 && (
           <section className="creator-panel-lg mt-6">

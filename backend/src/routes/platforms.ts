@@ -48,6 +48,20 @@ router.post('/connect', verifyToken, async (req: AuthRequest, res: Response) => 
   }
 });
 
+router.post('/:id/disconnect', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const account = await platformService.disconnect(
+      req.userId!,
+      req.token!,
+      String(req.params.id)
+    );
+    res.json({ account });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to disconnect';
+    res.status(400).json({ error: message });
+  }
+});
+
 router.post('/:id/sync', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
     const result = await platformService.syncAccount(

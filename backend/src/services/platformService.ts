@@ -113,6 +113,30 @@ class PlatformService {
     return data as PlatformAccount;
   }
 
+  public async disconnect(
+    userId: string,
+    accessToken: string,
+    accountId: string
+  ): Promise<PlatformAccount> {
+    const client = getAuthenticatedClient(accessToken);
+    const { data, error } = await client
+      .from('platform_accounts')
+      .update({
+        status: 'disconnected',
+        updated_at: new Date().toISOString(),
+      })
+      .eq('id', accountId)
+      .eq('user_id', userId)
+      .select('id, platform, platform_username, follower_count, status, last_synced_at')
+      .single();
+
+    if (error || !data) {
+      throw new Error('Failed to disconnect platform account');
+    }
+
+    return data as PlatformAccount;
+  }
+
   public async syncAccount(
     userId: string,
     accessToken: string,

@@ -7,7 +7,6 @@ import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { DashboardSkeleton } from '@/components/dashboard/DashboardSkeleton';
 import { MonthlyTrend } from '@/components/dashboard/MonthlyTrend';
 import { StatsCards } from '@/components/dashboard/StatsCards';
-import { PlatformsPanel } from '@/components/dashboard/PlatformsPanel';
 import { RecentEarnings } from '@/components/dashboard/RecentEarnings';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -65,7 +64,7 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
       await Promise.all(data.connectedPlatforms.map((p) => syncPlatform(p.id)));
       await load();
     } catch {
-      // sync errors surface per-platform in PlatformsPanel
+      // ignore individual sync failures; user can retry from the Platforms page
     } finally {
       setSyncing(false);
     }
@@ -149,18 +148,14 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
 
           <StatsCards data={data} />
 
-          <div className="grid gap-3 xl:grid-cols-4">
-            <Card className="py-4 xl:col-span-3">
-              <CardHeader>
-                <CardTitle>Earnings performance</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <MonthlyTrend data={data.monthlyTrend} />
-              </CardContent>
-            </Card>
-
-            <PlatformsPanel platforms={data.connectedPlatforms} earnings={data.byPlatform} />
-          </div>
+          <Card className="py-4">
+            <CardHeader>
+              <CardTitle>Earnings performance</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <MonthlyTrend data={data.monthlyTrend} />
+            </CardContent>
+          </Card>
 
           <RecentEarnings data={data.recentEarnings} />
         </div>

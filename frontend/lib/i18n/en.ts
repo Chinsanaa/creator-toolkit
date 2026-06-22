@@ -173,6 +173,13 @@ export const translations: Record<string, string> = {
   last_synced: 'Last synced',
   never_synced: 'Never synced',
   sync_now: 'Sync now',
+  remove_account: 'Remove account',
+  remove_account_confirm: 'Remove this account? You can reconnect it anytime.',
+  cancel: 'Cancel',
+  confirm_remove: 'Remove',
+  removing: 'Removing…',
+  disconnect_completed: 'Account removed.',
+  disconnect_failed: 'Failed to remove account',
 
   // Wallet
   wallet_subtitle: 'Withdraw earnings to your Mongolian bank account. Platform fee: 20% on sponsorships.',
