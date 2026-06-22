@@ -4,6 +4,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
 import { PlatformBadge } from '@/components/dashboard/PlatformBadge';
+import { PlatformsSkeleton } from '@/components/platforms/PlatformsSkeleton';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { getDashboardSummary } from '@/lib/api/dashboard';
@@ -36,6 +37,7 @@ export default function PlatformsPage() {
   const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const { t } = useLanguage();
 
   const load = useCallback(async (isCancelled: () => boolean = () => false) => {
@@ -54,6 +56,10 @@ export default function PlatformsPage() {
     } catch (err) {
       if (!isCancelled()) {
         setError(err instanceof ApiError ? err.message : t('failed_to_load_platforms'));
+      }
+    } finally {
+      if (!isCancelled()) {
+        setLoading(false);
       }
     }
   }, [t]);
@@ -142,6 +148,9 @@ export default function PlatformsPage() {
           <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         )}
 
+        {loading ? (
+          <PlatformsSkeleton />
+        ) : (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {PLATFORMS.map((platform) => {
             const account = accounts.find((a) => a.platform.toLowerCase() === platform.id);
@@ -249,6 +258,7 @@ export default function PlatformsPage() {
             );
           })}
         </div>
+        )}
 
         {history.length > 0 && (
           <section className="creator-panel-lg mt-6">
