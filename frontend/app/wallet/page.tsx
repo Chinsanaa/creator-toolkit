@@ -165,31 +165,32 @@ export default function WalletPage() {
 
         {summary && !loading && (
           <div className="space-y-8">
-            <div className="creator-hero-card">
-              <p className="creator-stat-label">{t('available_to_withdraw')}</p>
-              <p className="mt-2 text-3xl font-semibold tracking-tight text-landing-fg sm:text-4xl">
-                {formatMnt(summary.availableBalanceMnt)}
-              </p>
-              <div className="mt-6">
-                <p className="mb-2 text-xs font-medium uppercase tracking-wide text-landing-muted">
-                  {t('balance_trend')}
-                </p>
-                <BalanceTrend transactions={transactions} />
-              </div>
-            </div>
+            <div className="creator-hero">
+              <div className="creator-hero-body">
+                <p className="creator-hero-label">{t('available_to_withdraw')}</p>
+                <div className="creator-hero-amount">{formatMnt(summary.availableBalanceMnt)}</div>
 
-            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-              <BalanceCard
-                label={t('pending_payouts')}
-                value={formatMnt(summary.pendingPayoutMnt)}
-                hint={t('processing_transfers')}
-              />
-              <BalanceCard label={t('total_earned')} value={formatMnt(summary.totalEarnedMnt)} />
-              <BalanceCard
-                label={t('fees_paid')}
-                value={formatMnt(summary.totalFeesMnt)}
-                hint={`${(summary.platformFeeRate * 100).toFixed(0)}${t('pct_on_sponsorships')}`}
-              />
+                <div className="creator-hero-divider" />
+
+                <div className="creator-hero-stats">
+                  <div>
+                    <p className="creator-hero-stat-label">{t('pending_payouts')}</p>
+                    <p className="creator-hero-stat-value">{formatMnt(summary.pendingPayoutMnt)}</p>
+                  </div>
+                  <div>
+                    <p className="creator-hero-stat-label">{t('total_earned')}</p>
+                    <p className="creator-hero-stat-value">{formatMnt(summary.totalEarnedMnt)}</p>
+                  </div>
+                  <div>
+                    <p className="creator-hero-stat-label">{t('fees_paid')}</p>
+                    <p className="creator-hero-stat-value">{formatMnt(summary.totalFeesMnt)}</p>
+                  </div>
+                </div>
+
+                <div className="mt-6">
+                  <BalanceTrend transactions={transactions} />
+                </div>
+              </div>
             </div>
 
             <div className="grid gap-6 lg:grid-cols-2">
@@ -373,15 +374,5 @@ export default function WalletPage() {
         )}
       </div>
     </DashboardShell>
-  );
-}
-
-function BalanceCard({ label, value, hint }: { label: string; value: string; hint?: string }) {
-  return (
-    <div className="creator-stat-card">
-      <p className="creator-stat-label">{label}</p>
-      <p className="creator-stat-value">{value}</p>
-      {hint ? <p className="mt-1 text-xs text-landing-muted">{hint}</p> : null}
-    </div>
   );
 }

@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { CreatorPageHeader } from '@/components/creator/CreatorPageHeader';
 import { DashboardShell } from '@/components/dashboard/DashboardShell';
+import { PlatformBadge } from '@/components/dashboard/PlatformBadge';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import {
@@ -17,9 +18,9 @@ import { formatDate, formatHandle, platformLabel } from '@/lib/format';
 import type { PlatformAccount, SyncHistoryEntry } from '@/lib/types/platforms';
 
 const PLATFORMS = [
-  { id: 'tiktok', label: 'TikTok', icon: '🎵' },
-  { id: 'youtube', label: 'YouTube', icon: '📺' },
-  { id: 'instagram', label: 'Instagram', icon: '📷' },
+  { id: 'tiktok', label: 'TikTok' },
+  { id: 'youtube', label: 'YouTube' },
+  { id: 'instagram', label: 'Instagram' },
 ] as const;
 
 export default function PlatformsPage() {
@@ -101,7 +102,7 @@ export default function PlatformsPage() {
 
   return (
     <DashboardShell>
-      <div className="mx-auto max-w-3xl">
+      <div className="mx-auto max-w-5xl">
         <CreatorPageHeader
           title={t('platforms')}
           subtitle={t('connect_platforms_subtitle')}
@@ -114,64 +115,52 @@ export default function PlatformsPage() {
           <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
         )}
 
-        <section className="creator-panel mt-6">
-          <h2 className="text-base font-semibold text-landing-fg">Connect Your Platforms</h2>
-          <p className="mt-1 text-sm text-landing-muted">
-            Connect your social media accounts securely via OAuth to sync real earnings and analytics
-          </p>
+        <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {PLATFORMS.map((platform) => {
+            const account = accounts.find((a) => a.platform.toLowerCase() === platform.id);
+            const isConnecting = connectingPlatform === platform.id;
 
-          <div className="mt-6 grid gap-3">
-            {PLATFORMS.map((platform) => {
-              const account = accounts.find((a) => a.platform.toLowerCase() === platform.id);
-              const isConnecting = connectingPlatform === platform.id;
-
-              return (
-                <div
-                  key={platform.id}
-                  className="flex items-center justify-between rounded-xl border border-landing-border bg-landing-surface px-4 py-3"
-                >
+            return (
+              <div key={platform.id} className="creator-panel-lg flex flex-col gap-4">
+                <div className="flex items-center gap-3">
+                  <PlatformBadge platform={platform.id} />
                   <div>
-                    <p className="font-medium text-landing-fg">
-                      {platform.icon} {platform.label}
-                    </p>
+                    <p className="font-medium text-landing-fg">{platform.label}</p>
                     <p className="text-xs text-landing-muted">
                       {account ? formatHandle(account.platform_username) : 'Not connected'}
                     </p>
                   </div>
-                  {account ? (
-                    <button
-                      type="button"
-                      disabled={syncingId === account.id}
-                      onClick={() => handleSync(account.id)}
-                      className="landing-btn-light px-4 py-2 text-xs"
-                    >
-                      {syncingId === account.id ? 'Syncing...' : 'Sync'}
-                    </button>
-                  ) : (
-                    <button
-                      type="button"
-                      disabled={isConnecting}
-                      onClick={() => handleOAuthConnect(platform.id)}
-                      className="landing-btn-dark px-4 py-2 text-xs"
-                    >
-                      {isConnecting ? 'Connecting...' : 'Connect'}
-                    </button>
-                  )}
                 </div>
-              );
-            })}
-          </div>
-        </section>
+                {account ? (
+                  <button
+                    type="button"
+                    disabled={syncingId === account.id}
+                    onClick={() => handleSync(account.id)}
+                    className="landing-btn-light px-4 py-2 text-xs"
+                  >
+                    {syncingId === account.id ? 'Syncing...' : 'Sync'}
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    disabled={isConnecting}
+                    onClick={() => handleOAuthConnect(platform.id)}
+                    className="landing-btn-dark px-4 py-2 text-xs"
+                  >
+                    {isConnecting ? 'Connecting...' : 'Connect'}
+                  </button>
+                )}
+              </div>
+            );
+          })}
+        </div>
 
         {history.length > 0 && (
-          <section className="creator-panel mt-6">
-            <h2 className="text-base font-semibold text-landing-fg">{t('sync_history')}</h2>
+          <section className="creator-panel-lg mt-6">
+            <h2 className="text-base font-semibold tracking-tight text-landing-fg">{t('sync_history')}</h2>
             <ul className="mt-4 space-y-2">
               {history.slice(0, 6).map((h) => (
-                <li
-                  key={h.id}
-                  className="flex justify-between gap-2 rounded-xl border border-sky-50 px-3 py-2 text-sm"
-                >
+                <li key={h.id} className="creator-platform-row">
                   <span className="text-landing-fg">
                     {platformLabel(h.platform)} · {h.status}
                   </span>
