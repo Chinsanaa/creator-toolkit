@@ -354,7 +354,7 @@ html.apple-platform textarea {
 }
 
 .bg-landing-fg {
-  background: var(--landing-fg);
+  background: #0b1220;
 }
 
 .landing-footer {
@@ -570,6 +570,7 @@ html.apple-platform textarea {
   position: fixed;
   inset: 0;
   z-index: 50;
+  overflow: hidden;
 }
 
 .landing-mobile-menu-open {
@@ -609,7 +610,7 @@ html.apple-platform textarea {
 
 .landing-btn-dark {
   @apply inline-flex cursor-pointer items-center justify-center rounded-full font-semibold text-white transition;
-  background: var(--landing-fg);
+  background: #0b1220;
   box-shadow: var(--landing-btn-shadow);
 }
 
@@ -625,7 +626,7 @@ html.apple-platform textarea {
 .landing-btn-light {
   @apply inline-flex cursor-pointer items-center justify-center rounded-full font-semibold transition;
   background: #ffffff;
-  color: var(--landing-fg);
+  color: #0b1220;
   box-shadow: var(--landing-btn-light-shadow);
 }
 
@@ -746,13 +747,20 @@ html.apple-platform textarea {
 
 /* Creator app — same palette as landing */
 .creator-app {
+  height: 100dvh;
+  overflow: hidden;
   color: var(--landing-fg);
-  background: var(--landing-bg-bottom);
+  background: var(--landing-bg-top);
+}
+
+.creator-app-column {
+  height: 100%;
+  overflow: hidden;
 }
 
 .dark .creator-sidebar {
   border-right-color: rgb(51 65 85 / 0.6);
-  background: rgb(10 15 26 / 0.84);
+  background: rgb(10 15 26);
 }
 
 .dark .creator-sidebar-link:hover,
@@ -762,7 +770,7 @@ html.apple-platform textarea {
 
 .dark .creator-topbar {
   border-bottom-color: rgb(51 65 85 / 0.6);
-  background: rgb(10 15 26 / 0.78);
+  background: rgb(10 15 26);
 }
 
 .dark .creator-profile-dropdown {
@@ -793,12 +801,12 @@ html.apple-platform textarea {
 }
 
 .dark .creator-main {
-  background: linear-gradient(180deg, rgb(8 14 24) 0%, rgb(6 11 20) 55%);
+  background: var(--landing-bg-top);
 }
 
 .dark .creator-bottom-nav {
   border-top-color: rgb(51 65 85 / 0.7);
-  background: rgb(10 15 26 / 0.93);
+  background: rgb(10 15 26);
 }
 
 .dark .creator-bottom-link-active {
@@ -853,9 +861,10 @@ html.apple-platform textarea {
    Below the breakpoint (phone-width / native iOS app): bottom tab bar instead. */
 .creator-sidebar {
   display: none;
-  border-right: 1px solid rgb(255 255 255 / 0.8);
-  background: rgb(255 255 255 / 0.72);
-  backdrop-filter: blur(14px);
+  height: 100%;
+  overflow-y: auto;
+  border-right: 1px solid var(--border);
+  background: #ffffff;
   padding: 1.5rem 0.875rem;
 }
 
@@ -902,7 +911,7 @@ html.apple-platform textarea {
 }
 
 .creator-sidebar-link-active {
-  background: var(--landing-fg);
+  background: #0b1220;
   color: #fff;
   box-shadow: var(--landing-btn-shadow);
 }
@@ -934,13 +943,13 @@ html.apple-platform textarea {
 .creator-topbar {
   position: relative;
   z-index: 30;
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 0.75rem;
-  border-bottom: 1px solid rgb(255 255 255 / 0.6);
-  background: rgb(255 255 255 / 0.55);
+  border-bottom: 1px solid var(--border);
+  background: #ffffff;
   padding: 0.875rem 1rem;
-  backdrop-filter: blur(14px);
 }
 
 @media (min-width: 640px) {
@@ -1031,7 +1040,10 @@ html.apple-platform textarea {
 .creator-main {
   position: relative;
   isolation: isolate;
-  background: linear-gradient(180deg, var(--landing-bg-top) 0%, var(--landing-bg-bottom) 55%);
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  background: var(--landing-bg-top);
   padding: 1.25rem 1rem 5.5rem;
 }
 
@@ -1072,9 +1084,8 @@ html.apple-platform textarea {
   z-index: 40;
   grid-template-columns: repeat(4, minmax(0, 1fr));
   border-top: 1px solid rgb(224 242 254);
-  background: rgb(255 255 255 / 0.95);
+  background: #ffffff;
   padding: 0.5rem 0.25rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
-  backdrop-filter: blur(12px);
 }
 
 @media (max-width: 767px) {
@@ -1128,7 +1139,7 @@ html.apple-platform textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: var(--landing-fg);
+  background: #0b1220;
   font-size: 0.875rem;
   font-weight: 600;
   color: #fff;
@@ -1312,7 +1323,7 @@ html.apple-platform textarea {
   right: 0.75rem;
   z-index: 1;
   border-radius: 9999px;
-  background: var(--landing-fg);
+  background: #0b1220;
   padding: 0.25rem 0.625rem;
   font-size: 0.75rem;
   font-weight: 600;
