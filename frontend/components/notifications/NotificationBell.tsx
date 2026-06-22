@@ -151,7 +151,7 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
         <div
           className={
             isCreator
-              ? 'creator-notify-panel absolute right-0 z-[100] mt-2 w-80 overflow-hidden sm:w-96'
+              ? 'absolute right-0 z-[100] mt-2 w-80 overflow-hidden rounded-xl border border-sky-100 bg-white shadow-lg dark:border-border dark:bg-background sm:w-96'
               : 'absolute right-0 z-50 mt-2 w-80 overflow-hidden rounded-xl border border-border bg-card shadow-lg dark:border-border dark:bg-background sm:w-96'
           }
         >

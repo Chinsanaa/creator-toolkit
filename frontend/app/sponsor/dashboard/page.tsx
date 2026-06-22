@@ -8,7 +8,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { getSponsorDashboard } from '@/lib/api/sponsor';
-import { formatMnt } from '@/lib/format';
+import { firstNameOf, formatMnt } from '@/lib/format';
 import type { AuthUser } from '@/lib/types/auth';
 import type { SponsorDashboardStats } from '@/lib/types/sponsor';
 
@@ -44,7 +44,7 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
       <div className="mb-8 flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-2xl font-semibold text-foreground">
-            {t('greeting').replace('{name}', user.name)}
+            {t('greeting').replace('{name}', firstNameOf(user.name))}
           </h1>
           <p className="mt-1 text-muted">
             {t('sponsor_dashboard_subtitle')}
