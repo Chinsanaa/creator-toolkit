@@ -1001,7 +1001,7 @@ html.apple-platform textarea {
 
 .creator-topbar-nav {
   display: none;
-  flex: 1;
+  flex: 0 1 auto;
   align-items: center;
   justify-content: center;
   gap: 0.25rem;
@@ -1009,6 +1009,7 @@ html.apple-platform textarea {
   border: 1px solid var(--border);
   background: var(--landing-sky-50);
   padding: 0.3125rem;
+  margin: 0 auto;
 }
 
 @media (min-width: 768px) {
