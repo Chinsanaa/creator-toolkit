@@ -5,6 +5,8 @@ export const translations: Record<string, string> = {
   email: 'И-мэйл',
   password: 'Нууц үг',
   full_name: 'Бүтэн нэр',
+  first_name: 'Нэр',
+  last_name: 'Овог',
   username: 'Хэрэглэгчийн нэр',
   or_continue_with_email: 'Эсвэл үргэлжлүүлэх',
   continue_with_google: 'Google-ээр үргэлжлүүлэх',

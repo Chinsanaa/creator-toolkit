@@ -9,6 +9,7 @@ interface UsernameInputProps {
   onChange: (value: string) => void;
   onAvailabilityChange?: (available: boolean) => void;
   disabled?: boolean;
+  placeholder?: string;
 }
 
 export function UsernameInput({
@@ -16,6 +17,7 @@ export function UsernameInput({
   onChange,
   onAvailabilityChange,
   disabled,
+  placeholder = 'creator_handle',
 }: UsernameInputProps) {
   const { t } = useLanguage();
   const [isChecking, setIsChecking] = useState(false);
@@ -71,7 +73,7 @@ export function UsernameInput({
           name="username"
           type="text"
           required
-          placeholder="creator_handle"
+          placeholder={placeholder}
           value={value}
           onChange={(e) => onChange(e.target.value)}
           disabled={disabled}
