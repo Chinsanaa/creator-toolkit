@@ -11,6 +11,7 @@ import {
   listPlatforms,
   listSyncHistory,
   syncPlatform,
+  disconnectPlatform,
   getTikTokAuthUrl,
   getYouTubeAuthUrl,
   getInstagramAuthUrl,
@@ -31,6 +32,8 @@ export default function PlatformsPage() {
   const [earnings, setEarnings] = useState<PlatformEarnings[]>([]);
   const [syncingId, setSyncingId] = useState<string | null>(null);
   const [connectingPlatform, setConnectingPlatform] = useState<string | null>(null);
+  const [disconnectingId, setDisconnectingId] = useState<string | null>(null);
+  const [confirmRemoveId, setConfirmRemoveId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
   const { t } = useLanguage();
@@ -44,7 +47,7 @@ export default function PlatformsPage() {
         getDashboardSummary(),
       ]);
       if (!isCancelled()) {
-        setAccounts(accs);
+        setAccounts(accs.filter((a) => a.status === 'connected'));
         setHistory(hist);
         setEarnings(summary.byPlatform);
       }
@@ -90,6 +93,22 @@ export default function PlatformsPage() {
     } catch (err) {
       setError(err instanceof ApiError ? err.message : `Failed to initiate ${platformId} connection`);
       setConnectingPlatform(null);
+    }
+  }
+
+  async function handleDisconnect(accountId: string) {
+    setDisconnectingId(accountId);
+    setError(null);
+    setMessage(null);
+    try {
+      await disconnectPlatform(accountId);
+      setConfirmRemoveId(null);
+      setMessage(t('disconnect_completed'));
+      await load();
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : t('disconnect_failed'));
+    } finally {
+      setDisconnectingId(null);
     }
   }
 
@@ -184,6 +203,37 @@ export default function PlatformsPage() {
                         {syncingId === account.id ? t('syncing') : t('sync_now')}
                       </button>
                     </div>
+
+                    {confirmRemoveId === account.id ? (
+                      <div className="creator-remove-confirm">
+                        <p className="text-xs text-landing-muted">{t('remove_account_confirm')}</p>
+                        <div className="flex items-center gap-2">
+                          <button
+                            type="button"
+                            onClick={() => setConfirmRemoveId(null)}
+                            className="landing-btn-light px-3 py-1.5 text-xs"
+                          >
+                            {t('cancel')}
+                          </button>
+                          <button
+                            type="button"
+                            disabled={disconnectingId === account.id}
+                            onClick={() => handleDisconnect(account.id)}
+                            className="creator-remove-confirm-btn"
+                          >
+                            {disconnectingId === account.id ? t('removing') : t('confirm_remove')}
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => setConfirmRemoveId(account.id)}
+                        className="creator-remove-link"
+                      >
+                        {t('remove_account')}
+                      </button>
+                    )}
                   </>
                 ) : (
                   <button

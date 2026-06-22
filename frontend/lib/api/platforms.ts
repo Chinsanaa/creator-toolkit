@@ -21,6 +21,10 @@ export async function syncPlatform(accountId: string): Promise<void> {
   await apiFetch(`/api/platforms/${accountId}/sync`, { method: 'POST' });
 }
 
+export async function disconnectPlatform(accountId: string): Promise<void> {
+  await apiFetch(`/api/platforms/${accountId}/disconnect`, { method: 'POST' });
+}
+
 export async function listSyncHistory(): Promise<SyncHistoryEntry[]> {
   const data = await apiFetch<{ history: SyncHistoryEntry[] }>('/api/platforms/sync/history');
   return data.history;
