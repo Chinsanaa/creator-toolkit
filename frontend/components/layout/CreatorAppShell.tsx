@@ -32,6 +32,14 @@ function SettingsIcon() {
   );
 }
 
+function ChevronDownIcon() {
+  return (
+    <svg className="creator-profile-chevron h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
+    </svg>
+  );
+}
+
 function LogoutIcon() {
   return (
     <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.75}>
@@ -149,13 +157,14 @@ export function CreatorAppShell({
                   {(userName?.[0] ?? 'C').toUpperCase()}
                 </span>
                 {(userName || userHandle) && (
-                  <span className="hidden text-right md:block">
+                  <span className="hidden text-left md:block">
                     {userName ? <p className="text-sm font-medium text-landing-fg">{userName}</p> : null}
                     {userHandle ? (
                       <p className="text-xs text-landing-muted">{formatHandle(userHandle)}</p>
                     ) : null}
                   </span>
                 )}
+                <ChevronDownIcon />
               </button>
 
               {accountOpen && (
