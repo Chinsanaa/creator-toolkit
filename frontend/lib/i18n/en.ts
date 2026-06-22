@@ -8,6 +8,8 @@ export const translations: Record<string, string> = {
   email: 'Email',
   password: 'Password',
   full_name: 'Full name',
+  first_name: 'First name',
+  last_name: 'Last name',
   username: 'Username',
   or_continue_with_email: 'or continue with',
   continue_with_google: 'Continue with Google',
