@@ -1,8 +1,31 @@
 import express, { Response } from 'express';
 import sponsorService from '../services/sponsorService';
+import sponsorProfileService from '../services/sponsorProfileService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
 
 const router = express.Router();
+
+router.get('/profile', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const profile = await sponsorProfileService.getProfile(req.userId!, req.token!);
+    res.json(profile);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to load company profile';
+    const status = message.includes('Sponsor account') ? 403 : 500;
+    res.status(status).json({ error: message });
+  }
+});
+
+router.patch('/profile', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const profile = await sponsorProfileService.updateProfile(req.userId!, req.token!, req.body);
+    res.json(profile);
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to update company profile';
+    const status = message.includes('Sponsor account') ? 403 : 400;
+    res.status(status).json({ error: message });
+  }
+});
 
 router.get('/dashboard', verifyToken, async (req: AuthRequest, res: Response) => {
   try {

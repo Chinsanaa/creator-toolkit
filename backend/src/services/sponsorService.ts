@@ -9,6 +9,27 @@ export interface SponsorDashboardStats {
   pendingApplications: number;
   totalApplications: number;
   totalBudgetMnt: number;
+  statusBreakdown: ApplicationStatusBreakdown;
+  approvalRate: number | null;
+}
+
+export interface ApplicationStatusBreakdown {
+  pending: number;
+  approved: number;
+  rejected: number;
+}
+
+function buildStatusBreakdown(applications: { status: string }[]): ApplicationStatusBreakdown {
+  return {
+    pending: applications.filter((a) => a.status === 'pending').length,
+    approved: applications.filter((a) => a.status === 'approved').length,
+    rejected: applications.filter((a) => a.status === 'rejected').length,
+  };
+}
+
+function computeApprovalRate(breakdown: ApplicationStatusBreakdown): number | null {
+  const decided = breakdown.approved + breakdown.rejected;
+  return decided > 0 ? breakdown.approved / decided : null;
 }
 
 export interface SponsorCampaign {
@@ -154,14 +175,18 @@ class SponsorService {
       applications = apps ?? [];
     }
 
+    const statusBreakdown = buildStatusBreakdown(applications);
+
     return {
       activeCampaigns: rows.filter((r) => r.status === 'active').length,
       totalCampaigns: rows.length,
-      pendingApplications: applications.filter((a) => a.status === 'pending').length,
+      pendingApplications: statusBreakdown.pending,
       totalApplications: applications.length,
       totalBudgetMnt: rows
         .filter((r) => r.status === 'active')
         .reduce((sum, r) => sum + toNumber(r.payment_amount_mnt), 0),
+      statusBreakdown,
+      approvalRate: computeApprovalRate(statusBreakdown),
     };
   }
 
@@ -329,7 +354,12 @@ class SponsorService {
     userId: string,
     accessToken: string,
     campaignId: string
-  ): Promise<{ campaign: SponsorCampaign; applications: SponsorApplication[] }> {
+  ): Promise<{
+    campaign: SponsorCampaign;
+    applications: SponsorApplication[];
+    statusBreakdown: ApplicationStatusBreakdown;
+    approvalRate: number | null;
+  }> {
     await this.assertSponsor(userId, accessToken);
     const client = getAuthenticatedClient(accessToken);
 
@@ -381,14 +411,16 @@ class SponsorService {
       creator: creatorMap.get(app.creator_user_id) ?? null,
     }));
 
-    const pendingCount = applications.filter((a) => a.status === 'pending').length;
+    const statusBreakdown = buildStatusBreakdown(applications);
 
     return {
       campaign: mapCampaignRow(campaign, {
         total: applications.length,
-        pending: pendingCount,
+        pending: statusBreakdown.pending,
       }),
       applications,
+      statusBreakdown,
+      approvalRate: computeApprovalRate(statusBreakdown),
     };
   }
 
