@@ -11,6 +11,11 @@ import { ApiError } from '@/lib/api/client';
 import { validatePassword, getPasswordErrorMessage } from '@/lib/passwords';
 import type { UserType } from '@/lib/types/auth';
 
+function capitalizeFirstChar(value: string): string {
+  if (!value) return value;
+  return value.charAt(0).toUpperCase() + value.slice(1);
+}
+
 interface SignupFormProps {
   title: string;
   subtitle: string;
@@ -161,7 +166,7 @@ export function SignupForm({
                 required
                 placeholder={firstNamePlaceholder}
                 value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
+                onChange={(e) => setFirstName(capitalizeFirstChar(e.target.value))}
                 className="auth-input"
               />
             </div>
@@ -176,7 +181,7 @@ export function SignupForm({
                 required
                 placeholder={lastNamePlaceholder}
                 value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
+                onChange={(e) => setLastName(capitalizeFirstChar(e.target.value))}
                 className="auth-input"
               />
             </div>

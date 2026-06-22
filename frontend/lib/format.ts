@@ -25,6 +25,17 @@ export function formatHandle(handle: string): string {
   return trimmed.startsWith('@') ? trimmed : `@${trimmed}`;
 }
 
+export function capitalize(value: string): string {
+  const trimmed = value.trim();
+  if (!trimmed) return '';
+  return trimmed[0].toUpperCase() + trimmed.slice(1);
+}
+
+export function firstNameOf(fullName: string): string {
+  const first = fullName.trim().split(/\s+/)[0] ?? '';
+  return capitalize(first);
+}
+
 export function platformLabel(platform: string): string {
   const labels: Record<string, string> = {
     tiktok: 'TikTok',

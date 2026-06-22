@@ -13,7 +13,7 @@ import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
 import { getDashboardSummary } from '@/lib/api/dashboard';
-import { formatMnt, formatPercent } from '@/lib/format';
+import { firstNameOf, formatMnt, formatPercent } from '@/lib/format';
 import { PageHeader } from '@/components/ui/PageHeader';
 import type { AuthUser } from '@/lib/types/auth';
 import type { DashboardSummary } from '@/lib/types/dashboard';
@@ -50,7 +50,7 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
     <>
       <PageHeader
         eyebrow={t('creator_dashboard')}
-        title={t('greeting').replace('{name}', user.name)}
+        title={t('greeting').replace('{name}', firstNameOf(user.name))}
         description={t('creator_dashboard_subtitle')}
       />
 
