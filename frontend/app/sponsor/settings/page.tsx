@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { SponsorShell } from '@/components/sponsor/SponsorShell';
 import { AccountSettingsContent } from '@/components/settings/AccountSettingsContent';
+import { CompanyProfileSection } from '@/components/sponsor/CompanyProfileSection';
 import { useAuth } from '@/contexts/AuthContext';
 
 export default function SponsorSettingsPage() {
@@ -35,7 +36,10 @@ export default function SponsorSettingsPage() {
             Manage your profile and account preferences.
           </p>
         </header>
-        <AccountSettingsContent user={user} />
+        <div className="space-y-6">
+          <CompanyProfileSection />
+          <AccountSettingsContent user={user} />
+        </div>
       </div>
     </SponsorShell>
   );

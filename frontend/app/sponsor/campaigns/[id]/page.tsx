@@ -17,7 +17,11 @@ import {
 import { applicationStatusLabel, formatDate } from '@/lib/format';
 import { isLegacyUnpublished, isPublished } from '@/lib/sponsor/campaignForm';
 import { useLanguage } from '@/contexts/LanguageContext';
-import type { SponsorApplication, SponsorCampaign } from '@/lib/types/sponsor';
+import type {
+  ApplicationStatusBreakdown,
+  SponsorApplication,
+  SponsorCampaign,
+} from '@/lib/types/sponsor';
 
 export default function SponsorCampaignDetailPage() {
   const params = useParams();
@@ -27,6 +31,8 @@ export default function SponsorCampaignDetailPage() {
 
   const [campaign, setCampaign] = useState<SponsorCampaign | null>(null);
   const [applications, setApplications] = useState<SponsorApplication[]>([]);
+  const [statusBreakdown, setStatusBreakdown] = useState<ApplicationStatusBreakdown | null>(null);
+  const [approvalRate, setApprovalRate] = useState<number | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -40,6 +46,8 @@ export default function SponsorCampaignDetailPage() {
         if (!cancelled) {
           setCampaign(data.campaign);
           setApplications(data.applications);
+          setStatusBreakdown(data.statusBreakdown);
+          setApprovalRate(data.approvalRate);
         }
       } catch (err) {
         if (!cancelled) {
@@ -58,6 +66,8 @@ export default function SponsorCampaignDetailPage() {
     const data = await getSponsorCampaign(id);
     setCampaign(data.campaign);
     setApplications(data.applications);
+    setStatusBreakdown(data.statusBreakdown);
+    setApprovalRate(data.approvalRate);
   }
 
   async function handlePublish() {
@@ -159,11 +169,32 @@ export default function SponsorCampaignDetailPage() {
             )}
           </div>
 
-          {!legacy && (
+          {!legacy && statusBreakdown && (
             <section>
               <h2 className="font-display text-lg font-bold text-[color:var(--foreground)]">
                 {t('applications_heading')}
               </h2>
+
+              <div className="mt-4 grid grid-cols-3 gap-3">
+                <div className="creator-platform-stat">
+                  <p className="text-xs text-landing-muted">{t('applicants')}</p>
+                  <p className="mt-1 font-mono text-sm font-semibold text-landing-fg">
+                    {applications.length}
+                  </p>
+                </div>
+                <div className="creator-platform-stat">
+                  <p className="text-xs text-landing-muted">{t('approval_rate')}</p>
+                  <p className="mt-1 font-mono text-sm font-semibold text-landing-fg">
+                    {approvalRate !== null ? `${Math.round(approvalRate * 100)}%` : '—'}
+                  </p>
+                </div>
+                <div className="creator-platform-stat">
+                  <p className="text-xs text-landing-muted">{t('pending_short')}</p>
+                  <p className="mt-1 font-mono text-sm font-semibold text-landing-fg">
+                    {statusBreakdown.pending}
+                  </p>
+                </div>
+              </div>
 
               {applications.length === 0 && (
                 <p className="mt-4 text-sm text-[color:var(--muted-foreground)]">

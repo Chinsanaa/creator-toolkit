@@ -1,9 +1,23 @@
+export interface ApplicationStatusBreakdown {
+  pending: number;
+  approved: number;
+  rejected: number;
+}
+
 export interface SponsorDashboardStats {
   activeCampaigns: number;
   totalCampaigns: number;
   pendingApplications: number;
   totalApplications: number;
   totalBudgetMnt: number;
+  statusBreakdown: ApplicationStatusBreakdown;
+  approvalRate: number | null;
+}
+
+export interface SponsorProfile {
+  companyName: string | null;
+  websiteUrl: string | null;
+  logoUrl: string | null;
 }
 
 export interface SponsorCampaign {
@@ -35,4 +49,11 @@ export interface SponsorApplication {
     name: string;
     username: string;
   } | null;
+}
+
+export interface SponsorCampaignDetail {
+  campaign: SponsorCampaign;
+  applications: SponsorApplication[];
+  statusBreakdown: ApplicationStatusBreakdown;
+  approvalRate: number | null;
 }

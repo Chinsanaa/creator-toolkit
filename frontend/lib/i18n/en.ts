@@ -286,6 +286,22 @@ export const translations: Record<string, string> = {
   sum_of_active_payouts: 'Sum of active campaign payouts',
   view_all_campaigns: 'View all campaigns →',
   sponsor_account_required: 'Sponsor account required.',
+  approval_rate: 'Approval rate',
+  applicants: 'Applicants',
+  application_status: 'Application status',
+  pending_short: 'Pending',
+  approved_short: 'Approved',
+  rejected_short: 'Rejected',
+
+  // Sponsor company profile
+  company_profile: 'Company profile',
+  company_profile_subtitle: 'Tell creators who you are. This appears alongside your campaigns.',
+  website_url: 'Website URL',
+  logo_url: 'Logo URL',
+  save_changes: 'Save changes',
+  saving: 'Saving…',
+  company_profile_updated: 'Company profile updated.',
+  company_profile_failed: 'Failed to update company profile.',
 
   // Sponsor Campaigns
   campaigns_subtitle: 'Published campaigns appear in the creator marketplace. Close a campaign when you are done accepting applications.',

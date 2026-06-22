@@ -2,11 +2,28 @@ import { apiFetch } from './client';
 import type {
   SponsorApplication,
   SponsorCampaign,
+  SponsorCampaignDetail,
   SponsorDashboardStats,
+  SponsorProfile,
 } from '@/lib/types/sponsor';
 
 export async function getSponsorDashboard(): Promise<SponsorDashboardStats> {
   return apiFetch<SponsorDashboardStats>('/api/sponsor/dashboard');
+}
+
+export async function getSponsorProfile(): Promise<SponsorProfile> {
+  return apiFetch<SponsorProfile>('/api/sponsor/profile');
+}
+
+export async function updateSponsorProfile(payload: {
+  companyName?: string;
+  websiteUrl?: string;
+  logoUrl?: string;
+}): Promise<SponsorProfile> {
+  return apiFetch<SponsorProfile>('/api/sponsor/profile', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function listSponsorCampaigns(): Promise<SponsorCampaign[]> {
@@ -24,10 +41,7 @@ export async function createSponsorCampaign(
   return data.campaign;
 }
 
-export async function getSponsorCampaign(id: string): Promise<{
-  campaign: SponsorCampaign;
-  applications: SponsorApplication[];
-}> {
+export async function getSponsorCampaign(id: string): Promise<SponsorCampaignDetail> {
   return apiFetch(`/api/sponsor/campaigns/${id}`);
 }
 

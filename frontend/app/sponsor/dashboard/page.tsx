@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { SponsorShell } from '@/components/sponsor/SponsorShell';
+import { ApplicationStatusChart } from '@/components/sponsor/ApplicationStatusChart';
 import { useAuth } from '@/contexts/AuthContext';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { ApiError } from '@/lib/api/client';
@@ -67,20 +68,37 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
       )}
 
       {stats && !loading && (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          <StatCard label={t('active_campaigns')} value={String(stats.activeCampaigns)} />
-          <StatCard label={t('total_campaigns')} value={String(stats.totalCampaigns)} />
-          <StatCard
-            label={t('pending_applications')}
-            value={String(stats.pendingApplications)}
-            hint={`${stats.totalApplications} total`}
-          />
-          <StatCard
-            label={t('active_campaign_budget')}
-            value={formatMnt(stats.totalBudgetMnt)}
-            hint={t('sum_of_active_payouts')}
-          />
-        </div>
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            <StatCard label={t('active_campaigns')} value={String(stats.activeCampaigns)} />
+            <StatCard label={t('total_campaigns')} value={String(stats.totalCampaigns)} />
+            <StatCard
+              label={t('pending_applications')}
+              value={String(stats.pendingApplications)}
+              hint={`${stats.totalApplications} total`}
+            />
+            <StatCard
+              label={t('approval_rate')}
+              value={
+                stats.approvalRate !== null ? `${Math.round(stats.approvalRate * 100)}%` : '—'
+              }
+            />
+          </div>
+
+          <div className="mt-4 grid gap-4 sm:grid-cols-2">
+            <StatCard
+              label={t('active_campaign_budget')}
+              value={formatMnt(stats.totalBudgetMnt)}
+              hint={t('sum_of_active_payouts')}
+            />
+            <div className="card p-5">
+              <p className="text-sm text-muted">{t('application_status')}</p>
+              <div className="mt-2">
+                <ApplicationStatusChart data={stats.statusBreakdown} />
+              </div>
+            </div>
+          </div>
+        </>
       )}
 
       <div className="mt-8">
