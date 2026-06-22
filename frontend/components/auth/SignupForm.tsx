@@ -19,8 +19,10 @@ function capitalizeFirstChar(value: string): string {
 interface SignupFormProps {
   title: string;
   subtitle: string;
-  firstNamePlaceholder: string;
-  lastNamePlaceholder: string;
+  firstNamePlaceholder?: string;
+  lastNamePlaceholder?: string;
+  nameLabel?: string;
+  namePlaceholder?: string;
   usernamePlaceholder: string;
   emailLabel: string;
   emailPlaceholder: string;
@@ -44,6 +46,8 @@ export function SignupForm({
   subtitle,
   firstNamePlaceholder,
   lastNamePlaceholder,
+  nameLabel,
+  namePlaceholder,
   usernamePlaceholder,
   emailLabel,
   emailPlaceholder,
@@ -56,8 +60,10 @@ export function SignupForm({
   onSubmit,
 }: SignupFormProps) {
   const { t } = useLanguage();
+  const singleNameField = Boolean(nameLabel);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [name, setName] = useState('');
   const [username, setUsername] = useState('');
   const [usernameAvailable, setUsernameAvailable] = useState(false);
   const [email, setEmail] = useState('');
@@ -108,7 +114,7 @@ export function SignupForm({
 
     try {
       await onSubmit({
-        name: `${firstName.trim()} ${lastName.trim()}`.trim(),
+        name: singleNameField ? name.trim() : `${firstName.trim()} ${lastName.trim()}`.trim(),
         username,
         email,
         password,
@@ -123,8 +129,7 @@ export function SignupForm({
 
   const canSubmit =
     !pending &&
-    firstName.trim() &&
-    lastName.trim() &&
+    (singleNameField ? name.trim() : firstName.trim() && lastName.trim()) &&
     username &&
     usernameAvailable &&
     email &&
@@ -154,38 +159,56 @@ export function SignupForm({
         {beforeForm}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          {singleNameField ? (
             <div>
-              <label htmlFor="firstName" className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]">
-                {t('first_name')}
+              <label htmlFor="name" className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]">
+                {nameLabel}
               </label>
               <input
-                id="firstName"
-                name="firstName"
+                id="name"
+                name="name"
                 type="text"
                 required
-                placeholder={firstNamePlaceholder}
-                value={firstName}
-                onChange={(e) => setFirstName(capitalizeFirstChar(e.target.value))}
+                placeholder={namePlaceholder}
+                value={name}
+                onChange={(e) => setName(e.target.value)}
                 className="auth-input"
               />
             </div>
-            <div>
-              <label htmlFor="lastName" className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]">
-                {t('last_name')}
-              </label>
-              <input
-                id="lastName"
-                name="lastName"
-                type="text"
-                required
-                placeholder={lastNamePlaceholder}
-                value={lastName}
-                onChange={(e) => setLastName(capitalizeFirstChar(e.target.value))}
-                className="auth-input"
-              />
+          ) : (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label htmlFor="firstName" className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]">
+                  {t('first_name')}
+                </label>
+                <input
+                  id="firstName"
+                  name="firstName"
+                  type="text"
+                  required
+                  placeholder={firstNamePlaceholder}
+                  value={firstName}
+                  onChange={(e) => setFirstName(capitalizeFirstChar(e.target.value))}
+                  className="auth-input"
+                />
+              </div>
+              <div>
+                <label htmlFor="lastName" className="mb-1.5 block text-sm font-semibold text-[color:var(--foreground)]">
+                  {t('last_name')}
+                </label>
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  required
+                  placeholder={lastNamePlaceholder}
+                  value={lastName}
+                  onChange={(e) => setLastName(capitalizeFirstChar(e.target.value))}
+                  className="auth-input"
+                />
+              </div>
             </div>
-          </div>
+          )}
 
           <UsernameInput
             value={username}
