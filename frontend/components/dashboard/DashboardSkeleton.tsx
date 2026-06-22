@@ -23,18 +23,10 @@ export function DashboardSkeleton() {
         <StatCardSkeleton />
       </div>
 
-      <div className="grid gap-3 xl:grid-cols-4">
-        <div className="card space-y-3 p-4 xl:col-span-3">
-          <Skeleton className="h-4 w-40" />
-          <Skeleton className="h-8 w-32" />
-          <Skeleton className="h-48 w-full" />
-        </div>
-        <div className="card space-y-3 p-4">
-          <Skeleton className="h-4 w-24" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-          <Skeleton className="h-10 w-full" />
-        </div>
+      <div className="card space-y-3 p-4">
+        <Skeleton className="h-4 w-40" />
+        <Skeleton className="h-8 w-32" />
+        <Skeleton className="h-48 w-full" />
       </div>
 
       <div className="card space-y-3 p-4">
