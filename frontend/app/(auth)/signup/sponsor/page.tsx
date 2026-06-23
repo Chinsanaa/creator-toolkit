@@ -23,8 +23,8 @@ export default function SponsorSignupPage() {
       alternateLabel={t('sign_in')}
       beforeForm={<AuthTypeBackLink audience="sponsor" />}
       oauthUserType="sponsor"
-      firstNamePlaceholder="Jane"
-      lastNamePlaceholder="Doe"
+      nameLabel={t('company_or_brand_name')}
+      namePlaceholder="Acme Inc."
       usernamePlaceholder="brand_handle"
       emailLabel={t('work_email')}
       emailPlaceholder="you@company.com"
