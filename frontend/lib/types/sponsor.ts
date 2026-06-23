@@ -14,6 +14,16 @@ export interface SponsorDashboardStats {
   approvalRate: number | null;
 }
 
+export interface CampaignPaymentStatus {
+  approvedCount: number;
+  submittedCount: number;
+  amountDueMnt: number;
+  deadlinePassed: boolean;
+  allSubmitted: boolean;
+  readyToPay: boolean;
+  paidAt: string | null;
+}
+
 export interface SponsorProfile {
   companyName: string | null;
   websiteUrl: string | null;
@@ -35,6 +45,7 @@ export interface SponsorCampaign {
   created_at: string | null;
   applicationCount: number;
   pendingCount: number;
+  paymentMarkedPaidAt: string | null;
 }
 
 export interface SponsorApplication {
@@ -44,10 +55,13 @@ export interface SponsorApplication {
   response_text: string | null;
   sponsor_notes: string | null;
   applied_at: string | null;
+  deliverable_url: string | null;
+  deliverable_submitted_at: string | null;
   creator: {
     id: string;
     name: string;
     username: string;
+    email: string;
   } | null;
 }
 
@@ -56,4 +70,5 @@ export interface SponsorCampaignDetail {
   applications: SponsorApplication[];
   statusBreakdown: ApplicationStatusBreakdown;
   approvalRate: number | null;
+  payment: CampaignPaymentStatus;
 }

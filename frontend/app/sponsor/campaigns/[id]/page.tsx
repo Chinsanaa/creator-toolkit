@@ -11,14 +11,16 @@ import {
   closeCampaign,
   deleteSponsorCampaign,
   getSponsorCampaign,
+  markCampaignPaid,
   publishCampaign,
   updateApplicationStatus,
 } from '@/lib/api/sponsor';
-import { applicationStatusLabel, formatDate } from '@/lib/format';
+import { applicationStatusLabel, formatDate, formatMnt } from '@/lib/format';
 import { isLegacyUnpublished, isPublished } from '@/lib/sponsor/campaignForm';
 import { useLanguage } from '@/contexts/LanguageContext';
 import type {
   ApplicationStatusBreakdown,
+  CampaignPaymentStatus,
   SponsorApplication,
   SponsorCampaign,
 } from '@/lib/types/sponsor';
@@ -33,10 +35,14 @@ export default function SponsorCampaignDetailPage() {
   const [applications, setApplications] = useState<SponsorApplication[]>([]);
   const [statusBreakdown, setStatusBreakdown] = useState<ApplicationStatusBreakdown | null>(null);
   const [approvalRate, setApprovalRate] = useState<number | null>(null);
+  const [payment, setPayment] = useState<CampaignPaymentStatus | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [actionId, setActionId] = useState<string | null>(null);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
+  const [paying, setPaying] = useState(false);
+  const [paymentDismissed, setPaymentDismissed] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -48,6 +54,7 @@ export default function SponsorCampaignDetailPage() {
           setApplications(data.applications);
           setStatusBreakdown(data.statusBreakdown);
           setApprovalRate(data.approvalRate);
+          setPayment(data.payment);
         }
       } catch (err) {
         if (!cancelled) {
@@ -62,12 +69,33 @@ export default function SponsorCampaignDetailPage() {
     };
   }, [id]);
 
+  useEffect(() => {
+    if (payment?.readyToPay && !paymentDismissed) {
+      setShowPaymentModal(true);
+    }
+  }, [payment, paymentDismissed]);
+
   async function reload() {
     const data = await getSponsorCampaign(id);
     setCampaign(data.campaign);
     setApplications(data.applications);
     setStatusBreakdown(data.statusBreakdown);
     setApprovalRate(data.approvalRate);
+    setPayment(data.payment);
+  }
+
+  async function handleMarkPaid() {
+    setPaying(true);
+    setError(null);
+    try {
+      await markCampaignPaid(id);
+      await reload();
+      setShowPaymentModal(false);
+    } catch (err) {
+      setError(err instanceof ApiError ? err.message : 'Failed to mark payment');
+    } finally {
+      setPaying(false);
+    }
   }
 
   async function handlePublish() {
@@ -221,7 +249,83 @@ export default function SponsorCampaignDetailPage() {
               {t('publish_campaign_note')}
             </p>
           )}
+
+          {payment && payment.approvedCount > 0 && !payment.paidAt && (
+            <section className="creator-panel-lg p-6">
+              <h2 className="font-display text-lg font-bold text-[color:var(--foreground)]">
+                {t('payment_heading')}
+              </h2>
+              <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">
+                {t('payment_summary')
+                  .replace('{count}', String(payment.approvedCount))
+                  .replace('{amount}', formatMnt(payment.amountDueMnt))}
+              </p>
+              <p className="mt-1 text-xs text-[color:var(--muted)]">
+                {payment.submittedCount}/{payment.approvedCount} {t('deliverables_submitted_label')}
+              </p>
+              {!payment.readyToPay && (
+                <p className="mt-2 text-xs text-[color:var(--muted)]">
+                  {!payment.deadlinePassed
+                    ? t('payment_waiting_deadline')
+                    : t('payment_waiting_deliverables')}
+                </p>
+              )}
+              <button
+                type="button"
+                disabled={!payment.readyToPay || paying}
+                onClick={() => setShowPaymentModal(true)}
+                className="btn-primary mt-4 w-auto px-5 disabled:opacity-50"
+              >
+                {t('process_payment')}
+              </button>
+            </section>
+          )}
+
+          {payment?.paidAt && (
+            <p className="text-sm font-semibold text-[color:var(--success)]">
+              {t('payment_marked_paid')} {formatDate(payment.paidAt)}
+            </p>
+          )}
         </article>
+      )}
+
+      {showPaymentModal && payment && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="creator-panel-lg w-full max-w-md bg-[color:var(--card)] p-6">
+            <h2 className="font-display text-lg font-bold text-[color:var(--foreground)]">
+              {t('payment_heading')}
+            </h2>
+            <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">
+              {t('payment_summary')
+                .replace('{count}', String(payment.approvedCount))
+                .replace('{amount}', formatMnt(payment.amountDueMnt))}
+            </p>
+            <p className="mt-3 text-2xl font-bold text-[color:var(--foreground)]">
+              {formatMnt(payment.amountDueMnt)}
+            </p>
+            {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
+            <div className="mt-6 flex gap-2">
+              <button
+                type="button"
+                disabled={paying}
+                onClick={() => void handleMarkPaid()}
+                className="btn-primary disabled:opacity-50"
+              >
+                {paying ? t('please_wait') : t('mark_as_paid')}
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setShowPaymentModal(false);
+                  setPaymentDismissed(true);
+                }}
+                className="btn-secondary"
+              >
+                {t('remind_me_later')}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </SponsorShell>
   );
@@ -242,21 +346,33 @@ function ApplicationCard({
   const { t } = useLanguage();
   const pending = application.status === 'pending';
 
+  const approved = application.status === 'approved';
+
   return (
     <li className="creator-panel p-5">
-      <div>
-        <p className="font-semibold text-[color:var(--foreground)]">
-          {application.creator?.name ?? 'Creator'}
-          {application.creator && (
-            <span className="ml-2 text-sm font-normal text-[color:var(--muted)]">
-              @{application.creator.username}
-            </span>
-          )}
-        </p>
-        <p className="mt-1 text-xs text-[color:var(--muted)]">
-          {t('applied_label')} {formatDate(application.applied_at)} ·{' '}
-          {applicationStatusLabel(application.status)}
-        </p>
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <p className="font-semibold text-[color:var(--foreground)]">
+            {application.creator?.name ?? 'Creator'}
+            {application.creator && (
+              <span className="ml-2 text-sm font-normal text-[color:var(--muted)]">
+                @{application.creator.username}
+              </span>
+            )}
+          </p>
+          <p className="mt-1 text-xs text-[color:var(--muted)]">
+            {t('applied_label')} {formatDate(application.applied_at)} ·{' '}
+            {applicationStatusLabel(application.status)}
+          </p>
+        </div>
+        {application.creator?.email && (
+          <a
+            href={`mailto:${application.creator.email}`}
+            className="btn-secondary min-h-9 px-3 py-1.5 text-xs"
+          >
+            {t('contact')}
+          </a>
+        )}
       </div>
 
       {application.response_text && (
@@ -268,6 +384,21 @@ function ApplicationCard({
       {application.sponsor_notes && !pending && (
         <p className="mt-2 text-xs text-[color:var(--muted)]">
           {t('your_note_label')} {application.sponsor_notes}
+        </p>
+      )}
+
+      {approved && (
+        <p className="mt-2 text-xs font-medium text-[color:var(--muted)]">
+          {application.deliverable_url ? (
+            <>
+              {t('deliverable_submitted')}{' '}
+              <a href={application.deliverable_url} target="_blank" rel="noreferrer" className="link-primary">
+                {application.deliverable_url}
+              </a>
+            </>
+          ) : (
+            t('deliverable_pending')
+          )}
         </p>
       )}
 

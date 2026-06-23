@@ -57,6 +57,23 @@ router.post('/apply', verifyToken, async (req: AuthRequest, res: Response) => {
   }
 });
 
+router.patch('/applications/:id/deliverable', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const { deliverableUrl } = req.body as { deliverableUrl?: string };
+    const result = await sponsorshipService.submitDeliverable(
+      String(req.params.id),
+      req.userId!,
+      req.token!,
+      deliverableUrl ?? ''
+    );
+    res.json({ message: 'Deliverable submitted', application: result });
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : 'Failed to submit deliverable';
+    const status = message.includes('not found') ? 404 : 400;
+    res.status(status).json({ error: message });
+  }
+});
+
 router.get('/:id', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
     const id = String(req.params.id);

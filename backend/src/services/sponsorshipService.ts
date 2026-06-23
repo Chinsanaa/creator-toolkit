@@ -31,6 +31,8 @@ export interface SponsorshipApplication {
   status: string;
   response_text: string | null;
   applied_at: string | null;
+  deliverable_url: string | null;
+  deliverable_submitted_at: string | null;
   sponsorship: {
     id: string;
     title: string;
@@ -247,6 +249,8 @@ class SponsorshipService {
         status,
         response_text,
         applied_at,
+        deliverable_url,
+        deliverable_submitted_at,
         sponsorship:sponsorships (
           id,
           title,
@@ -274,6 +278,8 @@ class SponsorshipService {
         status: row.status,
         response_text: row.response_text,
         applied_at: row.applied_at,
+        deliverable_url: row.deliverable_url,
+        deliverable_submitted_at: row.deliverable_submitted_at,
         sponsorship: sponsorship
           ? {
               id: sponsorship.id,
@@ -285,6 +291,50 @@ class SponsorshipService {
           : null,
       };
     });
+  }
+
+  public async submitDeliverable(
+    applicationId: string,
+    userId: string,
+    accessToken: string,
+    deliverableUrl: string
+  ): Promise<{ id: string; deliverable_url: string | null; deliverable_submitted_at: string | null }> {
+    if (!deliverableUrl?.trim()) {
+      throw new Error('A deliverable link is required');
+    }
+
+    const client = getAuthenticatedClient(accessToken);
+
+    const { data: application, error: findError } = await client
+      .from('sponsorship_applications')
+      .select('id, creator_user_id, status')
+      .eq('id', applicationId)
+      .eq('creator_user_id', userId)
+      .single();
+
+    if (findError || !application) {
+      throw new Error('Application not found');
+    }
+
+    if (application.status !== 'approved') {
+      throw new Error('Only approved applications can submit a deliverable');
+    }
+
+    const { data, error } = await client
+      .from('sponsorship_applications')
+      .update({
+        deliverable_url: deliverableUrl.trim(),
+        deliverable_submitted_at: new Date().toISOString(),
+      })
+      .eq('id', applicationId)
+      .select('id, deliverable_url, deliverable_submitted_at')
+      .single();
+
+    if (error) {
+      throw new Error(`Failed to submit deliverable: ${error.message}`);
+    }
+
+    return data;
   }
 }
 

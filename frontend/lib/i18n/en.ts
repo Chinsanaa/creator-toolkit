@@ -289,6 +289,7 @@ export const translations: Record<string, string> = {
   approval_rate: 'Approval rate',
   applicants: 'Applicants',
   application_status: 'Application status',
+  total_applications: 'Total applications',
   pending_short: 'Pending',
   approved_short: 'Approved',
   rejected_short: 'Rejected',
@@ -331,6 +332,22 @@ export const translations: Record<string, string> = {
   close_campaign: 'Close campaign',
   closing_campaign_note: 'Closing stops new applications. Published campaigns cannot be edited.',
   delete: 'Delete',
+
+  // Contact / deliverables / payment
+  contact: 'Contact',
+  submit: 'Submit',
+  deliverable_submitted: 'Deliverable submitted:',
+  deliverable_pending: 'Deliverable not yet submitted.',
+  submit_deliverable_link: 'Submit your deliverable link',
+  deliverables_submitted_label: 'deliverables submitted',
+  payment_heading: 'Payment',
+  payment_summary: 'Pay {count} approved applicant(s) a total of {amount}.',
+  payment_waiting_deadline: 'Waiting for the completion deadline to pass.',
+  payment_waiting_deliverables: 'Waiting for all approved applicants to submit their deliverable.',
+  process_payment: 'Process payment',
+  mark_as_paid: 'Mark as paid',
+  remind_me_later: 'Remind me later',
+  payment_marked_paid: 'Payment marked as paid on',
 
   // Sponsorship detail
   back_to_explore: '← Back to Explore',

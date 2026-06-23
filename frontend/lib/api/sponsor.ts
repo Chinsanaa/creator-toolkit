@@ -63,6 +63,14 @@ export async function deleteSponsorCampaign(id: string): Promise<void> {
   await apiFetch(`/api/sponsor/campaigns/${id}`, { method: 'DELETE' });
 }
 
+export async function markCampaignPaid(id: string): Promise<SponsorCampaign> {
+  const data = await apiFetch<{ campaign: SponsorCampaign }>(
+    `/api/sponsor/campaigns/${id}/payment`,
+    { method: 'POST' }
+  );
+  return data.campaign;
+}
+
 export async function updateApplicationStatus(
   id: string,
   status: 'approved' | 'rejected',
