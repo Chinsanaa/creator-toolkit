@@ -1,5 +1,8 @@
 export type SupportedPlatform = 'tiktok' | 'youtube' | 'instagram';
 
+/** Rough MNT→USD conversion rate used for synced earnings. */
+export const MNT_PER_USD = 3400;
+
 export interface PlatformSyncResult {
   followerCount: number;
   earningsMnt: number;
@@ -17,9 +20,11 @@ function hashSeed(input: string): number {
   return Math.abs(h);
 }
 
+// Build the bounds in UTC: constructing local-midnight dates and then
+// formatting with toISOString() shifts the day for servers ahead of UTC.
 function monthBounds(date = new Date()): { start: string; end: string } {
-  const start = new Date(date.getFullYear(), date.getMonth(), 1);
-  const end = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+  const start = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
+  const end = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0));
   const fmt = (d: Date) => d.toISOString().slice(0, 10);
   return { start: fmt(start), end: fmt(end) };
 }
@@ -39,7 +44,7 @@ export function fetchPlatformData(
   const baseEarnings =
     platform === 'tiktok' ? 520_000 : platform === 'youtube' ? 280_000 : 150_000;
   const earningsMnt = baseEarnings + (seed % 200_000);
-  const amountUsd = Math.round(earningsMnt / 3400);
+  const amountUsd = Math.round(earningsMnt / MNT_PER_USD);
 
   return {
     followerCount,

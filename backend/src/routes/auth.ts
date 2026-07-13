@@ -46,7 +46,8 @@ const resetPasswordRateLimiter = rateLimit({
   limit: 2,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => `${ipKeyGenerator(req.ip ?? '')}:${req.method}:${req.path}:${(req.body as { email?: string }).email || ''}`,
+  keyGenerator: (req) =>
+    `${ipKeyGenerator(req.ip ?? '')}:${req.method}:${req.path}:${(req.body as { email?: string } | undefined)?.email || ''}`,
   message: { error: 'Too many password reset attempts. Please try again later.' },
 });
 

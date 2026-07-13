@@ -54,7 +54,6 @@ function CreatorDashboardBody({ user }: { user: AuthUser }) {
     return () => {
       cancelled = true;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   async function handleSyncAll() {

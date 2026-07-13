@@ -202,7 +202,7 @@ class TikTokOAuthService {
 
     const { data: account } = await supabaseAdmin
       .from('platform_accounts')
-      .select('oauth_refresh_token, oauth_token_expires_at')
+      .select('oauth_access_token, oauth_refresh_token, oauth_token_expires_at')
       .eq('id', platformAccountId)
       .single();
 
@@ -215,18 +215,11 @@ class TikTokOAuthService {
     }
 
     // Check if token is still valid
-    if (account.oauth_token_expires_at) {
+    if (account.oauth_token_expires_at && account.oauth_access_token) {
       const expiresAt = new Date(account.oauth_token_expires_at).getTime();
       if (expiresAt > Date.now() + 60000) {
         // Token is valid for at least 1 minute, no need to refresh
-        const { data: accountData } = await supabaseAdmin
-          .from('platform_accounts')
-          .select('oauth_access_token')
-          .eq('id', platformAccountId)
-          .single();
-        if (accountData?.oauth_access_token) {
-          return accountData.oauth_access_token;
-        }
+        return account.oauth_access_token;
       }
     }
 

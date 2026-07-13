@@ -34,7 +34,10 @@ class NotificationService {
       return;
     }
 
-    await this.sendEmailForUser(userId, type, title, body);
+    // Email delivery is best-effort; don't block the caller's request on it.
+    void this.sendEmailForUser(userId, type, title, body).catch((err) => {
+      console.error('Failed to send notification email:', err);
+    });
   }
 
   private async sendEmailForUser(

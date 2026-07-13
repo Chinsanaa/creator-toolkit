@@ -40,13 +40,15 @@ export interface WalletSummary {
   minPayoutMnt: number;
 }
 
+type BalanceRow = { type: string; amount_mnt: number | string; status: string };
+
 function maskAccountNumber(num: string): string {
   if (num.length <= 4) return num;
   return `•••• ${num.slice(-4)}`;
 }
 
 class WalletService {
-  private computeBalances(transactions: WalletTransaction[]): {
+  private computeBalances(transactions: BalanceRow[]): {
     available: number;
     pendingPayout: number;
     totalEarned: number;
@@ -92,8 +94,26 @@ class WalletService {
     };
   }
 
+  // Balances must be computed over the user's full transaction history, not the
+  // paginated list shown in the UI, so only the columns needed for the math are
+  // fetched here.
+  private async fetchBalanceRows(userId: string, accessToken: string): Promise<BalanceRow[]> {
+    const client = getAuthenticatedClient(accessToken);
+
+    const { data, error } = await client
+      .from('wallet_transactions')
+      .select('type, amount_mnt, status')
+      .eq('user_id', userId);
+
+    if (error) {
+      throw new Error(`Failed to load transactions: ${error.message}`);
+    }
+
+    return data ?? [];
+  }
+
   public async getSummary(userId: string, accessToken: string): Promise<WalletSummary> {
-    const transactions = await this.listTransactions(userId, accessToken);
+    const transactions = await this.fetchBalanceRows(userId, accessToken);
     const balances = this.computeBalances(transactions);
 
     return {
@@ -186,12 +206,12 @@ class WalletService {
 
     const client = getAuthenticatedClient(accessToken);
 
-    const { data: existing } = await client
+    const { count } = await client
       .from('bank_accounts')
-      .select('id')
+      .select('id', { count: 'exact', head: true })
       .eq('user_id', userId);
 
-    const isFirst = !existing?.length;
+    const isFirst = (count ?? 0) === 0;
 
     if (setAsDefault || isFirst) {
       await client
@@ -273,18 +293,19 @@ class WalletService {
 
     const client = getAuthenticatedClient(accessToken);
 
-    const { data: bankAccount } = await client
-      .from('bank_accounts')
-      .select('id, bank_name, account_number')
-      .eq('id', bankAccountId)
-      .eq('user_id', userId)
-      .single();
+    const [{ data: bankAccount }, summary] = await Promise.all([
+      client
+        .from('bank_accounts')
+        .select('id, bank_name, account_number')
+        .eq('id', bankAccountId)
+        .eq('user_id', userId)
+        .single(),
+      this.getSummary(userId, accessToken),
+    ]);
 
     if (!bankAccount) {
       throw new Error('Bank account not found');
     }
-
-    const summary = await this.getSummary(userId, accessToken);
 
     if (summary.pendingPayoutMnt > 0) {
       throw new Error('You already have a pending payout request');

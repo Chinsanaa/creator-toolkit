@@ -1,5 +1,5 @@
 import { randomInt } from 'node:crypto';
-import { supabase, supabaseAdmin } from '../database/supabase';
+import { supabaseAdmin } from '../database/supabase';
 import emailService from './emailService';
 
 interface EmailVerificationPayload {
@@ -33,6 +33,19 @@ class EmailVerificationService {
       throw new Error('Email verification service is temporarily unavailable');
     }
 
+    // The endpoint is unauthenticated, so the email must be proven to belong to
+    // this user before a code is issued — otherwise anyone could get a code for
+    // an arbitrary user delivered to an address they control.
+    const { data: user, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('name, email')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !user || user.email?.toLowerCase() !== email.toLowerCase().trim()) {
+      throw new Error('User not found');
+    }
+
     const verificationCode = this.generateVerificationCode();
     const expiresAt = new Date(Date.now() + this.CODE_EXPIRY_MINUTES * 60 * 1000).toISOString();
 
@@ -52,17 +65,10 @@ class EmailVerificationService {
       throw new Error('Failed to send verification email');
     }
 
-    // Get user name
-    const { data: user } = await supabaseAdmin
-      .from('users')
-      .select('name')
-      .eq('id', userId)
-      .single();
-
     // Send email
     await emailService.sendVerificationEmail({
       to: email,
-      userName: user?.name || email.split('@')[0],
+      userName: user.name || email.split('@')[0],
       verificationCode,
       expiresInMinutes: this.CODE_EXPIRY_MINUTES,
     });

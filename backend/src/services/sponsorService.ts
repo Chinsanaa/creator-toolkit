@@ -186,17 +186,34 @@ class SponsorService {
     }
   }
 
+  // Runs a read-only query concurrently with the sponsor-role check instead of
+  // serializing the two round trips. The role-check failure takes priority so
+  // non-sponsors still get the 403-style error.
+  private async assertSponsorAlongside<T>(
+    userId: string,
+    accessToken: string,
+    work: PromiseLike<T>
+  ): Promise<T> {
+    const [assertResult, workResult] = await Promise.allSettled([
+      this.assertSponsor(userId, accessToken),
+      work,
+    ]);
+    if (assertResult.status === 'rejected') throw assertResult.reason;
+    if (workResult.status === 'rejected') throw workResult.reason;
+    return workResult.value;
+  }
+
   public async getDashboard(
     userId: string,
     accessToken: string
   ): Promise<SponsorDashboardStats> {
-    await this.assertSponsor(userId, accessToken);
     const client = getAuthenticatedClient(accessToken);
 
-    const { data: campaigns, error } = await client
-      .from('sponsorships')
-      .select('id, status, payment_amount_mnt')
-      .eq('sponsor_user_id', userId);
+    const { data: campaigns, error } = await this.assertSponsorAlongside(
+      userId,
+      accessToken,
+      client.from('sponsorships').select('id, status, payment_amount_mnt').eq('sponsor_user_id', userId)
+    );
 
     if (error) {
       throw new Error(`Failed to load dashboard: ${error.message}`);
@@ -233,16 +250,17 @@ class SponsorService {
     userId: string,
     accessToken: string
   ): Promise<SponsorCampaign[]> {
-    await this.assertSponsor(userId, accessToken);
     const client = getAuthenticatedClient(accessToken);
 
-    const { data: campaigns, error } = await client
-      .from('sponsorships')
-      .select(
-        CAMPAIGN_COLUMNS
-      )
-      .eq('sponsor_user_id', userId)
-      .order('created_at', { ascending: false });
+    const { data: campaigns, error } = await this.assertSponsorAlongside(
+      userId,
+      accessToken,
+      client
+        .from('sponsorships')
+        .select(CAMPAIGN_COLUMNS)
+        .eq('sponsor_user_id', userId)
+        .order('created_at', { ascending: false })
+    );
 
     if (error) {
       throw new Error(`Failed to load campaigns: ${error.message}`);
@@ -400,17 +418,18 @@ class SponsorService {
     approvalRate: number | null;
     payment: CampaignPaymentStatus;
   }> {
-    await this.assertSponsor(userId, accessToken);
     const client = getAuthenticatedClient(accessToken);
 
-    const { data: campaign, error: campError } = await client
-      .from('sponsorships')
-      .select(
-        CAMPAIGN_COLUMNS
-      )
-      .eq('id', campaignId)
-      .eq('sponsor_user_id', userId)
-      .single();
+    const { data: campaign, error: campError } = await this.assertSponsorAlongside(
+      userId,
+      accessToken,
+      client
+        .from('sponsorships')
+        .select(CAMPAIGN_COLUMNS)
+        .eq('id', campaignId)
+        .eq('sponsor_user_id', userId)
+        .single()
+    );
 
     if (campError || !campaign) {
       throw new Error('Campaign not found');

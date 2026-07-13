@@ -1,6 +1,6 @@
 import { randomInt } from 'node:crypto';
 import { User } from '@supabase/supabase-js';
-import { getAuthenticatedClient, supabase, supabaseAdmin } from '../database/supabase';
+import { createAnonClient, getAuthenticatedClient, supabase, supabaseAdmin } from '../database/supabase';
 import { validatePassword, getPasswordErrorMessage } from '../utils/passwords';
 import notificationService from './notificationService';
 
@@ -286,7 +286,7 @@ class AuthService {
       throw new Error('Username already taken');
     }
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await createAnonClient().auth.signUp({
       email,
       password,
       options: {
@@ -343,7 +343,7 @@ class AuthService {
       throw new Error('Email and password required');
     }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await createAnonClient().auth.signInWithPassword({
       email,
       password,
     });
@@ -373,7 +373,7 @@ class AuthService {
   public async refreshToken(
     refreshToken: string
   ): Promise<{ accessToken: string; refreshToken: string }> {
-    const { data, error } = await supabase.auth.refreshSession({
+    const { data, error } = await createAnonClient().auth.refreshSession({
       refresh_token: refreshToken,
     });
 
@@ -392,7 +392,8 @@ class AuthService {
       return;
     }
 
-    const { data, error } = await supabase.auth.refreshSession({
+    const client = createAnonClient();
+    const { data, error } = await client.auth.refreshSession({
       refresh_token: refreshToken,
     });
 
@@ -400,11 +401,7 @@ class AuthService {
       return;
     }
 
-    await supabase.auth.setSession({
-      access_token: data.session.access_token,
-      refresh_token: data.session.refresh_token,
-    });
-    await supabase.auth.signOut({ scope: 'global' });
+    await client.auth.signOut({ scope: 'global' });
   }
 
   public async finishOAuthSession(
@@ -447,7 +444,7 @@ class AuthService {
       );
     }
 
-    const { data: signInData, error: signInError } = await supabase.auth.signInWithPassword({
+    const { data: signInData, error: signInError } = await createAnonClient().auth.signInWithPassword({
       email: email.trim(),
       password,
     });
@@ -469,9 +466,15 @@ class AuthService {
       );
     }
 
-    const { error: signOutError } = await supabaseAdmin.auth.admin.signOut(userId, 'global');
-    if (signOutError) {
-      console.error('Sign out error during account deletion:', signOutError);
+    if (signInData.session) {
+      // admin.signOut expects a session JWT, not a user id
+      const { error: signOutError } = await supabaseAdmin.auth.admin.signOut(
+        signInData.session.access_token,
+        'global'
+      );
+      if (signOutError) {
+        console.error('Sign out error during account deletion:', signOutError);
+      }
     }
 
     const { error: deleteError } = await supabaseAdmin.auth.admin.deleteUser(userId);
