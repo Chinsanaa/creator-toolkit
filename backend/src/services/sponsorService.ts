@@ -19,7 +19,7 @@ export interface ApplicationStatusBreakdown {
   rejected: number;
 }
 
-function buildStatusBreakdown(applications: { status: string }[]): ApplicationStatusBreakdown {
+export function buildStatusBreakdown(applications: { status: string }[]): ApplicationStatusBreakdown {
   return {
     pending: applications.filter((a) => a.status === 'pending').length,
     approved: applications.filter((a) => a.status === 'approved').length,
@@ -27,7 +27,7 @@ function buildStatusBreakdown(applications: { status: string }[]): ApplicationSt
   };
 }
 
-function computeApprovalRate(breakdown: ApplicationStatusBreakdown): number | null {
+export function computeApprovalRate(breakdown: ApplicationStatusBreakdown): number | null {
   const decided = breakdown.approved + breakdown.rejected;
   return decided > 0 ? breakdown.approved / decided : null;
 }
@@ -42,7 +42,7 @@ export interface CampaignPaymentStatus {
   paidAt: string | null;
 }
 
-function computePaymentStatus(
+export function computePaymentStatus(
   campaign: SponsorCampaign,
   applications: SponsorApplication[]
 ): CampaignPaymentStatus {
@@ -152,7 +152,7 @@ function mapCampaignRow(
   };
 }
 
-function validateCampaignPayload(payload: CampaignPayload): void {
+export function validateCampaignPayload(payload: CampaignPayload): void {
   const { title, description, paymentAmountMnt } = payload;
   if (!title?.trim() || !description?.trim()) {
     throw new Error('Title and description are required');

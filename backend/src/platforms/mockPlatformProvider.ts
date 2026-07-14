@@ -11,7 +11,7 @@ export interface PlatformSyncResult {
   periodEnd: string;
 }
 
-function hashSeed(input: string): number {
+export function hashSeed(input: string): number {
   let h = 0;
   for (let i = 0; i < input.length; i++) {
     h = (h << 5) - h + input.charCodeAt(i);
@@ -22,7 +22,7 @@ function hashSeed(input: string): number {
 
 // Build the bounds in UTC: constructing local-midnight dates and then
 // formatting with toISOString() shifts the day for servers ahead of UTC.
-function monthBounds(date = new Date()): { start: string; end: string } {
+export function monthBounds(date = new Date()): { start: string; end: string } {
   const start = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), 1));
   const end = new Date(Date.UTC(date.getUTCFullYear(), date.getUTCMonth() + 1, 0));
   const fmt = (d: Date) => d.toISOString().slice(0, 10);
