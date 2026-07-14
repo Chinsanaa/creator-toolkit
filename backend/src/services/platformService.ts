@@ -5,6 +5,7 @@ import {
   type SupportedPlatform,
 } from '../platforms/mockPlatformProvider';
 import { getAuthenticatedClient, supabaseAdmin } from '../database/supabase';
+import { decrypt } from '../utils/encryption';
 import tiktokApiService from './tiktokApiService';
 import tiktokOAuthService from './tiktokOAuthService';
 import notificationService from './notificationService';
@@ -259,10 +260,11 @@ class PlatformService {
       // Check if this is an OAuth-connected TikTok account with valid token
       if (platform === 'tiktok' && accountData?.oauth_access_token) {
         try {
+          const oauthAccessToken = decrypt(accountData.oauth_access_token);
           // Fetch real data from TikTok API
           const [profile, videos] = await Promise.all([
-            tiktokApiService.fetchCreatorProfile(accountData.oauth_access_token),
-            tiktokApiService.fetchRecentVideos(accountData.oauth_access_token, 10),
+            tiktokApiService.fetchCreatorProfile(oauthAccessToken),
+            tiktokApiService.fetchRecentVideos(oauthAccessToken, 10),
           ]);
 
           // Calculate earnings from engagement

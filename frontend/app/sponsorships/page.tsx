@@ -10,21 +10,44 @@ import { ApiError } from '@/lib/api/client';
 import { listSponsorships } from '@/lib/api/sponsorships';
 import type { SponsorshipListing } from '@/lib/types/sponsorship';
 
+const PAGE_SIZE = 24;
+
 export default function SponsorshipsPage() {
   const [listings, setListings] = useState<SponsorshipListing[]>([]);
+  const [hasMore, setHasMore] = useState(false);
+  const [nextOffset, setNextOffset] = useState(0);
+  const [loadingMore, setLoadingMore] = useState(false);
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { t } = useLanguage();
 
   useEffect(() => {
-    listSponsorships()
-      .then(setListings)
+    listSponsorships({ limit: PAGE_SIZE })
+      .then((page) => {
+        setListings(page.items);
+        setHasMore(page.hasMore);
+        setNextOffset(page.nextOffset);
+      })
       .catch((err) =>
         setError(err instanceof ApiError ? err.message : 'Failed to load sponsorships')
       )
       .finally(() => setLoading(false));
   }, []);
+
+  async function loadMore() {
+    setLoadingMore(true);
+    try {
+      const page = await listSponsorships({ limit: PAGE_SIZE, offset: nextOffset });
+      setListings((prev) => [...prev, ...page.items]);
+      setHasMore(page.hasMore);
+      setNextOffset(page.nextOffset);
+    } catch {
+      // Keep loaded listings; the user can retry.
+    } finally {
+      setLoadingMore(false);
+    }
+  }
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -100,6 +123,18 @@ export default function SponsorshipsPage() {
                 <SponsorshipCard key={s.id} sponsorship={s} />
               ))}
             </div>
+            {hasMore && !query && (
+              <div className="mt-6 flex justify-center">
+                <button
+                  type="button"
+                  onClick={loadMore}
+                  disabled={loadingMore}
+                  className="landing-btn-light px-5 py-2.5 text-sm disabled:opacity-60"
+                >
+                  {loadingMore ? t('loading') : t('load_more')}
+                </button>
+              </div>
+            )}
           </>
         )}
       </div>

@@ -2,6 +2,7 @@ import { randomInt } from 'node:crypto';
 import { User } from '@supabase/supabase-js';
 import { createAnonClient, getAuthenticatedClient, supabase, supabaseAdmin } from '../database/supabase';
 import { validatePassword, getPasswordErrorMessage } from '../utils/passwords';
+import { verifyAccessTokenLocal } from '../utils/jwtVerify';
 import notificationService from './notificationService';
 
 export interface SignupPayload {
@@ -254,6 +255,17 @@ class AuthService {
   }
 
   public async verifyAccessToken(accessToken: string): Promise<string | null> {
+    // Verify the JWT locally first — this avoids a Supabase network round trip
+    // on every authenticated request. Only fall back to getUser() when local
+    // verification is unconfigured (no shared secret and no reachable JWKS).
+    const local = await verifyAccessTokenLocal(accessToken);
+    if (local.status === 'ok') {
+      return local.userId;
+    }
+    if (local.status === 'invalid') {
+      return null;
+    }
+
     const { data, error } = await supabase.auth.getUser(accessToken);
     if (error || !data.user) {
       return null;

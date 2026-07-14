@@ -2,11 +2,6 @@ import { randomInt } from 'node:crypto';
 import { supabaseAdmin } from '../database/supabase';
 import emailService from './emailService';
 
-interface EmailVerificationPayload {
-  userId: string;
-  email: string;
-}
-
 interface VerificationCodeCheck {
   valid: boolean;
   userId?: string;
@@ -22,30 +17,29 @@ class EmailVerificationService {
     return randomInt(100000, 999999).toString();
   }
 
-  public async sendVerificationEmail(payload: EmailVerificationPayload): Promise<void> {
-    const { userId, email } = payload;
-
-    if (!email?.trim() || !userId?.trim()) {
-      throw new Error('User ID and email are required');
+  public async sendVerificationEmail(userId: string): Promise<void> {
+    if (!userId?.trim()) {
+      throw new Error('User ID is required');
     }
 
     if (!supabaseAdmin) {
       throw new Error('Email verification service is temporarily unavailable');
     }
 
-    // The endpoint is unauthenticated, so the email must be proven to belong to
-    // this user before a code is issued — otherwise anyone could get a code for
-    // an arbitrary user delivered to an address they control.
+    // The caller is authenticated (userId comes from their access token), so the
+    // email is resolved from the user record — the client can't choose where the
+    // code is delivered.
     const { data: user, error: userError } = await supabaseAdmin
       .from('users')
       .select('name, email')
       .eq('id', userId)
       .single();
 
-    if (userError || !user || user.email?.toLowerCase() !== email.toLowerCase().trim()) {
+    if (userError || !user?.email) {
       throw new Error('User not found');
     }
 
+    const email = user.email;
     const verificationCode = this.generateVerificationCode();
     const expiresAt = new Date(Date.now() + this.CODE_EXPIRY_MINUTES * 60 * 1000).toISOString();
 
@@ -205,10 +199,7 @@ class EmailVerificationService {
       .eq('user_id', userId);
 
     // Send new verification email
-    await this.sendVerificationEmail({
-      userId,
-      email: user.email,
-    });
+    await this.sendVerificationEmail(userId);
   }
 }
 

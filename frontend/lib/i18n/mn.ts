@@ -137,6 +137,7 @@ export const translations: Record<string, string> = {
   social_accounts: 'Нийгмийн сүлжээний бүртгэлүүд',
   manage_platform_connections: 'Орлогын синкэд зориулж платформ холболтыг удирдах.',
   loading: 'Ачаалж байна…',
+  load_more: 'Цааш үзэх',
   not_connected: 'Холбогдоогүй',
   use_form_below: 'Доорх маягтыг ашиглах',
   your_handle: 'your_handle',

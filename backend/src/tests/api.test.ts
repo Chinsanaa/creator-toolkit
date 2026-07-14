@@ -61,6 +61,27 @@ describe('Protected routes', () => {
     assert.equal(res.status, 400);
   });
 
+  it('rejects unauthenticated send-verification-email', async () => {
+    const res = await request(app())
+      .post('/api/auth/send-verification-email')
+      .send({ userId: 'someone', email: 'attacker@example.com' });
+    assert.equal(res.status, 401);
+  });
+
+  it('rejects unauthenticated verify-email', async () => {
+    const res = await request(app())
+      .post('/api/auth/verify-email')
+      .send({ userId: 'someone', code: '123456' });
+    assert.equal(res.status, 401);
+  });
+
+  it('rejects unauthenticated resend-verification-email', async () => {
+    const res = await request(app())
+      .post('/api/auth/resend-verification-email')
+      .send({ userId: 'someone' });
+    assert.equal(res.status, 401);
+  });
+
   it('rate limits repeated refresh attempts', async () => {
     const testApp = app();
 

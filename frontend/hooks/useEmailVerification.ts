@@ -16,26 +16,23 @@ export function useEmailVerification() {
     success: false,
   });
 
-  const sendVerificationEmail = useCallback(
-    async (userId: string, email: string) => {
-      setState((prev) => ({ ...prev, sending: true, error: null, success: false }));
-      try {
-        await api.sendVerificationEmail({ userId, email });
-        setState((prev) => ({ ...prev, success: true, sending: false }));
-        return true;
-      } catch (err) {
-        const message = err instanceof api.ApiError ? err.message : 'Failed to send verification email';
-        setState((prev) => ({ ...prev, error: message, sending: false }));
-        return false;
-      }
-    },
-    []
-  );
+  const sendVerificationEmail = useCallback(async () => {
+    setState((prev) => ({ ...prev, sending: true, error: null, success: false }));
+    try {
+      await api.sendVerificationEmail();
+      setState((prev) => ({ ...prev, success: true, sending: false }));
+      return true;
+    } catch (err) {
+      const message = err instanceof api.ApiError ? err.message : 'Failed to send verification email';
+      setState((prev) => ({ ...prev, error: message, sending: false }));
+      return false;
+    }
+  }, []);
 
-  const verifyEmail = useCallback(async (userId: string, code: string) => {
+  const verifyEmail = useCallback(async (code: string) => {
     setState((prev) => ({ ...prev, verifying: true, error: null, success: false }));
     try {
-      await api.verifyEmail({ userId, code });
+      await api.verifyEmail(code);
       setState((prev) => ({ ...prev, success: true, verifying: false }));
       return true;
     } catch (err) {
@@ -45,10 +42,10 @@ export function useEmailVerification() {
     }
   }, []);
 
-  const resendVerificationEmail = useCallback(async (userId: string) => {
+  const resendVerificationEmail = useCallback(async () => {
     setState((prev) => ({ ...prev, sending: true, error: null, success: false }));
     try {
-      await api.resendVerificationEmail({ userId });
+      await api.resendVerificationEmail();
       setState((prev) => ({ ...prev, success: true, sending: false }));
       return true;
     } catch (err) {

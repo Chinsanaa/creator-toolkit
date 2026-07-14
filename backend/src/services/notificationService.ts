@@ -117,23 +117,36 @@ class NotificationService {
   public async list(
     userId: string,
     accessToken: string,
-    limit = 30
-  ): Promise<{ notifications: NotificationRow[]; unreadCount: number }> {
+    options: { limit?: number; offset?: number } = {}
+  ): Promise<{
+    notifications: NotificationRow[];
+    unreadCount: number;
+    hasMore: boolean;
+    nextOffset: number;
+  }> {
     const client = getAuthenticatedClient(accessToken);
+    const limit = Math.min(Math.max(options.limit ?? 30, 1), 100);
+    const offset = Math.max(0, options.offset ?? 0);
+
+    // One extra row signals hasMore without a separate count query.
     const { data, error } = await client
       .from('notifications')
       .select('id, type, title, body, metadata, read_at, created_at')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
-      .limit(limit);
+      .range(offset, offset + limit);
 
     if (error) {
       throw new Error(`Failed to load notifications: ${error.message}`);
     }
 
-    const notifications = (data ?? []) as NotificationRow[];
+    const rows = (data ?? []) as NotificationRow[];
+    const hasMore = rows.length > limit;
+    const notifications = hasMore ? rows.slice(0, limit) : rows;
+
+    // Reflects the current page (sufficient for the bell's badge given the cap).
     const unreadCount = notifications.filter((n) => !n.read_at).length;
-    return { notifications, unreadCount };
+    return { notifications, unreadCount, hasMore, nextOffset: offset + notifications.length };
   }
 
   public async markRead(

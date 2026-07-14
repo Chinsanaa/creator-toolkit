@@ -17,8 +17,14 @@ router.get('/summary', verifyToken, async (req: AuthRequest, res: Response) => {
 
 router.get('/transactions', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
-    const transactions = await walletService.listTransactions(req.userId!, req.token!);
-    res.json({ transactions });
+    const limit = parsePositiveInt(req.query.limit, { min: 1, max: 100 }) ?? undefined;
+    const offset = parsePositiveInt(req.query.offset, { min: 0, max: 1_000_000 }) ?? 0;
+    const { items, hasMore, nextOffset } = await walletService.listTransactions(
+      req.userId!,
+      req.token!,
+      { limit, offset }
+    );
+    res.json({ transactions: items, hasMore, nextOffset });
   } catch (error: unknown) {
     res.status(500).json({ error: safeErrorMessage(error, 'Failed to load transactions') });
   }
