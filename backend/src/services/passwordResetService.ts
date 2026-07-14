@@ -1,5 +1,5 @@
 import { randomBytes, createHash } from 'crypto';
-import { supabase, supabaseAdmin } from '../database/supabase';
+import { createAnonClient, supabaseAdmin } from '../database/supabase';
 import { validatePassword, getPasswordErrorMessage } from '../utils/passwords';
 import emailService from './emailService';
 import authService, { AuthResponse } from './authService';
@@ -187,19 +187,7 @@ class PasswordResetService {
       throw new Error('Failed to reset password. Please try again.');
     }
 
-    // Mark token as used
-    const { error: markUsedError } = await supabaseAdmin
-      .from('password_reset_tokens')
-      .update({ used_at: new Date().toISOString() })
-      .eq('token_hash', this.hashToken(token))
-      .single();
-
-    if (markUsedError) {
-      console.error('Failed to mark token as used:', markUsedError);
-      // Don't fail the whole operation if this fails
-    }
-
-    // Optional: Delete all other active password reset tokens for this user
+    // Invalidate every active reset token for this user (including the one just used)
     await supabaseAdmin
       .from('password_reset_tokens')
       .update({ used_at: new Date().toISOString() })
@@ -214,7 +202,7 @@ class PasswordResetService {
     });
 
     // Sign in the user automatically after password reset
-    const { data, error } = await supabase.auth.signInWithPassword({
+    const { data, error } = await createAnonClient().auth.signInWithPassword({
       email: userProfile.email,
       password: newPassword,
     });

@@ -1,3 +1,5 @@
+export type { Page } from './pagination';
+
 export interface WalletSummary {
   availableBalanceMnt: number;
   pendingPayoutMnt: number;

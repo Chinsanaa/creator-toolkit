@@ -158,6 +158,7 @@ export const translations: Record<string, string> = {
   social_accounts: 'Social accounts',
   manage_platform_connections: 'Manage platform connections for earnings sync.',
   loading: 'Loading…',
+  load_more: 'Load more',
   not_connected: 'Not connected',
   use_form_below: 'Use form below',
   your_handle: 'your_handle',

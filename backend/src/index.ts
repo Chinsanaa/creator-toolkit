@@ -5,6 +5,7 @@ import { loadEnvConfig } from './config/env';
 import { createApp } from './app';
 import { startSyncScheduler } from './jobs/syncScheduler';
 import { hasServiceRoleKey, warnIfMissingServiceRoleKey } from './database/supabase';
+import { isConfigured as isEncryptionConfigured, warnIfMissingEncryptionKey } from './utils/encryption';
 import emailService from './services/emailService';
 
 const config = loadEnvConfig();
@@ -13,7 +14,13 @@ if (config.nodeEnv === 'production' && !hasServiceRoleKey()) {
     'SUPABASE_SERVICE_ROLE_KEY is required when NODE_ENV=production. Add it from Supabase Dashboard → API → service_role.'
   );
 }
+if (config.nodeEnv === 'production' && !isEncryptionConfigured()) {
+  throw new Error(
+    'ENCRYPTION_KEY is required when NODE_ENV=production so OAuth tokens and bank account numbers are encrypted at rest. Generate one with: openssl rand -base64 32'
+  );
+}
 warnIfMissingServiceRoleKey();
+warnIfMissingEncryptionKey();
 emailService.warnIfNotConfigured();
 
 const app = createApp(config);

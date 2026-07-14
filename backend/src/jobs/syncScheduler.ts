@@ -19,11 +19,16 @@ export function startSyncScheduler(): void {
   }
 
   const run = () => {
-    platformService.runScheduledSyncAll().then(({ synced, failed }) => {
-      if (synced > 0 || failed > 0) {
-        console.log(`Platform sync cron: ${synced} ok, ${failed} failed`);
-      }
-    });
+    platformService
+      .runScheduledSyncAll()
+      .then(({ synced, failed }) => {
+        if (synced > 0 || failed > 0) {
+          console.log(`Platform sync cron: ${synced} ok, ${failed} failed`);
+        }
+      })
+      .catch((err) => {
+        console.error('Platform sync cron failed:', err);
+      });
   };
 
   setTimeout(run, 30_000);

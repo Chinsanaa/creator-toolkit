@@ -23,6 +23,7 @@
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.2.0",
+    "jose": "^5.10.0",
     "resend": "^6.12.3",
     "ts-node": "^10.9.2",
     "typescript": "^6.0.3",

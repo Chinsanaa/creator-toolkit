@@ -1,5 +1,6 @@
 import { URL } from 'url';
 import { getAuthenticatedClient, supabaseAdmin } from '../database/supabase';
+import { decrypt, encrypt } from '../utils/encryption';
 import platformService from './platformService';
 
 interface TikTokOAuthConfig {
@@ -149,8 +150,8 @@ class TikTokOAuthService {
       const { data, error } = await client
         .from('platform_accounts')
         .update({
-          oauth_access_token: tokenData.access_token,
-          oauth_refresh_token: tokenData.refresh_token,
+          oauth_access_token: encrypt(tokenData.access_token),
+          oauth_refresh_token: encrypt(tokenData.refresh_token),
           oauth_token_expires_at: expiresAt,
           oauth_connected_at: new Date().toISOString(),
           status: 'connected',
@@ -175,8 +176,8 @@ class TikTokOAuthService {
         platform: 'tiktok',
         platform_username: platformUsername,
         platform_user_id: platformUserId,
-        oauth_access_token: tokenData.access_token,
-        oauth_refresh_token: tokenData.refresh_token,
+        oauth_access_token: encrypt(tokenData.access_token),
+        oauth_refresh_token: encrypt(tokenData.refresh_token),
         oauth_token_expires_at: expiresAt,
         oauth_connected_at: new Date().toISOString(),
         status: 'connected',
@@ -202,7 +203,7 @@ class TikTokOAuthService {
 
     const { data: account } = await supabaseAdmin
       .from('platform_accounts')
-      .select('oauth_refresh_token, oauth_token_expires_at')
+      .select('oauth_access_token, oauth_refresh_token, oauth_token_expires_at')
       .eq('id', platformAccountId)
       .single();
 
@@ -215,18 +216,11 @@ class TikTokOAuthService {
     }
 
     // Check if token is still valid
-    if (account.oauth_token_expires_at) {
+    if (account.oauth_token_expires_at && account.oauth_access_token) {
       const expiresAt = new Date(account.oauth_token_expires_at).getTime();
       if (expiresAt > Date.now() + 60000) {
         // Token is valid for at least 1 minute, no need to refresh
-        const { data: accountData } = await supabaseAdmin
-          .from('platform_accounts')
-          .select('oauth_access_token')
-          .eq('id', platformAccountId)
-          .single();
-        if (accountData?.oauth_access_token) {
-          return accountData.oauth_access_token;
-        }
+        return decrypt(account.oauth_access_token);
       }
     }
 
@@ -239,7 +233,7 @@ class TikTokOAuthService {
       body: new URLSearchParams({
         client_key: this.config.clientId,
         client_secret: this.config.clientSecret,
-        refresh_token: account.oauth_refresh_token,
+        refresh_token: decrypt(account.oauth_refresh_token),
         grant_type: 'refresh_token',
       }).toString(),
     });
@@ -266,8 +260,8 @@ class TikTokOAuthService {
     await supabaseAdmin
       .from('platform_accounts')
       .update({
-        oauth_access_token: tokenData.access_token,
-        oauth_refresh_token: tokenData.refresh_token,
+        oauth_access_token: encrypt(tokenData.access_token),
+        oauth_refresh_token: encrypt(tokenData.refresh_token),
         oauth_token_expires_at: expiresAt,
         updated_at: new Date().toISOString(),
       })

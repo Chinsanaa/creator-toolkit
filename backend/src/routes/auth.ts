@@ -46,7 +46,8 @@ const resetPasswordRateLimiter = rateLimit({
   limit: 2,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => `${ipKeyGenerator(req.ip ?? '')}:${req.method}:${req.path}:${(req.body as { email?: string }).email || ''}`,
+  keyGenerator: (req) =>
+    `${ipKeyGenerator(req.ip ?? '')}:${req.method}:${req.path}:${(req.body as { email?: string } | undefined)?.email || ''}`,
   message: { error: 'Too many password reset attempts. Please try again later.' },
 });
 
@@ -323,39 +324,36 @@ router.post('/check-username', async (req: AuthRequest, res: Response) => {
   }
 });
 
-router.post('/send-verification-email', authRateLimiter, async (req: AuthRequest, res: Response) => {
-  try {
-    const { userId, email } = req.body as { userId?: string; email?: string };
+router.post(
+  '/send-verification-email',
+  authRateLimiter,
+  verifyToken,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      // The user is identified by their access token — never trust a
+      // client-supplied userId/email for issuing verification codes.
+      await emailVerificationService.sendVerificationEmail(req.userId!);
 
-    if (!userId?.trim() || !email?.trim()) {
-      res.status(400).json({ error: 'User ID and email are required' });
-      return;
+      res.json({
+        message: 'Verification email sent',
+      });
+    } catch (error: unknown) {
+      const message = authErrorMessage(error, 'Failed to send verification email');
+      res.status(400).json({ error: message });
     }
-
-    await emailVerificationService.sendVerificationEmail({
-      userId: userId.trim(),
-      email: email.trim(),
-    });
-
-    res.json({
-      message: 'Verification email sent',
-    });
-  } catch (error: unknown) {
-    const message = authErrorMessage(error, 'Failed to send verification email');
-    res.status(400).json({ error: message });
   }
-});
+);
 
-router.post('/verify-email', authRateLimiter, async (req: AuthRequest, res: Response) => {
+router.post('/verify-email', authRateLimiter, verifyToken, async (req: AuthRequest, res: Response) => {
   try {
-    const { userId, code } = req.body as { userId?: string; code?: string };
+    const { code } = req.body as { code?: string };
 
-    if (!userId?.trim() || !code?.trim()) {
-      res.status(400).json({ error: 'User ID and verification code are required' });
+    if (!code?.trim()) {
+      res.status(400).json({ error: 'Verification code is required' });
       return;
     }
 
-    await emailVerificationService.confirmEmailVerification(userId.trim(), code.trim());
+    await emailVerificationService.confirmEmailVerification(req.userId!, code.trim());
 
     res.json({
       message: 'Email verified successfully',
@@ -366,25 +364,23 @@ router.post('/verify-email', authRateLimiter, async (req: AuthRequest, res: Resp
   }
 });
 
-router.post('/resend-verification-email', authRateLimiter, async (req: AuthRequest, res: Response) => {
-  try {
-    const { userId } = req.body as { userId?: string };
+router.post(
+  '/resend-verification-email',
+  authRateLimiter,
+  verifyToken,
+  async (req: AuthRequest, res: Response) => {
+    try {
+      await emailVerificationService.resendVerificationEmail(req.userId!);
 
-    if (!userId?.trim()) {
-      res.status(400).json({ error: 'User ID is required' });
-      return;
+      res.json({
+        message: 'Verification email resent',
+      });
+    } catch (error: unknown) {
+      const message = authErrorMessage(error, 'Failed to resend verification email');
+      res.status(400).json({ error: message });
     }
-
-    await emailVerificationService.resendVerificationEmail(userId.trim());
-
-    res.json({
-      message: 'Verification email resent',
-    });
-  } catch (error: unknown) {
-    const message = authErrorMessage(error, 'Failed to resend verification email');
-    res.status(400).json({ error: message });
   }
-});
+);
 
 // TikTok OAuth routes for platform connection
 router.get('/tiktok/authorize', async (req: AuthRequest, res: Response) => {

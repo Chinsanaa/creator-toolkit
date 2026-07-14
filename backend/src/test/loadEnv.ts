@@ -11,3 +11,13 @@ if (!process.env.SUPABASE_URL?.trim()) {
 if (!process.env.SUPABASE_ANON_KEY?.trim() && !process.env.SUPABASE_KEY?.trim()) {
   process.env.SUPABASE_ANON_KEY = 'test-anon-key';
 }
+
+// Deterministic keys so the encryption and JWT modules initialise in a known,
+// configured state before any application module is imported. Set here (the
+// shared test bootstrap) because both modules read their config at import time.
+if (!process.env.ENCRYPTION_KEY?.trim()) {
+  process.env.ENCRYPTION_KEY = Buffer.alloc(32, 7).toString('base64');
+}
+if (!process.env.SUPABASE_JWT_SECRET?.trim()) {
+  process.env.SUPABASE_JWT_SECRET = 'test-jwt-secret-please-change';
+}

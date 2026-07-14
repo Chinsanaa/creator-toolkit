@@ -44,8 +44,12 @@ function isCredit(type: string): boolean {
 }
 
 export default function WalletPage() {
+  const TX_PAGE_SIZE = 20;
   const [summary, setSummary] = useState<WalletSummary | null>(null);
   const [transactions, setTransactions] = useState<WalletTransaction[]>([]);
+  const [txHasMore, setTxHasMore] = useState(false);
+  const [txNextOffset, setTxNextOffset] = useState(0);
+  const [txLoadingMore, setTxLoadingMore] = useState(false);
   const [bankAccounts, setBankAccounts] = useState<BankAccount[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -68,11 +72,13 @@ export default function WalletPage() {
     try {
       const [s, tx, banks] = await Promise.all([
         getWalletSummary(),
-        getWalletTransactions(),
+        getWalletTransactions({ limit: TX_PAGE_SIZE }),
         getBankAccounts(),
       ]);
       setSummary(s);
-      setTransactions(tx);
+      setTransactions(tx.items);
+      setTxHasMore(tx.hasMore);
+      setTxNextOffset(tx.nextOffset);
       setBankAccounts(banks);
       const defaultBank = banks.find((b) => b.is_default) ?? banks[0];
       if (defaultBank) setPayoutBankId(defaultBank.id);
@@ -83,18 +89,34 @@ export default function WalletPage() {
     }
   }, []);
 
+  const loadMoreTransactions = useCallback(async () => {
+    setTxLoadingMore(true);
+    try {
+      const tx = await getWalletTransactions({ limit: TX_PAGE_SIZE, offset: txNextOffset });
+      setTransactions((prev) => [...prev, ...tx.items]);
+      setTxHasMore(tx.hasMore);
+      setTxNextOffset(tx.nextOffset);
+    } catch {
+      // Keep the already-loaded rows; the user can retry.
+    } finally {
+      setTxLoadingMore(false);
+    }
+  }, [txNextOffset]);
+
   useEffect(() => {
     let cancelled = false;
     void (async () => {
       try {
         const [s, tx, banks] = await Promise.all([
           getWalletSummary(),
-          getWalletTransactions(),
+          getWalletTransactions({ limit: TX_PAGE_SIZE }),
           getBankAccounts(),
         ]);
         if (!cancelled) {
           setSummary(s);
-          setTransactions(tx);
+          setTransactions(tx.items);
+          setTxHasMore(tx.hasMore);
+          setTxNextOffset(tx.nextOffset);
           setBankAccounts(banks);
           const defaultBank = banks.find((b) => b.is_default) ?? banks[0];
           if (defaultBank) setPayoutBankId(defaultBank.id);
@@ -369,6 +391,18 @@ export default function WalletPage() {
                   </tbody>
                 </table>
               </div>
+              {txHasMore && (
+                <div className="mt-4 flex justify-center">
+                  <button
+                    type="button"
+                    onClick={loadMoreTransactions}
+                    disabled={txLoadingMore}
+                    className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-foreground hover:bg-surface disabled:opacity-60"
+                  >
+                    {txLoadingMore ? t('loading') : t('load_more')}
+                  </button>
+                </div>
+              )}
             </section>
           </div>
         )}

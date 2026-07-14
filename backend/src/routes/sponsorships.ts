@@ -1,13 +1,20 @@
 import express, { Response } from 'express';
 import sponsorshipService from '../services/sponsorshipService';
 import { verifyToken, AuthRequest } from '../proxy/authProxy';
+import { parsePositiveInt } from '../utils/validate';
 
 const router = express.Router();
 
 router.get('/', verifyToken, async (req: AuthRequest, res: Response) => {
   try {
-    const listings = await sponsorshipService.listActive(req.userId!, req.token!);
-    res.json({ sponsorships: listings });
+    const limit = parsePositiveInt(req.query.limit, { min: 1, max: 100 }) ?? undefined;
+    const offset = parsePositiveInt(req.query.offset, { min: 0, max: 1_000_000 }) ?? 0;
+    const { items, hasMore, nextOffset } = await sponsorshipService.listActive(
+      req.userId!,
+      req.token!,
+      { limit, offset }
+    );
+    res.json({ sponsorships: items, hasMore, nextOffset });
   } catch (error: unknown) {
     const message = error instanceof Error ? error.message : 'Failed to load sponsorships';
     res.status(500).json({ error: message });

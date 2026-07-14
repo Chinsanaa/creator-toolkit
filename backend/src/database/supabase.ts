@@ -26,6 +26,13 @@ const clientOptions = {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, clientOptions);
 
+// Auth flows (signUp, signInWithPassword, refreshSession) store the resulting
+// session on the client instance, so concurrent requests must never run them
+// on the shared module-level client.
+export function createAnonClient(): SupabaseClient {
+  return createClient(supabaseUrl, supabaseAnonKey, clientOptions);
+}
+
 const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY?.trim();
 
 export const supabaseAdmin: SupabaseClient | null = serviceRoleKey

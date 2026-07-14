@@ -1,11 +1,6 @@
 import { randomInt } from 'node:crypto';
-import { supabase, supabaseAdmin } from '../database/supabase';
+import { supabaseAdmin } from '../database/supabase';
 import emailService from './emailService';
-
-interface EmailVerificationPayload {
-  userId: string;
-  email: string;
-}
 
 interface VerificationCodeCheck {
   valid: boolean;
@@ -22,17 +17,29 @@ class EmailVerificationService {
     return randomInt(100000, 999999).toString();
   }
 
-  public async sendVerificationEmail(payload: EmailVerificationPayload): Promise<void> {
-    const { userId, email } = payload;
-
-    if (!email?.trim() || !userId?.trim()) {
-      throw new Error('User ID and email are required');
+  public async sendVerificationEmail(userId: string): Promise<void> {
+    if (!userId?.trim()) {
+      throw new Error('User ID is required');
     }
 
     if (!supabaseAdmin) {
       throw new Error('Email verification service is temporarily unavailable');
     }
 
+    // The caller is authenticated (userId comes from their access token), so the
+    // email is resolved from the user record — the client can't choose where the
+    // code is delivered.
+    const { data: user, error: userError } = await supabaseAdmin
+      .from('users')
+      .select('name, email')
+      .eq('id', userId)
+      .single();
+
+    if (userError || !user?.email) {
+      throw new Error('User not found');
+    }
+
+    const email = user.email;
     const verificationCode = this.generateVerificationCode();
     const expiresAt = new Date(Date.now() + this.CODE_EXPIRY_MINUTES * 60 * 1000).toISOString();
 
@@ -52,17 +59,10 @@ class EmailVerificationService {
       throw new Error('Failed to send verification email');
     }
 
-    // Get user name
-    const { data: user } = await supabaseAdmin
-      .from('users')
-      .select('name')
-      .eq('id', userId)
-      .single();
-
     // Send email
     await emailService.sendVerificationEmail({
       to: email,
-      userName: user?.name || email.split('@')[0],
+      userName: user.name || email.split('@')[0],
       verificationCode,
       expiresInMinutes: this.CODE_EXPIRY_MINUTES,
     });
@@ -199,10 +199,7 @@ class EmailVerificationService {
       .eq('user_id', userId);
 
     // Send new verification email
-    await this.sendVerificationEmail({
-      userId,
-      email: user.email,
-    });
+    await this.sendVerificationEmail(userId);
   }
 }
 

@@ -1,9 +1,11 @@
 import {
   fetchPlatformData,
   isSupportedPlatform,
+  MNT_PER_USD,
   type SupportedPlatform,
 } from '../platforms/mockPlatformProvider';
 import { getAuthenticatedClient, supabaseAdmin } from '../database/supabase';
+import { decrypt } from '../utils/encryption';
 import tiktokApiService from './tiktokApiService';
 import tiktokOAuthService from './tiktokOAuthService';
 import notificationService from './notificationService';
@@ -252,27 +254,32 @@ class PlatformService {
 
       let payload;
       let updatedFollowerCount = 0;
+      let updatedUsername: string | null = null;
       let profileUpdated = false;
 
       // Check if this is an OAuth-connected TikTok account with valid token
       if (platform === 'tiktok' && accountData?.oauth_access_token) {
         try {
+          const oauthAccessToken = decrypt(accountData.oauth_access_token);
           // Fetch real data from TikTok API
-          const profile = await tiktokApiService.fetchCreatorProfile(accountData.oauth_access_token);
-          const videos = await tiktokApiService.fetchRecentVideos(accountData.oauth_access_token, 10);
+          const [profile, videos] = await Promise.all([
+            tiktokApiService.fetchCreatorProfile(oauthAccessToken),
+            tiktokApiService.fetchRecentVideos(oauthAccessToken, 10),
+          ]);
 
           // Calculate earnings from engagement
           const earningsMnt = tiktokApiService.calculateEarnings(videos, profile.follower_count);
 
           updatedFollowerCount = profile.follower_count;
+          updatedUsername = profile.display_name || null;
           profileUpdated = true;
 
           // Create payload in mock format for consistency
           payload = {
             earningsMnt,
-            amountUsd: Math.round(earningsMnt / 1200), // Rough MNT to USD (1 USD ≈ 1200 MNT)
+            amountUsd: Math.round(earningsMnt / MNT_PER_USD),
             followerCount: profile.follower_count,
-            periodStart: new Date(new Date().setDate(new Date().getDate() - 30))
+            periodStart: new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
               .toISOString()
               .split('T')[0],
             periodEnd: new Date().toISOString().split('T')[0],
@@ -341,13 +348,8 @@ class PlatformService {
       };
 
       // If OAuth, also update platform_username if we got it from the API
-      if (profileUpdated && platform === 'tiktok') {
-        const profile = await tiktokApiService.fetchCreatorProfile(
-          accountData?.oauth_access_token as string
-        );
-        if (profile.display_name) {
-          updateData.platform_username = `@${profile.display_name}`;
-        }
+      if (updatedUsername) {
+        updateData.platform_username = `@${updatedUsername}`;
       }
 
       await client.from('platform_accounts').update(updateData).eq('id', accountId);

@@ -32,15 +32,25 @@ export interface DashboardSummary {
   recentEarnings: EarningsRow[];
 }
 
+// Month keys must be derived consistently in UTC: `new Date('2026-07-01')`
+// parses as UTC midnight, so reading it back with local getters shifts the
+// month for servers in negative-offset timezones.
 function monthKey(dateStr: string): string {
+  const match = /^(\d{4}-\d{2})/.exec(dateStr);
+  if (match) return match[1];
   const d = new Date(dateStr);
-  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
+}
+
+function monthKeyFromUtc(year: number, monthIndex: number): string {
+  const d = new Date(Date.UTC(year, monthIndex, 1));
+  return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, '0')}`;
 }
 
 function monthLabel(key: string): string {
   const [year, month] = key.split('-');
-  const d = new Date(Number(year), Number(month) - 1, 1);
-  return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' });
+  const d = new Date(Date.UTC(Number(year), Number(month) - 1, 1));
+  return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
 }
 
 class DashboardService {
@@ -94,9 +104,8 @@ class DashboardService {
     const totalEarningsUsd = earnings.reduce((sum, e) => sum + (e.amount_usd ?? 0), 0);
 
     const now = new Date();
-    const thisMonthKey = monthKey(now.toISOString());
-    const lastMonthDate = new Date(now.getFullYear(), now.getMonth() - 1, 1);
-    const lastMonthKey = monthKey(lastMonthDate.toISOString());
+    const thisMonthKey = monthKeyFromUtc(now.getUTCFullYear(), now.getUTCMonth());
+    const lastMonthKey = monthKeyFromUtc(now.getUTCFullYear(), now.getUTCMonth() - 1);
 
     const earningsThisMonth = earnings
       .filter((e) => monthKey(e.period_start) === thisMonthKey)
@@ -135,8 +144,7 @@ class DashboardService {
 
     const trendKeys: string[] = [];
     for (let i = 5; i >= 0; i--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
-      trendKeys.push(monthKey(d.toISOString()));
+      trendKeys.push(monthKeyFromUtc(now.getUTCFullYear(), now.getUTCMonth() - i));
     }
 
     const monthlyTrend = trendKeys.map((key) => ({

@@ -237,41 +237,19 @@ export async function checkUsernameAvailability(username: string): Promise<{
   );
 }
 
-export async function sendVerificationEmail(payload: {
-  userId: string;
-  email: string;
-}): Promise<void> {
-  await apiFetch(
-    '/api/auth/send-verification-email',
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    },
-    false
-  );
+// The authenticated user is identified by their access token, so these no
+// longer take a userId/email — the backend derives them from the session.
+export async function sendVerificationEmail(): Promise<void> {
+  await apiFetch('/api/auth/send-verification-email', { method: 'POST' });
 }
 
-export async function verifyEmail(payload: {
-  userId: string;
-  code: string;
-}): Promise<void> {
-  await apiFetch(
-    '/api/auth/verify-email',
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    },
-    false
-  );
+export async function verifyEmail(code: string): Promise<void> {
+  await apiFetch('/api/auth/verify-email', {
+    method: 'POST',
+    body: JSON.stringify({ code }),
+  });
 }
 
-export async function resendVerificationEmail(payload: { userId: string }): Promise<void> {
-  await apiFetch(
-    '/api/auth/resend-verification-email',
-    {
-      method: 'POST',
-      body: JSON.stringify(payload),
-    },
-    false
-  );
+export async function resendVerificationEmail(): Promise<void> {
+  await apiFetch('/api/auth/resend-verification-email', { method: 'POST' });
 }

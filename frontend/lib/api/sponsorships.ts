@@ -1,9 +1,20 @@
 import { apiFetch } from './client';
 import type { SponsorshipApplication, SponsorshipListing } from '@/lib/types/sponsorship';
+import type { Page } from '@/lib/types/pagination';
 
-export async function listSponsorships(): Promise<SponsorshipListing[]> {
-  const data = await apiFetch<{ sponsorships: SponsorshipListing[] }>('/api/sponsorships');
-  return data.sponsorships;
+export async function listSponsorships(
+  options: { limit?: number; offset?: number } = {}
+): Promise<Page<SponsorshipListing>> {
+  const params = new URLSearchParams();
+  if (options.limit != null) params.set('limit', String(options.limit));
+  if (options.offset != null) params.set('offset', String(options.offset));
+  const query = params.toString();
+  const data = await apiFetch<{
+    sponsorships: SponsorshipListing[];
+    hasMore: boolean;
+    nextOffset: number;
+  }>(`/api/sponsorships${query ? `?${query}` : ''}`);
+  return { items: data.sponsorships, hasMore: data.hasMore, nextOffset: data.nextOffset };
 }
 
 export async function getSponsorship(id: string): Promise<SponsorshipListing> {

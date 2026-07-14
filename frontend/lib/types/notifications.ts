@@ -11,4 +11,6 @@ export interface Notification {
 export interface NotificationsResponse {
   notifications: Notification[];
   unreadCount: number;
+  hasMore?: boolean;
+  nextOffset?: number;
 }

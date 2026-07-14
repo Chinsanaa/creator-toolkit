@@ -63,10 +63,14 @@ class SponsorshipService {
 
   public async listActive(
     userId: string,
-    accessToken: string
-  ): Promise<SponsorshipListing[]> {
+    accessToken: string,
+    options: { limit?: number; offset?: number } = {}
+  ): Promise<{ items: SponsorshipListing[]; hasMore: boolean; nextOffset: number }> {
     const client = getAuthenticatedClient(accessToken);
+    const limit = Math.min(Math.max(options.limit ?? 50, 1), 100);
+    const offset = Math.max(0, options.offset ?? 0);
 
+    // One extra row signals hasMore without a separate count query.
     const [sponsorshipsResult, applicationsResult] = await Promise.all([
       client
         .from('sponsorships')
@@ -74,7 +78,8 @@ class SponsorshipService {
           'id, sponsor_user_id, title, description, payment_amount_mnt, content_type, required_followers_min, required_followers_max, engagement_rate_min, status, deadline_apply, deadline_complete, created_at'
         )
         .eq('status', 'active')
-        .order('created_at', { ascending: false }),
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit),
       client
         .from('sponsorship_applications')
         .select('sponsorship_id, status')
@@ -94,10 +99,12 @@ class SponsorshipService {
       applicationMap.set(app.sponsorship_id, app.status);
     }
 
-    const rows = sponsorshipsResult.data ?? [];
+    const allRows = sponsorshipsResult.data ?? [];
+    const hasMore = allRows.length > limit;
+    const rows = hasMore ? allRows.slice(0, limit) : allRows;
     const sponsorMap = await this.enrichSponsors(rows);
 
-    return rows.map((row) => ({
+    const items = rows.map((row) => ({
       id: row.id,
       title: row.title,
       description: row.description,
@@ -115,6 +122,8 @@ class SponsorshipService {
       hasApplied: applicationMap.has(row.id),
       applicationStatus: applicationMap.get(row.id) ?? null,
     }));
+
+    return { items, hasMore, nextOffset: offset + items.length };
   }
 
   public async getById(
