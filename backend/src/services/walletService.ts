@@ -3,8 +3,8 @@ import notificationService from './notificationService';
 import { toNumber } from '../utils/toNumber';
 import { decrypt, deterministicHash, encrypt } from '../utils/encryption';
 
-const MIN_PAYOUT_MNT = 50_000;
-const PLATFORM_FEE_RATE = 0.2;
+export const MIN_PAYOUT_MNT = 50_000;
+export const PLATFORM_FEE_RATE = 0.2;
 
 const CREDIT_TYPES = new Set(['sponsorship_credit', 'earning_credit', 'adjustment']);
 
@@ -41,7 +41,15 @@ export interface WalletSummary {
   minPayoutMnt: number;
 }
 
-type BalanceRow = { type: string; amount_mnt: number | string; status: string };
+export type BalanceRow = { type: string; amount_mnt: number | string; status: string };
+
+export interface WalletBalances {
+  available: number;
+  pendingPayout: number;
+  totalEarned: number;
+  totalFees: number;
+  totalPaidOut: number;
+}
 
 export interface Paginated<T> {
   items: T[];
@@ -52,14 +60,56 @@ export interface Paginated<T> {
 const DEFAULT_PAGE_SIZE = 50;
 const MAX_PAGE_SIZE = 100;
 
-function clampLimit(limit?: number): number {
+export function clampLimit(limit?: number): number {
   if (!limit || limit < 1) return DEFAULT_PAGE_SIZE;
   return Math.min(limit, MAX_PAGE_SIZE);
 }
 
-function maskAccountNumber(num: string): string {
+export function maskAccountNumber(num: string): string {
   if (num.length <= 4) return num;
   return `•••• ${num.slice(-4)}`;
+}
+
+// Pure ledger derivation over the user's full transaction history. Extracted as
+// a module-level function so it can be unit tested without a Supabase client.
+export function computeBalances(transactions: BalanceRow[]): WalletBalances {
+  let available = 0;
+  let pendingPayout = 0;
+  let totalEarned = 0;
+  let totalFees = 0;
+  let totalPaidOut = 0;
+
+  for (const tx of transactions) {
+    const amount = toNumber(tx.amount_mnt);
+
+    if (CREDIT_TYPES.has(tx.type) && tx.status === 'completed') {
+      totalEarned += amount;
+      available += amount;
+    }
+
+    if (tx.type === 'platform_fee' && tx.status === 'completed') {
+      totalFees += amount;
+      available -= amount;
+    }
+
+    if (tx.type === 'payout') {
+      if (tx.status === 'completed') {
+        totalPaidOut += amount;
+        available -= amount;
+      } else if (tx.status === 'pending') {
+        pendingPayout += amount;
+        available -= amount;
+      }
+    }
+  }
+
+  return {
+    available: Math.max(0, available),
+    pendingPayout,
+    totalEarned,
+    totalFees,
+    totalPaidOut,
+  };
 }
 
 // account_number is stored encrypted, so prefer the plaintext last-4 column for
@@ -76,50 +126,8 @@ function maskStored(accountNumber: string | null, last4: string | null): string 
 }
 
 class WalletService {
-  private computeBalances(transactions: BalanceRow[]): {
-    available: number;
-    pendingPayout: number;
-    totalEarned: number;
-    totalFees: number;
-    totalPaidOut: number;
-  } {
-    let available = 0;
-    let pendingPayout = 0;
-    let totalEarned = 0;
-    let totalFees = 0;
-    let totalPaidOut = 0;
-
-    for (const tx of transactions) {
-      const amount = toNumber(tx.amount_mnt);
-
-      if (CREDIT_TYPES.has(tx.type) && tx.status === 'completed') {
-        totalEarned += amount;
-        available += amount;
-      }
-
-      if (tx.type === 'platform_fee' && tx.status === 'completed') {
-        totalFees += amount;
-        available -= amount;
-      }
-
-      if (tx.type === 'payout') {
-        if (tx.status === 'completed') {
-          totalPaidOut += amount;
-          available -= amount;
-        } else if (tx.status === 'pending') {
-          pendingPayout += amount;
-          available -= amount;
-        }
-      }
-    }
-
-    return {
-      available: Math.max(0, available),
-      pendingPayout,
-      totalEarned,
-      totalFees,
-      totalPaidOut,
-    };
+  private computeBalances(transactions: BalanceRow[]): WalletBalances {
+    return computeBalances(transactions);
   }
 
   // Balances must be computed over the user's full transaction history, not the
