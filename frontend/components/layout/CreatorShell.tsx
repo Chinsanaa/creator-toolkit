@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { CreatorAppShell } from '@/components/layout/CreatorAppShell';
+import { EmailVerificationPrompt } from '@/components/settings/EmailVerificationPrompt';
 import { useAuth } from '@/contexts/AuthContext';
 
 export function CreatorShell({ children }: { children: React.ReactNode }) {
@@ -22,6 +23,7 @@ export function CreatorShell({ children }: { children: React.ReactNode }) {
       userHandle={user?.username}
       onLogout={() => logout()}
     >
+      <EmailVerificationPrompt />
       {children}
     </CreatorAppShell>
   );

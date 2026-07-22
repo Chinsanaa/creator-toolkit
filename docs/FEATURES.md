@@ -23,6 +23,9 @@
 - [x] Generic error messages (no email enumeration)
 - [x] Terms & Privacy Policy acceptance on signup
 - [x] User metadata storage (name, username, user_type, terms_accepted_at)
+- [x] Edit display name (`PATCH /api/auth/me`)
+- [x] Change password (`POST /api/auth/change-password`)
+- [x] Email verification send/confirm/resend + optional post-signup UI
 
 ### Creator Dashboard (`/dashboard`)
 
@@ -81,6 +84,7 @@
 - [x] Add Mongolian bank account (Khan Bank, Golomt, etc.)
 - [x] Bank account storage with secure masking in API responses
 - [x] Request payout (minimum 50,000 MNT)
+- [x] Sponsorship mark-paid credits creator wallet (gross + 20% platform fee)
 - [x] Payout creates pending transaction
 - [x] Payout request sends in-app notification
 - [x] Payout request sends email notification (if Resend configured)
@@ -155,10 +159,8 @@
 ## 🚧 In Progress / Partial Implementation
 
 - **Mobile app** — Capacitor iOS wrapper exists but not tested on real devices
-- **E2E tests** — No automated end-to-end tests yet (manual testing only)
 - **Accessibility** — Not fully audited for WCAG compliance
 - **Performance optimization** — No Lighthouse budget automation
-- **i18n** — No multi-language support (English only)
 
 ---
 
@@ -176,10 +178,9 @@
 
 ### Medium Priority (Reliability & Quality)
 
-- [ ] Add Playwright E2E tests (signup → apply → approve flow)
-- [ ] Add frontend component tests (Jest/React Testing Library)
+- [x] Add Playwright E2E tests (signup → apply → approve → payout) — local; see `frontend/e2e/`
+- [x] Frontend unit tests (Vitest)
 - [ ] Expand backend test coverage to 50%+
-- [ ] Add E2E token refresh test
 - [ ] Add E2E concurrent request handling tests
 - [ ] Migrate sync scheduler to external job queue (BullMQ, AWS Lambda, Google Cloud Tasks)
 - [ ] Add Sentry error tracking integration
@@ -192,14 +193,14 @@
 - [ ] Campaign filters/search with saved preferences
 - [ ] Campaign drafts (save without publishing)
 - [ ] Creator public profiles (`@username` pages for sponsors to view)
-- [ ] Password reset flow (email link)
-- [ ] Email verification flow (if Supabase has it enabled)
+- [x] Password reset flow (email link)
+- [x] Email verification flow (optional UI; login not gated)
 - [ ] Admin panel for dispute handling, pending payouts, user management
 - [ ] Payment dispute/chargeback handling
 
 ### Low Priority (Polish & Growth)
 
-- [ ] i18n support (Mongolian UI copy, localized currency formatting)
+- [x] i18n support (EN/MN UI copy)
 - [ ] Mobile app push notifications (Capacitor)
 - [ ] Creator messaging / DM system
 - [ ] Creator portfolio/reel showcase
@@ -236,7 +237,7 @@
 | `/sponsorships/applications` | ✅ | My applications, status tracking |
 | `/platforms` | ✅ | Connect TikTok/YouTube/Instagram, sync, history |
 | `/wallet` | ✅ | Balance, transactions, bank accounts, payouts |
-| `/settings` | 🚧 | Profile management (partial) |
+| `/settings` | ✅ | Edit name, change password, email verify, legal, delete |
 
 ### Sponsor App
 
@@ -246,6 +247,7 @@
 | `/sponsor/campaigns` | ✅ | Campaign list, create, edit, delete |
 | `/sponsor/campaigns/new` | ✅ | Campaign form, validation |
 | `/sponsor/campaigns/[id]` | ✅ | Campaign detail, applications, approval workflow |
+| `/sponsor/settings` | ✅ | Company profile + account settings |
 
 ---
 
@@ -253,10 +255,9 @@
 
 | Area | Status | Coverage |
 |------|--------|----------|
-| Backend unit tests | ✅ | 8 integration tests |
-| Backend integration tests | ✅ | 8 tests covering auth, dashboard, sync |
-| Frontend component tests | 🚧 | 0 (planned with Jest) |
-| Frontend E2E tests | 🚧 | 0 (planned with Playwright) |
+| Backend unit/integration tests | ✅ | Node test runner under `backend/src/tests/` |
+| Frontend unit tests | ✅ | Vitest (`frontend/**/*.test.ts[x]`) |
+| Frontend E2E tests | ✅ | Playwright (`frontend/e2e/`) — run locally with servers up |
 | Database RLS policy tests | 🚧 | 0 (manual verification only) |
 
 ---
@@ -269,27 +270,26 @@
 | Backend build | ✅ | Express production build tested |
 | Database schema | ✅ | Migrations reviewed and applied |
 | RLS policies | ✅ | Policies exist but need formal audit |
-| Email integration | ✅ | Resend working with verified domains |
-| CI/CD | ✅ | GitHub Actions pipeline in place |
+| Email integration | ✅ | Resend working with verified domains (optional in local demo) |
+| CI/CD | ✅ | GitHub Actions pipeline in place (unit/lint/build; E2E local) |
 | Deployment docs | ✅ | Vercel + Railway setup guide |
-| Health monitoring | ✅ | Health endpoint and basic checks |
+| Health monitoring | ✅ | Public `/api/health`; detailed requires `x-cron-secret` |
 | Error tracking | 🚧 | Sentry integration planned |
 | Analytics | 🚧 | PostHog/Plausible planned |
 
 ---
 
-## 🔄 Recent Updates (May–June 2026)
+## 🔄 Recent Updates (May–July 2026)
 
-1. **Persistent login** — Sessions now survive browser restarts via sessionStorage + localStorage
-2. **Dark mode** — Theme toggle in header with system preference detection
-3. **Design system** — Centralized Earnio design tokens (`.agents/skills/earnio-design`)
-4. **Navigation refactor** — Single-tab creator navigation with profile dropdown
-5. **Visual polish** — Dashboard colors, hero illustrations, explore/wallet page updates
-6. **PKCE auth** — Secure code flow implementation
-7. **Middleware role checks** — Edge-level protection with cookie-based routing
-8. **Icon improvements** — Lucide icon integration throughout UI
-9. **CSS class cleanup** — Creator-prefixed styling for consistency
-10. **Test coverage** — Backend test count increased to 8 with improved scenarios
+1. **Mark-paid wallet credits** — Sponsor mark-paid inserts gross `sponsorship_credit` + 20% `platform_fee`
+2. **Settings** — Edit display name, change password, email verification UI
+3. **Playwright E2E** — Auth redirect + sponsorship happy path
+4. **Persistent login** — Sessions survive browser restarts via sessionStorage + localStorage
+5. **Dark mode** — Theme toggle in header with system preference detection
+6. **Design system** — Centralized Earnio design tokens
+7. **i18n** — EN/MN language switcher
+8. **PKCE auth** — Secure code flow implementation
+9. **Detailed health** — Protected with `SYNC_CRON_SECRET`
 
 ---
 
@@ -301,4 +301,4 @@
 - **For investors** — Reference for feature completeness and progress
 - **Update frequency** — After each major feature or bug fix, update the relevant section
 
-*Last reviewed: June 18, 2026*
+*Last reviewed: July 23, 2026*

@@ -10,6 +10,7 @@
     "dev:frontend": "npm run dev --prefix frontend",
     "lint": "npm run lint --prefix frontend",
     "smoke": "node scripts/smoke-test.mjs",
+    "seed:demo": "node scripts/seed-demo.mjs",
     "cap:sync": "npx cap sync ios",
     "cap:copy": "npx cap copy ios",
     "ios:open": "npx cap open ios"

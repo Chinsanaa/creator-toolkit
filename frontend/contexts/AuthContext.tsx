@@ -96,6 +96,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       if (!profile) {
         throw new Error('Failed to load profile after signup');
       }
+      try {
+        sessionStorage.setItem('earnio-show-verify', '1');
+      } catch {
+        // ignore storage failures
+      }
       router.push(getNextPathFromWindow() ?? homePathForUserType(profile.userType));
       router.refresh();
     },

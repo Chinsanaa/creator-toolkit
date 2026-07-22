@@ -20,6 +20,7 @@ import {
   mutationRateLimiter,
   securityHeaders,
 } from './middleware/security';
+import { secureCompareStrings } from './utils/secureCompare';
 
 export function createApp(config: EnvConfig): express.Application {
   const app = express();
@@ -41,7 +42,17 @@ export function createApp(config: EnvConfig): express.Application {
     res.status(health.status === 'ok' ? 200 : 503).json(health);
   });
 
-  app.get('/api/health/detailed', async (_req, res) => {
+  app.get('/api/health/detailed', async (req, res) => {
+    const secret = process.env.SYNC_CRON_SECRET;
+    const header = req.headers['x-cron-secret'];
+    if (
+      !secret ||
+      typeof header !== 'string' ||
+      !secureCompareStrings(header, secret)
+    ) {
+      res.status(401).json({ error: 'Unauthorized' });
+      return;
+    }
     const health = await getHealthStatus(config.port);
     res.status(health.status === 'ok' ? 200 : 503).json(health);
   });

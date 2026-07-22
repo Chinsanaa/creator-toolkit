@@ -2,11 +2,19 @@
 
 **Earn more, create more.**
 
-UGC monetization platform for Mongolian Gen Z creators and brands. Creators track earnings, apply to sponsorships, and withdraw MNT. Brands run campaigns and review applications.
+UGC monetization platform for Mongolian Gen Z creators and brands. Creators connect their TikTok/YouTube/Instagram, track earnings, apply to brand sponsorship campaigns, and request MNT payouts. Brands post campaigns, review applications, and approve creators. Earnio takes a 20% commission on sponsorships; creators keep 80%.
 
-**Stack:** Next.js 16 + Express 5 + Supabase · Web + iOS · Active development (June 2026)
+This is a solo-built, full-stack portfolio project — not a live startup. Platform earnings and bank payouts are intentionally **mocked** (real OAuth and bank rails were scoped out to ship the full product loop in 12 weeks; see [instructions.md](./instructions.md)). Everything else — auth, RLS-backed Postgres, the sponsorship marketplace, wallet ledger, notifications, i18n — is real, working code with backend + frontend + e2e test coverage.
 
-→ **Full project map:** [context.md](./context.md)
+`Next.js 16` · `React 19` · `Express 5` · `TypeScript` · `Supabase (Postgres + JWT)` · `Tailwind 4` · `Capacitor/SwiftUI (iOS)`
+
+→ **Full project map:** [context.md](./context.md) · **Demo walkthrough:** [docs/APP_OVERVIEW.md](./docs/APP_OVERVIEW.md#demo-walkthrough-portfolio)
+
+---
+
+## Screenshots
+
+<!-- TODO: add 3-5 screenshots/GIF here (creator dashboard, sponsorship marketplace, wallet, dark mode) once captured against a running local instance with seeded demo data — see `npm run seed:demo` below. -->
 
 ---
 
@@ -31,6 +39,14 @@ npm run dev          # from repo root — frontend :3000 + backend :3001
 - **Creator signup:** http://localhost:3000/signup/creator  
 
 **Docker:** `docker compose up --build`
+
+**Want realistic demo data instead of clicking through the whole flow by hand?** With both servers running:
+
+```bash
+npm run seed:demo
+```
+
+This drives the real API to create a demo sponsor + campaign, a demo creator, an application, an approval, a mark-paid wallet credit, and a payout request — see [Commands](#commands).
 
 ---
 
@@ -81,6 +97,10 @@ See `backend/.env.example` for the full list.
 | `npm run lint` | ESLint (frontend) |
 | `npm test` | Backend tests (run from `backend/`) |
 | `npm run smoke` | HTTP smoke tests |
+| `npm run seed:demo` | Seeds a full demo sponsor+creator flow via the live API (servers must be running) |
+| `cd frontend && npm run test:e2e` | Playwright E2E (servers must be running) |
+
+**Playwright:** start `npm run dev`, then `cd frontend && npm run test:e2e:install` (once) and `npm run test:e2e`. Happy-path skips if the API health check fails. See [docs/APP_OVERVIEW.md](./docs/APP_OVERVIEW.md) for the demo walkthrough and Resend notes.
 
 ---
 

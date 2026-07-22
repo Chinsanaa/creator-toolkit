@@ -24,14 +24,31 @@ describe('GET /api/health', () => {
     assert.equal(res.body.checks, undefined);
   });
 
-  it('returns detailed health payload on internal route', async () => {
+  it('rejects detailed health without cron secret', async () => {
     const app = createApp(testConfig);
     const res = await request(app).get('/api/health/detailed');
 
-    assert.ok([200, 503].includes(res.status));
-    assert.equal(Number(res.body.port), testConfig.port);
-    assert.equal(typeof res.body.checks, 'object');
-    assert.ok('database' in res.body.checks);
+    assert.equal(res.status, 401);
+    assert.equal(res.body.error, 'Unauthorized');
+  });
+
+  it('returns detailed health payload when cron secret matches', async () => {
+    const previous = process.env.SYNC_CRON_SECRET;
+    process.env.SYNC_CRON_SECRET = 'test-health-secret';
+    try {
+      const app = createApp(testConfig);
+      const res = await request(app)
+        .get('/api/health/detailed')
+        .set('x-cron-secret', 'test-health-secret');
+
+      assert.ok([200, 503].includes(res.status));
+      assert.equal(Number(res.body.port), testConfig.port);
+      assert.equal(typeof res.body.checks, 'object');
+      assert.ok('database' in res.body.checks);
+    } finally {
+      if (previous === undefined) delete process.env.SYNC_CRON_SECRET;
+      else process.env.SYNC_CRON_SECRET = previous;
+    }
   });
 });
 

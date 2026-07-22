@@ -1,7 +1,62 @@
 import authService from './authService';
 import notificationService from './notificationService';
+import { PLATFORM_FEE_RATE } from './walletService';
 import { getAuthenticatedClient, supabaseAdmin } from '../database/supabase';
 import { toNumber } from '../utils/toNumber';
+
+/** Ledger rows written when a sponsor marks a campaign as paid (gross credit + 20% fee). */
+export interface SponsorshipPaymentLedgerRow {
+  user_id: string;
+  type: 'sponsorship_credit' | 'platform_fee';
+  amount_mnt: number;
+  currency: 'MNT';
+  status: 'completed';
+  description: string;
+  reference_type: 'sponsorship';
+  reference_id: string;
+}
+
+/**
+ * Build wallet ledger inserts for one creator payment.
+ * Credit is the gross campaign amount; fee is PLATFORM_FEE_RATE of gross
+ * (available balance = 80% after both rows land).
+ */
+export function buildSponsorshipPaymentLedgerRows(params: {
+  creatorUserId: string;
+  campaignId: string;
+  campaignTitle: string;
+  paymentAmountMnt: number;
+}): SponsorshipPaymentLedgerRow[] {
+  const gross = Math.round(params.paymentAmountMnt);
+  if (!Number.isFinite(gross) || gross <= 0) {
+    throw new Error('Payment amount must be a positive number');
+  }
+  const fee = Math.round(gross * PLATFORM_FEE_RATE);
+  const title = params.campaignTitle.trim() || 'Campaign';
+
+  return [
+    {
+      user_id: params.creatorUserId,
+      type: 'sponsorship_credit',
+      amount_mnt: gross,
+      currency: 'MNT',
+      status: 'completed',
+      description: `Sponsorship payment for "${title}"`,
+      reference_type: 'sponsorship',
+      reference_id: params.campaignId,
+    },
+    {
+      user_id: params.creatorUserId,
+      type: 'platform_fee',
+      amount_mnt: fee,
+      currency: 'MNT',
+      status: 'completed',
+      description: `Platform fee (20%) for "${title}"`,
+      reference_type: 'sponsorship',
+      reference_id: params.campaignId,
+    },
+  ];
+}
 
 export interface SponsorDashboardStats {
   activeCampaigns: number;
@@ -512,7 +567,7 @@ class SponsorService {
 
     const { data: apps, error: appsError } = await client
       .from('sponsorship_applications')
-      .select('status, deliverable_url')
+      .select('status, deliverable_url, creator_user_id')
       .eq('sponsorship_id', campaignId);
 
     if (appsError) {
@@ -527,16 +582,70 @@ class SponsorService {
       throw new Error('All approved applicants must submit their deliverable before paying');
     }
 
+    if (!supabaseAdmin) {
+      throw new Error('Payment processing is temporarily unavailable');
+    }
+
+    const { data: existingCredits, error: existingError } = await supabaseAdmin
+      .from('wallet_transactions')
+      .select('id')
+      .eq('reference_type', 'sponsorship')
+      .eq('reference_id', campaignId)
+      .eq('type', 'sponsorship_credit')
+      .limit(1);
+
+    if (existingError) {
+      throw new Error(`Failed to verify payment ledger: ${existingError.message}`);
+    }
+    if (existingCredits && existingCredits.length > 0) {
+      throw new Error('Payment has already been marked as paid');
+    }
+
+    const gross = toNumber(campaign.payment_amount_mnt);
+    const campaignTitle = campaign.title ?? 'Campaign';
+    const ledgerRows = approved.flatMap((app) =>
+      buildSponsorshipPaymentLedgerRows({
+        creatorUserId: app.creator_user_id,
+        campaignId,
+        campaignTitle,
+        paymentAmountMnt: gross,
+      })
+    );
+
+    const { error: ledgerError } = await supabaseAdmin
+      .from('wallet_transactions')
+      .insert(ledgerRows);
+
+    if (ledgerError) {
+      throw new Error(`Failed to credit creator wallets: ${ledgerError.message}`);
+    }
+
     const { data, error } = await client
       .from('sponsorships')
       .update({ payment_marked_paid_at: new Date().toISOString() })
       .eq('id', campaignId)
+      .is('payment_marked_paid_at', null)
       .select(CAMPAIGN_COLUMNS)
       .single();
 
-    if (error) {
-      throw new Error(`Failed to mark campaign as paid: ${error.message}`);
+    if (error || !data) {
+      throw new Error(
+        error?.message
+          ? `Failed to mark campaign as paid: ${error.message}`
+          : 'Failed to mark campaign as paid'
+      );
     }
+
+    const netPerCreator = Math.round(gross * (1 - PLATFORM_FEE_RATE));
+    await Promise.all(
+      approved.map((app) =>
+        notificationService.notifySponsorshipPaid(
+          app.creator_user_id,
+          campaignTitle,
+          netPerCreator
+        )
+      )
+    );
 
     return mapCampaignRow(data, {
       total: apps?.length ?? 0,

@@ -1,6 +1,7 @@
 import { describe, it } from 'node:test';
 import assert from 'node:assert/strict';
 import {
+  buildSponsorshipPaymentLedgerRows,
   buildStatusBreakdown,
   computeApprovalRate,
   computePaymentStatus,
@@ -9,6 +10,7 @@ import {
   type SponsorApplication,
   type CampaignPayload,
 } from '../services/sponsorService';
+import { PLATFORM_FEE_RATE, computeBalances } from '../services/walletService';
 
 function makeCampaign(overrides: Partial<SponsorCampaign> = {}): SponsorCampaign {
   return {
@@ -202,6 +204,45 @@ describe('validateCampaignPayload', () => {
     assert.throws(
       () => validateCampaignPayload({ ...base, paymentAmountMnt: 0 }),
       /Minimum payment/
+    );
+  });
+});
+
+describe('buildSponsorshipPaymentLedgerRows', () => {
+  it('creates gross credit + 20% fee rows that net to 80% available', () => {
+    const gross = 500_000;
+    const rows = buildSponsorshipPaymentLedgerRows({
+      creatorUserId: 'creator-1',
+      campaignId: 'camp-1',
+      campaignTitle: 'Skincare UGC',
+      paymentAmountMnt: gross,
+    });
+
+    assert.equal(rows.length, 2);
+    assert.equal(rows[0].type, 'sponsorship_credit');
+    assert.equal(rows[0].amount_mnt, gross);
+    assert.equal(rows[0].user_id, 'creator-1');
+    assert.equal(rows[0].reference_id, 'camp-1');
+    assert.equal(rows[1].type, 'platform_fee');
+    assert.equal(rows[1].amount_mnt, Math.round(gross * PLATFORM_FEE_RATE));
+
+    const balances = computeBalances(
+      rows.map((r) => ({ type: r.type, amount_mnt: r.amount_mnt, status: r.status }))
+    );
+    assert.equal(balances.available, Math.round(gross * (1 - PLATFORM_FEE_RATE)));
+    assert.equal(balances.totalFees, Math.round(gross * PLATFORM_FEE_RATE));
+  });
+
+  it('rejects non-positive payment amounts', () => {
+    assert.throws(
+      () =>
+        buildSponsorshipPaymentLedgerRows({
+          creatorUserId: 'c1',
+          campaignId: 'camp-1',
+          campaignTitle: 'X',
+          paymentAmountMnt: 0,
+        }),
+      /positive/
     );
   });
 });
