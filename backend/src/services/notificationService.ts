@@ -114,6 +114,20 @@ class NotificationService {
     );
   }
 
+  public async notifySponsorshipPaid(
+    creatorUserId: string,
+    campaignTitle: string,
+    netAmountMnt: number
+  ): Promise<void> {
+    await this.create(
+      creatorUserId,
+      'sponsorship_paid',
+      'Sponsorship payment received',
+      `₮${netAmountMnt.toLocaleString()} from "${campaignTitle}" was added to your wallet.`,
+      { campaignTitle, netAmountMnt }
+    );
+  }
+
   public async list(
     userId: string,
     accessToken: string,
