@@ -20,14 +20,16 @@
 
 ## Demo walkthrough (portfolio)
 
-Use **fresh accounts** (recommended) so the full ledger path is visible:
+**Fast path:** with both servers running (`npm run dev`), run `npm run seed:demo` from the repo root. It drives the real API through the full flow below and prints login credentials for a demo sponsor and creator with a campaign, approved application, mark-paid wallet credit, and pending payout already in place.
+
+**Manual path** (what the script above automates) — use **fresh accounts** so the full ledger path is visible:
 
 1. Sign up as **sponsor** → create campaign (budget ≥ 100,000 MNT) → set status **active**
 2. Sign up as **creator** → apply with a pitch → (sponsor) approve → (creator) submit deliverable URL
 3. (Sponsor) **Mark paid** → creator wallet receives `sponsorship_credit` (gross) + `platform_fee` (20%); available = 80%
 4. (Creator) add a bank account → request payout (≥ 50,000 MNT) → pending payout appears in wallet
 
-Optional seed demo rows (users present when the migration ran): `supabase/migrations/20250521120100_seed_wallet_demo.sql`. New signups are not covered by that seed — mark-paid is the supported path for a live demo.
+Optional seed demo rows (users present when the migration ran): `supabase/migrations/20250521120100_seed_wallet_demo.sql`. New signups are not covered by that seed — `npm run seed:demo` or the manual mark-paid path above are the supported ways to get a live demo state.
 
 ### Email (Resend)
 
