@@ -29,6 +29,7 @@ describe('normalizeAuthUser', () => {
       name: '',
       username: '',
       userType: 'creator',
+      isVerified: false,
     });
   });
 
@@ -39,6 +40,7 @@ describe('normalizeAuthUser', () => {
       name: 'Amar',
       username: 'amar',
       user_type: 'sponsor',
+      is_verified: true,
     });
 
     expect(user).toEqual({
@@ -47,6 +49,7 @@ describe('normalizeAuthUser', () => {
       name: 'Amar',
       username: 'amar',
       userType: 'sponsor',
+      isVerified: true,
     });
   });
 

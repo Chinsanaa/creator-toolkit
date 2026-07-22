@@ -6,9 +6,11 @@ import { SponsorShell } from '@/components/sponsor/SponsorShell';
 import { AccountSettingsContent } from '@/components/settings/AccountSettingsContent';
 import { CompanyProfileSection } from '@/components/sponsor/CompanyProfileSection';
 import { useAuth } from '@/contexts/AuthContext';
+import { useLanguage } from '@/contexts/LanguageContext';
 
 export default function SponsorSettingsPage() {
   const { user, loading } = useAuth();
+  const { t } = useLanguage();
   const router = useRouter();
 
   useEffect(() => {
@@ -20,7 +22,7 @@ export default function SponsorSettingsPage() {
   if (loading || !user) {
     return (
       <SponsorShell>
-        <p className="text-sm text-[color:var(--muted-foreground)]">Loading…</p>
+        <p className="text-sm text-[color:var(--muted-foreground)]">{t('loading')}</p>
       </SponsorShell>
     );
   }
@@ -30,10 +32,10 @@ export default function SponsorSettingsPage() {
       <div className="mx-auto max-w-2xl">
         <header className="mb-8">
           <h1 className="text-2xl font-semibold tracking-tight text-[color:var(--foreground)]">
-            Account settings
+            {t('settings_title')}
           </h1>
           <p className="mt-2 text-sm text-[color:var(--muted-foreground)]">
-            Manage your profile and account preferences.
+            {t('settings_subtitle')}
           </p>
         </header>
         <div className="space-y-6">

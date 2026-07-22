@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { CreatorAppShell } from '@/components/layout/CreatorAppShell';
+import { EmailVerificationPrompt } from '@/components/settings/EmailVerificationPrompt';
 import { SPONSOR_SIDEBAR_NAV, isSponsorNavActive } from '@/components/layout/sponsor-nav';
 import { useAuth } from '@/contexts/AuthContext';
 
@@ -26,6 +27,7 @@ export function SponsorShell({ children }: { children: React.ReactNode }) {
       userName={user?.name}
       onLogout={() => logout()}
     >
+      <EmailVerificationPrompt />
       {children}
     </CreatorAppShell>
   );

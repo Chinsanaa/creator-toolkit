@@ -26,6 +26,7 @@ export interface AuthUser {
   name: string;
   username: string;
   userType: 'creator' | 'sponsor';
+  isVerified: boolean;
 }
 
 export interface AuthResponse {
@@ -40,6 +41,7 @@ type UserRow = {
   name: string;
   username: string;
   user_type: 'creator' | 'sponsor';
+  is_verified?: boolean | null;
 };
 
 class AuthService {
@@ -68,6 +70,7 @@ class AuthService {
       name: row.name,
       username: row.username,
       userType: this.normalizeUserType(row.user_type),
+      isVerified: Boolean(row.is_verified),
     };
   }
 
@@ -79,6 +82,7 @@ class AuthService {
       name: (meta.name as string) ?? (meta.full_name as string) ?? '',
       username: (meta.username as string) ?? '',
       userType: this.normalizeUserType(meta.user_type as string | undefined),
+      isVerified: Boolean(user.email_confirmed_at),
     };
   }
 
@@ -230,7 +234,7 @@ class AuthService {
   }
 
   public async getProfile(userId: string, accessToken: string): Promise<AuthUser> {
-    const select = 'id, email, name, username, user_type';
+    const select = 'id, email, name, username, user_type, is_verified';
 
     if (supabaseAdmin) {
       const { data: adminData, error: adminError } = await supabaseAdmin
@@ -252,6 +256,85 @@ class AuthService {
     }
 
     throw new Error('User profile not found');
+  }
+
+  public async updateProfile(
+    userId: string,
+    accessToken: string,
+    payload: { name?: string }
+  ): Promise<AuthUser> {
+    const name = payload.name?.trim() ?? '';
+    if (!name) {
+      throw new Error('Name is required');
+    }
+    if (name.length > 100) {
+      throw new Error('Name must be 100 characters or fewer');
+    }
+
+    const client = getAuthenticatedClient(accessToken);
+    const { data, error } = await client
+      .from('users')
+      .update({ name, updated_at: new Date().toISOString() })
+      .eq('id', userId)
+      .select('id, email, name, username, user_type, is_verified')
+      .single();
+
+    if (error || !data) {
+      throw new Error(error?.message || 'Failed to update profile');
+    }
+
+    if (supabaseAdmin) {
+      const { error: metaError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+        user_metadata: { name },
+      });
+      if (metaError) {
+        console.error('Failed to sync name to auth metadata:', metaError.message);
+      }
+    }
+
+    return this.mapProfile(data as UserRow);
+  }
+
+  public async changePassword(
+    userId: string,
+    email: string,
+    currentPassword: string,
+    newPassword: string
+  ): Promise<void> {
+    if (!currentPassword || !newPassword) {
+      throw new Error('Current password and new password are required');
+    }
+
+    const passwordStrength = validatePassword(newPassword);
+    if (!passwordStrength.isValid) {
+      const errorMessage = getPasswordErrorMessage(newPassword);
+      throw new Error(errorMessage || 'Password does not meet security requirements');
+    }
+
+    if (currentPassword === newPassword) {
+      throw new Error('New password must be different from your current password');
+    }
+
+    if (!supabaseAdmin) {
+      throw new Error('Password change is temporarily unavailable');
+    }
+
+    const { data: signInData, error: signInError } = await createAnonClient().auth.signInWithPassword({
+      email: email.trim(),
+      password: currentPassword,
+    });
+
+    if (signInError || !signInData.user || signInData.user.id !== userId) {
+      throw new Error('Incorrect password');
+    }
+
+    const { error: updateError } = await supabaseAdmin.auth.admin.updateUserById(userId, {
+      password: newPassword,
+    });
+
+    if (updateError) {
+      throw new Error('Failed to change password. Please try again.');
+    }
   }
 
   public async verifyAccessToken(accessToken: string): Promise<string | null> {

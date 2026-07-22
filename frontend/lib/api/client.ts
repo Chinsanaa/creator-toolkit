@@ -2,6 +2,7 @@ import { normalizeAuthUser } from '../auth/user';
 import { getAccessToken, setAccessToken, setUserTypeCookie } from '../auth/session';
 import type {
   AuthResponse,
+  AuthUser,
   LoginRequest,
   MeResponse,
   OAuthSessionRequest,
@@ -155,6 +156,24 @@ export async function logout(): Promise<void> {
 export async function getMe(): Promise<MeResponse> {
   const data = await apiFetch<MeResponse>('/api/auth/me');
   return { ...data, user: normalizeAuthUser(data.user) };
+}
+
+export async function updateProfile(payload: { name: string }): Promise<AuthUser> {
+  const data = await apiFetch<{ user: AuthUser }>('/api/auth/me', {
+    method: 'PATCH',
+    body: JSON.stringify(payload),
+  });
+  return normalizeAuthUser(data.user);
+}
+
+export async function changePassword(payload: {
+  currentPassword: string;
+  newPassword: string;
+}): Promise<void> {
+  await apiFetch('/api/auth/change-password', {
+    method: 'POST',
+    body: JSON.stringify(payload),
+  });
 }
 
 export async function deleteAccount(password: string): Promise<void> {

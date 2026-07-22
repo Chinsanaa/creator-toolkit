@@ -81,6 +81,12 @@ const SAFE_AUTH_ERRORS = new Set([
   'Email verification service is temporarily unavailable',
   'Email is already verified',
   'User not found',
+  'Name is required',
+  'Name must be 100 characters or fewer',
+  'Current password and new password are required',
+  'New password must be different from your current password',
+  'Password change is temporarily unavailable',
+  'Failed to change password. Please try again.',
 ]);
 
 function authErrorMessage(error: unknown, fallback: string): string {
@@ -211,6 +217,44 @@ router.get('/me', verifyToken, async (req: AuthRequest, res: Response) => {
     });
   } catch {
     res.status(500).json({ error: 'Failed to fetch profile' });
+  }
+});
+
+router.patch('/me', verifyToken, async (req: AuthRequest, res: Response) => {
+  try {
+    const { name } = req.body as { name?: string };
+    const user = await authService.updateProfile(req.userId!, req.token!, { name });
+
+    res.json({
+      message: 'Profile updated',
+      user,
+    });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Failed to update profile');
+    res.status(400).json({ error: message });
+  }
+});
+
+router.post('/change-password', verifyToken, authRateLimiter, async (req: AuthRequest, res: Response) => {
+  try {
+    const { currentPassword, newPassword } = req.body as {
+      currentPassword?: string;
+      newPassword?: string;
+    };
+    const profile = await authService.getProfile(req.userId!, req.token!);
+
+    await authService.changePassword(
+      req.userId!,
+      profile.email,
+      currentPassword ?? '',
+      newPassword ?? ''
+    );
+
+    res.json({ message: 'Password changed successfully' });
+  } catch (error: unknown) {
+    const message = authErrorMessage(error, 'Failed to change password');
+    const status = message.toLowerCase().includes('incorrect password') ? 401 : 400;
+    res.status(status).json({ error: message });
   }
 });
 
