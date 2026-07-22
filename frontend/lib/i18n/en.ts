@@ -81,7 +81,7 @@ export const translations: Record<string, string> = {
   easy_delivery: 'Easy delivery.',
   easy_delivery_desc: 'Manage briefs, applications, and payouts in one platform.',
   creators_love_earnio: 'Creators love Earnio',
-  join_hundreds: 'Join hundreds of Mongolian creators earning through brand partnerships.',
+  join_hundreds: "Here's how creators use Earnio to manage brand partnerships and get paid in MNT.",
   have_questions: 'Have questions? We have answers',
   faq_signup_q: 'How do I sign up as a creator?',
   faq_signup_a: 'Create a free Earnio account, connect your TikTok, YouTube, or Instagram platforms, and complete your profile. You can browse sponsorships and apply directly from your dashboard.',

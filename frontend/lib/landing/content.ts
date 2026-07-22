@@ -52,21 +52,21 @@ export const CREATOR_FEATURES = [
 export const CREATOR_TESTIMONIALS = [
   {
     quote:
-      'Earnio helped me track my TikTok earnings and land my first brand deal in Mongolia. Everything is in one place.',
-    name: 'Bold-Erdene',
-    role: 'TikTok creator',
+      'Track your TikTok earnings and land brand deals in Mongolia — everything in one place.',
+    name: 'For TikTok creators',
+    role: 'Illustrative use case',
   },
   {
     quote:
-      'I used to spreadsheet everything manually. Now I see YouTube and sponsorship income together and get paid in MNT.',
-    name: 'Sarnai',
-    role: 'YouTube creator',
+      'Stop spreadsheeting it manually — see YouTube and sponsorship income together and get paid in MNT.',
+    name: 'For YouTube creators',
+    role: 'Illustrative use case',
   },
   {
     quote:
-      'The sponsorship board is the best part — I apply to local brands without cold DMs and keep status updated in the app.',
-    name: 'Temuulen',
-    role: 'UGC creator',
+      'Apply to local brands without cold DMs, and keep every application status updated in the app.',
+    name: 'For UGC creators',
+    role: 'Illustrative use case',
   },
 ] as const;
 
