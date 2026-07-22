@@ -11,7 +11,7 @@
 Before deploying to production:
 
 - [ ] GitHub repository with CI passing
-  - [ ] Backend: `npm test` (8 tests pass)
+  - [ ] Backend: `npm test` (all tests pass)
   - [ ] Frontend: `npm run lint && npm run build`
 - [ ] Supabase project created
   - [ ] All migrations applied to database (including password reset & email verification tables)

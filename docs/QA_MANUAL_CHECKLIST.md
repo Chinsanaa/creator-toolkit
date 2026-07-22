@@ -2,37 +2,41 @@
 
 → Also rendered at `/docs/qa-checklist` · Map: [../context.md](../context.md)
 
-Run before each release. Use test accounts for creator and sponsor roles.
+Run before each release. Use **fresh** creator + sponsor accounts for the money path (mark-paid credits wallets).
+
+**Automated coverage:** Playwright `frontend/e2e/happy-path.spec.ts` covers signup → apply → approve → deliverable → mark paid → wallet credit → payout (when API is up). Auth redirect: `e2e/auth-redirect.spec.ts`.
 
 ## Creator
 
-- [ ] Sign up → confirm session and redirect to dashboard
-- [ ] Log in / log out
+- [x] Sign up → confirm session and redirect to dashboard (Playwright happy-path)
+- [ ] Log in / log out (spot-check in browser)
 - [ ] Dashboard loads earnings and trend chart on mobile width
 - [ ] Connect platform (mock) → sync now → earnings update
-- [ ] Browse sponsorships → open detail → apply (sticky submit on mobile)
-- [ ] Wallet → request payout (validates balance)
-- [ ] Notification bell shows new items; email received when configured
+- [x] Browse sponsorships → apply (API path in Playwright; UI spot-check)
+- [x] Wallet → request payout after mark-paid (Playwright happy-path)
+- [ ] Notification bell shows new items; email received when Resend configured
+- [ ] Settings: edit name, change password, email verify UI
 
 ## Sponsor
 
-- [ ] Sign up as sponsor → sponsor dashboard
-- [ ] Create sponsorship → visible in marketplace
-- [ ] Review application → approve / reject → creator notified
+- [x] Sign up as sponsor → create campaign → approve → mark paid (Playwright happy-path)
+- [ ] Create sponsorship visible in marketplace UI
+- [ ] Review application UI → approve / reject notes
 
 ## Auth & security
 
-- [x] `/dashboard` without login → redirect to login (covered by automated API + proxy tests; verify in browser)
-- [x] Creator cannot access `/sponsor/*`; sponsor cannot access creator-only routes (edge proxy + `ct-user-type` cookie; verify in browser)
+- [x] `/dashboard` without login → redirect to login (Playwright + proxy)
+- [x] Creator cannot access `/sponsor/*`; sponsor cannot access creator-only routes
 - [ ] Wrong password shows generic error (no email enumeration)
 - [ ] Expired session refreshes or redirects to login
+- [x] `GET /api/health/detailed` without `x-cron-secret` → 401
 
 ## Password Reset Flow
 
 - [ ] Click "Forgot password?" on login page → redirects to `/forgot-password`
 - [ ] Empty email field shows validation error
 - [ ] Valid email submits; shows "Check your email" message
-- [ ] Reset email arrives within 30 seconds
+- [ ] Reset email arrives within 30 seconds (**requires Resend**)
 - [ ] Reset link includes token and email as URL parameters
 - [ ] Clicking reset link loads password form with countdown timer
 - [ ] Invalid or expired token shows error; offers "Request new link"
@@ -41,18 +45,17 @@ Run before each release. Use test accounts for creator and sponsor roles.
 - [ ] After reset, redirects to correct dashboard (creator vs. sponsor)
 - [ ] Attempting password reset 4+ times in 30 min shows rate limit error (429)
 
-## Email Verification (2FA)
+## Email Verification
 
-- [ ] After signup, user sees "Verify your email" prompt/modal
-- [ ] Clicking "Send code" triggers email delivery (check Resend logs)
+- [x] After signup, user sees "Verify your email" prompt/modal (UI wired; optional continue)
+- [ ] Clicking "Send code" triggers email delivery (**requires Resend**)
 - [ ] Email arrives within 30 seconds with 6-digit code
 - [ ] Code input accepts 6 numeric digits only
 - [ ] Entering wrong code shows error message
 - [ ] Entering wrong code 3 times locks account; shows "Too many attempts"
 - [ ] Clicking "Resend code" unlocks and sends new code
 - [ ] Entering correct code shows success message
-- [ ] After verification, redirects to dashboard
-- [ ] Code expires after 15 minutes (show countdown timer)
+- [ ] Continue without verifying still reaches dashboard
 - [ ] Attempting verification 6+ times in 15 min shows rate limit error (429)
 
 ## Username Validation
@@ -70,9 +73,7 @@ Run before each release. Use test accounts for creator and sponsor roles.
 Test rate limits by making rapid requests:
 
 - [ ] **Login/Signup:** 5 requests per 15 min per IP → 6th attempt returns 429
-  - Command: `for i in {1..6}; do curl -X POST https://api.earnio.app/api/auth/login -d '{}'; done`
 - [ ] **Forgot Password:** 3 requests per 30 min per IP → 4th attempt returns 429
-  - Command: `for i in {1..4}; do curl -X POST https://api.earnio.app/api/auth/forgot-password -d '{"email":"test@example.com"}'; done`
 - [ ] **Reset Password:** 2 requests per 60 min per IP → 3rd attempt returns 429
 - [ ] **Email Verification:** 5 requests per 15 min per IP → 6th attempt returns 429
 - [ ] 429 responses show user-friendly "Too many requests. Try again later." message

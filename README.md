@@ -81,6 +81,9 @@ See `backend/.env.example` for the full list.
 | `npm run lint` | ESLint (frontend) |
 | `npm test` | Backend tests (run from `backend/`) |
 | `npm run smoke` | HTTP smoke tests |
+| `cd frontend && npm run test:e2e` | Playwright E2E (servers must be running) |
+
+**Playwright:** start `npm run dev`, then `cd frontend && npm run test:e2e:install` (once) and `npm run test:e2e`. Happy-path skips if the API health check fails. See [docs/APP_OVERVIEW.md](./docs/APP_OVERVIEW.md) for the demo walkthrough and Resend notes.
 
 ---
 

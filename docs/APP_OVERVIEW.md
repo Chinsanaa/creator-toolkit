@@ -3,7 +3,7 @@
 > **Audience:** QA, operators, future maintainers.  
 > **Not duplicated here:** architecture, features list, env setup, or quick start — see [context.md](../context.md).
 
-**Last updated:** June 2026 · **Status:** MVP with comprehensive features; mock platform sync and payouts.
+**Last updated:** July 2026 · **Status:** Portfolio-ready MVP; mock platform sync; sponsorship mark-paid credits wallets; payouts remain pending (no real bank rail).
 
 ---
 
@@ -15,6 +15,25 @@
 |---------|--------------|
 | Creator | `/dashboard`, `/platforms`, `/sponsorships`, `/wallet` |
 | Sponsor | `/sponsor/dashboard`, `/sponsor/campaigns` |
+
+---
+
+## Demo walkthrough (portfolio)
+
+Use **fresh accounts** (recommended) so the full ledger path is visible:
+
+1. Sign up as **sponsor** → create campaign (budget ≥ 100,000 MNT) → set status **active**
+2. Sign up as **creator** → apply with a pitch → (sponsor) approve → (creator) submit deliverable URL
+3. (Sponsor) **Mark paid** → creator wallet receives `sponsorship_credit` (gross) + `platform_fee` (20%); available = 80%
+4. (Creator) add a bank account → request payout (≥ 50,000 MNT) → pending payout appears in wallet
+
+Optional seed demo rows (users present when the migration ran): `supabase/migrations/20250521120100_seed_wallet_demo.sql`. New signups are not covered by that seed — mark-paid is the supported path for a live demo.
+
+### Email (Resend)
+
+Set `RESEND_API_KEY` and `EMAIL_FROM` in `backend/.env` for password-reset and verification emails. Without them, those APIs still return success but no message is delivered — fine for a silent demo; call it out if reviewers expect inbox mail.
+
+Production checklist: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, `FRONTEND_URL`, `ENCRYPTION_KEY`, optional Resend + `SYNC_CRON_SECRET` (protects detailed health and cron).
 
 ---
 
@@ -35,13 +54,14 @@
 |------|--------|
 | Edge role routing (`ct-user-type` cookie) | Fixed — `proxy.ts` redirects wrong-role routes |
 | Sponsor API enforcement | Backend `assertSponsor()` on sponsor routes |
+| Detailed health | `GET /api/health/detailed` requires `x-cron-secret` = `SYNC_CRON_SECRET` |
 | RLS | Must be verified per migration in production |
 
 ### Quality gaps
 
 | Item | Detail |
 |------|--------|
-| Test coverage | Backend integration tests only; no frontend/E2E |
+| Test coverage | Backend unit/integration + frontend Vitest; Playwright E2E local (see below) |
 | Sync scheduler | In-process cron off in production; use `POST /api/sync/cron` |
 | Lighthouse / mobile QA | Not automated — use [QA_MANUAL_CHECKLIST.md](./QA_MANUAL_CHECKLIST.md) |
 
@@ -54,8 +74,9 @@ Full feature checklist: [FEATURES.md](./FEATURES.md). Architecture: [ARCHITECTUR
 | Symptom | Likely cause | Fix |
 |---------|--------------|-----|
 | Backend won't start | Missing Supabase env | Copy `backend/.env.example` → `.env` |
-| Health `database: error` | Wrong keys or migrations | Apply `supabase/migrations/` |
+| Public health `degraded` | Wrong keys or migrations | Apply `supabase/migrations/` |
 | Signup fails username check | No service role key | Set `SUPABASE_SERVICE_ROLE_KEY` |
+| Mark paid fails / empty wallet | No service role or deliverables missing | Set service role; ensure approved applicants submitted URLs |
 | 401 on API calls | Expired/missing token | Re-login; check CORS + cookies |
 | CORS errors | Origin mismatch | Match `FRONTEND_URL` exactly |
 | No emails | Resend not configured | Set `RESEND_API_KEY`, `EMAIL_FROM` |
@@ -63,7 +84,10 @@ Full feature checklist: [FEATURES.md](./FEATURES.md). Architecture: [ARCHITECTUR
 
 ```bash
 curl http://localhost:3001/api/health
-# Expect status: "ok", checks.database: "ok"
+# Expect: { "status": "ok", "timestamp": "..." }
+
+# Detailed (requires SYNC_CRON_SECRET):
+curl -H "x-cron-secret: $SYNC_CRON_SECRET" http://localhost:3001/api/health/detailed
 ```
 
 ---
@@ -79,7 +103,7 @@ curl http://localhost:3001/api/health
 
 ### P1 — Reliability
 
-- [ ] Playwright E2E (signup → apply → approve → payout)
+- [x] Playwright E2E happy path (local; `cd frontend && npm run test:e2e`)
 - [ ] External job queue for sync
 - [ ] Sentry / analytics
 
@@ -98,9 +122,11 @@ See [FEATURES.md](./FEATURES.md) for the full implemented/planned list.
 |-------|----------------|------|
 | Backend tests | `cd backend && npm test` | All pass |
 | Frontend lint | `cd frontend && npm run lint` | 0 errors |
+| Frontend unit | `cd frontend && npm test` | All pass |
 | Frontend build | `cd frontend && npm run build` | Success |
+| Playwright E2E | Servers up → `cd frontend && npm run test:e2e` | Pass (happy-path skips if API down) |
 | API health | `GET /api/health` | `status: ok` |
-| Manual QA | [QA_MANUAL_CHECKLIST.md](./QA_MANUAL_CHECKLIST.md) | All critical paths |
+| Manual QA | [QA_MANUAL_CHECKLIST.md](./QA_MANUAL_CHECKLIST.md) | Critical paths |
 
 ---
 
