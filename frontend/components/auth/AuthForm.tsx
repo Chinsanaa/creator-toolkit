@@ -154,7 +154,7 @@ export function AuthForm({
                 onChange={field.type === 'password' && isSignupForm ? handlePasswordChange : undefined}
               />
               {field.type === 'password' && isSignupForm && passwordError && (
-                <p className="mt-2 text-sm text-red-600">{passwordError}</p>
+                <p className="mt-2 text-sm text-red-600 dark:text-red-400">{passwordError}</p>
               )}
               {field.type === 'password' && isSignupForm && (
                 <PasswordRequirements password={passwordValue} showRequirements={true} />
@@ -186,7 +186,7 @@ export function AuthForm({
           ) : null}
 
           {error && (
-            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+            <p className="alert-error">{error}</p>
           )}
 
           <button

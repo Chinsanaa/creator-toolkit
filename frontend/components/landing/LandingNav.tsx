@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { EarnioLogo } from '@/components/brand/EarnioLogo';
 import { LanguageSwitcher } from '@/components/ui/LanguageSwitcher';
 import { ThemeToggle } from '@/components/ui/ThemeToggle';
@@ -57,7 +58,12 @@ function NavItemLink({
 
 export function LandingNav({ content }: { content: LandingContent }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const { t } = useLanguage();
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!mobileOpen) return;
@@ -79,7 +85,7 @@ export function LandingNav({ content }: { content: LandingContent }) {
   const navLinkClass =
     'flex cursor-pointer items-center gap-1 rounded-lg px-3 py-2 text-[14px] font-medium text-landing-fg/80 transition-colors hover:text-landing-fg';
   const mobileNavLinkClass =
-    'flex w-full items-center rounded-xl px-4 py-3 text-[15px] font-medium text-landing-fg transition-colors hover:bg-sky-50';
+    'flex w-full items-center rounded-xl px-4 py-3 text-[15px] font-medium text-landing-fg transition-colors hover:bg-sky-50 dark:hover:bg-white/5';
 
   return (
     <header className="landing-nav sticky top-0 z-50">
@@ -139,48 +145,52 @@ export function LandingNav({ content }: { content: LandingContent }) {
         </div>
       </div>
 
-      <div
-        id="landing-mobile-menu"
-        className={`landing-mobile-menu lg:hidden ${mobileOpen ? 'landing-mobile-menu-open' : ''}`}
-        aria-hidden={!mobileOpen}
-      >
-        <button
-          type="button"
-          className="landing-mobile-menu-backdrop"
-          aria-label={t('close_menu')}
-          onClick={() => setMobileOpen(false)}
-        />
-        <div className="landing-mobile-menu-panel">
-          <nav className="flex flex-col gap-1 p-4" aria-label="Mobile navigation">
-            {content.navItems.map((item) => (
-              <NavItemLink
-                key={item.href}
-                item={item}
-                showChevron={false}
-                onNavigate={() => setMobileOpen(false)}
-                className={mobileNavLinkClass}
-              />
-            ))}
-          </nav>
-          <div className="border-t border-sky-100 p-4">
-            <Link
-              href={content.switchAudience.href}
-              className={`${mobileNavLinkClass} gap-2`}
+      {mounted &&
+        createPortal(
+          <div
+            id="landing-mobile-menu"
+            className={`landing-mobile-menu lg:hidden ${mobileOpen ? 'landing-mobile-menu-open' : ''}`}
+            aria-hidden={!mobileOpen}
+          >
+            <button
+              type="button"
+              className="landing-mobile-menu-backdrop"
+              aria-label={t('close_menu')}
               onClick={() => setMobileOpen(false)}
-            >
-              {content.switchAudience.label}
-              <ExternalIcon />
-            </Link>
-            <Link
-              href={content.loginHref}
-              className={mobileNavLinkClass}
-              onClick={() => setMobileOpen(false)}
-            >
-              {t('log_in')}
-            </Link>
-          </div>
-        </div>
-      </div>
+            />
+            <div className="landing-mobile-menu-panel">
+              <nav className="flex flex-col gap-1 p-4" aria-label="Mobile navigation">
+                {content.navItems.map((item) => (
+                  <NavItemLink
+                    key={item.href}
+                    item={item}
+                    showChevron={false}
+                    onNavigate={() => setMobileOpen(false)}
+                    className={mobileNavLinkClass}
+                  />
+                ))}
+              </nav>
+              <div className="border-t border-sky-100 p-4 dark:border-border">
+                <Link
+                  href={content.switchAudience.href}
+                  className={`${mobileNavLinkClass} gap-2`}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {content.switchAudience.label}
+                  <ExternalIcon />
+                </Link>
+                <Link
+                  href={content.loginHref}
+                  className={mobileNavLinkClass}
+                  onClick={() => setMobileOpen(false)}
+                >
+                  {t('log_in')}
+                </Link>
+              </div>
+            </div>
+          </div>,
+          document.body
+        )}
     </header>
   );
 }

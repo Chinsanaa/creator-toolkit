@@ -249,7 +249,7 @@ export function SignupForm({
                 passwordError ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
               }`}
             />
-            {passwordError && <p className="mt-1.5 text-sm text-red-600">{passwordError}</p>}
+            {passwordError && <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{passwordError}</p>}
             <PasswordRequirements password={password} showRequirements={true} />
           </div>
 
@@ -272,7 +272,7 @@ export function SignupForm({
                 passwordsMismatch ? 'border-red-500 focus:border-red-500 focus:ring-red-500' : ''
               }`}
             />
-            {passwordsMismatch && <p className="mt-1.5 text-sm text-red-600">{t('passwords_do_not_match')}</p>}
+            {passwordsMismatch && <p className="mt-1.5 text-sm text-red-600 dark:text-red-400">{t('passwords_do_not_match')}</p>}
           </div>
 
           <div className="space-y-5">
@@ -284,7 +284,7 @@ export function SignupForm({
 
           <LegalConsent mode="signup" checked={acceptedTerms} onCheckedChange={setAcceptedTerms} />
 
-          {error && <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>}
+          {error && <p className="alert-error">{error}</p>}
 
           <button
             type="submit"

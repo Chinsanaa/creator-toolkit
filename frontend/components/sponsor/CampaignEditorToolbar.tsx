@@ -56,7 +56,7 @@ export function CampaignEditorToolbar({
           type="button"
           disabled={busy}
           onClick={onDelete}
-          className={`min-h-11 rounded-xl border border-[color:var(--destructive)]/40 px-4 py-2.5 text-sm font-semibold text-[color:var(--destructive)] transition hover:bg-red-50 dark:hover:bg-red-950/30 ${
+          className={`min-h-11 rounded-xl border border-[color:var(--destructive)]/40 px-4 py-2.5 text-sm font-semibold text-destructive-text transition hover:bg-red-50 dark:hover:bg-red-950/30 ${
             variant === 'published' ? '' : 'ml-auto'
           }`}
         >

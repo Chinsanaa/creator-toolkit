@@ -63,7 +63,7 @@ export default function SponsorshipDetailPage() {
 
         {loading && <p className="mt-8 text-sm text-landing-muted">{t('loading')}</p>}
         {error && (
-          <p className="mt-8 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+          <p className="mt-8 alert-error">{error}</p>
         )}
 
         {sponsorship && (
@@ -129,7 +129,7 @@ export default function SponsorshipDetailPage() {
             {sponsorship.hasApplied ? (
               <p className="creator-panel mt-6 text-sm font-medium text-landing-fg">
                 {t('you_applied_status')}{' '}
-                <span className="text-sky-700">
+                <span className="text-sky-700 dark:text-sky-300">
                   {applicationStatusLabel(sponsorship.applicationStatus ?? 'pending')}
                 </span>
               </p>
@@ -149,8 +149,8 @@ export default function SponsorshipDetailPage() {
                     className="auth-input mt-2 min-h-[120px] resize-y"
                   />
                 </div>
-                {applyError && <p className="text-sm text-red-600">{applyError}</p>}
-                <div className="fixed bottom-16 left-0 right-0 z-30 border-t border-sky-100 bg-white/95 p-4 backdrop-blur md:static md:border-0 md:bg-transparent md:p-0">
+                {applyError && <p className="text-sm text-destructive-text">{applyError}</p>}
+                <div className="fixed bottom-16 left-0 right-0 z-30 border-t border-sky-100 bg-white/95 p-4 backdrop-blur dark:border-border dark:bg-card/95 md:static md:border-0 md:bg-transparent md:p-0">
                   <button
                     type="submit"
                     disabled={submitting}

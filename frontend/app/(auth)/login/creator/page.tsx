@@ -34,7 +34,7 @@ export default function CreatorLoginPage() {
       }}
       afterPassword={
         <div className="text-right">
-          <Link href={appendNextParam('/forgot-password', nextPath)} className="text-sm text-blue-600 hover:text-blue-700">
+          <Link href={appendNextParam('/forgot-password', nextPath)} className="text-sm text-primary hover:text-primary-hover">
             {t('forgot_password')}
           </Link>
         </div>

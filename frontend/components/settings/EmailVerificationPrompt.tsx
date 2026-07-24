@@ -133,12 +133,12 @@ export function EmailVerificationPrompt() {
         </form>
       ) : null}
       {error ? (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-red-600 dark:text-red-400" role="alert">
           {error}
         </p>
       ) : null}
       {done ? (
-        <p className="text-sm text-emerald-700" role="status">
+        <p className="text-sm text-emerald-700 dark:text-emerald-300" role="status">
           {t('email_verified_success')}
         </p>
       ) : null}
@@ -151,7 +151,7 @@ export function EmailVerificationPrompt() {
   return (
     <>
       {showBanner && !showModal ? (
-        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-landing-fg">
+        <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-xl border border-sky-200 bg-sky-50 px-4 py-3 text-sm text-landing-fg dark:border-sky-900/50 dark:bg-sky-950/40">
           <p>{t('verify_email_banner')}</p>
           <div className="flex items-center gap-3">
             <button

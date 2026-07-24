@@ -34,9 +34,9 @@ const MONGOLIAN_BANKS = [
 ];
 
 const TX_STATUS_STYLES: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-800',
-  completed: 'bg-emerald-100 text-emerald-800',
-  failed: 'bg-red-100 text-red-800',
+  pending: 'badge-status-pending',
+  completed: 'badge-status-success',
+  failed: 'badge-status-danger',
 };
 
 function isCredit(type: string): boolean {
@@ -182,7 +182,7 @@ export default function WalletPage() {
 
         {loading && <WalletSkeleton />}
         {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+          <p className="alert-error">{error}</p>
         )}
 
         {summary && !loading && (
@@ -224,7 +224,7 @@ export default function WalletPage() {
                   {t('minimum_payout_note').replace('{min}', formatMnt(summary.minPayoutMnt))}
                 </p>
                 {bankAccounts.length === 0 ? (
-                  <p className="mt-4 text-sm text-amber-700">
+                  <p className="mt-4 text-sm text-amber-700 dark:text-amber-300">
                     {t('add_bank_account_first')}
                   </p>
                 ) : (
@@ -260,9 +260,9 @@ export default function WalletPage() {
                         ))}
                       </select>
                     </div>
-                    {payoutError && <p className="text-sm text-red-600">{payoutError}</p>}
+                    {payoutError && <p className="text-sm text-red-600 dark:text-red-400">{payoutError}</p>}
                     {payoutSuccess && (
-                      <p className="text-sm text-emerald-700">{payoutSuccess}</p>
+                      <p className="text-sm text-emerald-700 dark:text-emerald-300">{payoutSuccess}</p>
                     )}
                     <button
                       type="submit"
@@ -334,7 +334,7 @@ export default function WalletPage() {
                     onChange={(e) => setAccountHolderName(e.target.value)}
                     className="auth-input"
                   />
-                  {bankError && <p className="text-sm text-red-600">{bankError}</p>}
+                  {bankError && <p className="text-sm text-red-600 dark:text-red-400">{bankError}</p>}
                   <button
                     type="submit"
                     disabled={bankPending}
@@ -367,11 +367,7 @@ export default function WalletPage() {
                         <td className="text-landing-muted">{formatDate(tx.created_at)}</td>
                         <td>{transactionTypeLabel(tx.type)}</td>
                         <td>
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-xs font-medium ${
-                              TX_STATUS_STYLES[tx.status] ?? ''
-                            }`}
-                          >
+                          <span className={TX_STATUS_STYLES[tx.status] ?? 'badge-status-neutral'}>
                             {transactionStatusLabel(tx.status)}
                           </span>
                         </td>
@@ -380,7 +376,7 @@ export default function WalletPage() {
                         </td>
                         <td
                           className={`text-right font-medium ${
-                            isCredit(tx.type) ? 'text-emerald-700' : 'text-landing-fg'
+                            isCredit(tx.type) ? 'text-emerald-700 dark:text-emerald-300' : 'text-landing-fg'
                           }`}
                         >
                           {isCredit(tx.type) ? '+' : '−'}

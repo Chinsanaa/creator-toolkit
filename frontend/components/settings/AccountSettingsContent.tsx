@@ -94,12 +94,12 @@ export function AccountSettingsContent({ user }: { user: AuthUser }) {
           </div>
 
           {error ? (
-            <p className="text-sm text-red-600" role="alert">
+            <p className="text-sm text-red-600 dark:text-red-400" role="alert">
               {error}
             </p>
           ) : null}
           {success ? (
-            <p className="text-sm text-emerald-700" role="status">
+            <p className="text-sm text-emerald-700 dark:text-emerald-300" role="status">
               {success}
             </p>
           ) : null}

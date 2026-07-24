@@ -23,7 +23,7 @@ export function HowItWorks({
         <div className="mt-16 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
           {content.steps.map((step, i) => (
             <div key={step.title} className="landing-feature-card rounded-3xl p-6">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-100 text-sm font-semibold text-sky-700">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-sky-100 text-sm font-semibold text-sky-700 dark:bg-sky-900/40 dark:text-sky-300">
                 {i + 1}
               </span>
               <h3 className="mt-4 text-lg font-semibold text-landing-fg">{step.title}</h3>

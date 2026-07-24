@@ -1,10 +1,12 @@
 /* ============================================================
    Earnio — Typography tokens
-   Display: Bricolage Grotesque · Body/UI: Plus Jakarta Sans · Numerals: JetBrains Mono
+   Display: Space Grotesk · Body/UI: Plus Jakarta Sans · Numerals: JetBrains Mono
+   (Matches app/globals.css and app/layout.tsx, the canonical source — see
+   that file's next/font/google Space_Grotesk({ variable: '--font-display' }) call.)
    ============================================================ */
 
 :root {
-  --font-display: 'Bricolage Grotesque', system-ui, sans-serif;
+  --font-display: 'Space Grotesk', system-ui, sans-serif;
   --font-sans:    'Plus Jakarta Sans', system-ui, sans-serif;
   --font-mono:    'JetBrains Mono', ui-monospace, monospace;
 

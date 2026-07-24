@@ -91,7 +91,7 @@ export function LegalDocumentModal({ slug, onClose }: LegalDocumentModalProps) {
         <div className="legal-modal-body">
           {loading && <p className="text-sm text-landing-muted">Loading document…</p>}
           {error && (
-            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+            <p className="alert-error">{error}</p>
           )}
           {!loading && !error && content ? (
             <div className="legal-markdown">

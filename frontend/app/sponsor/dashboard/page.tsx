@@ -62,7 +62,7 @@ function SponsorDashboardBody({ user }: { user: AuthUser }) {
       {loading && <p className="text-sm text-muted">{t('loading_stats')}</p>}
 
       {error && (
-        <p className="rounded-lg bg-red-50 px-4 py-3 text-sm text-red-700 dark:bg-red-950/50 dark:text-red-300">
+        <p className="alert-error">
           {error}
         </p>
       )}

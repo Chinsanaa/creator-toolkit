@@ -33,7 +33,7 @@ export function EarnioLogo({
 }: EarnioLogoProps) {
   if (variant === 'icon') {
     const mark = (
-      <EarnioMark className={`${iconClassName} text-[#2E5BFF]`} />
+      <EarnioMark className={`${iconClassName} text-primary`} />
     );
 
     return href ? (
@@ -47,7 +47,7 @@ export function EarnioLogo({
 
   if (variant === 'wordmark') {
     const wordmark = (
-      <span className={`text-[15px] font-semibold tracking-tight text-[#0B1220] dark:text-white ${className}`}>
+      <span className={`text-[15px] font-semibold tracking-tight text-landing-fg ${className}`}>
         Earnio
       </span>
     );
@@ -63,12 +63,12 @@ export function EarnioLogo({
 
   // Full logo with icon and text
   const full = (
-    <div className={`flex items-center gap-2.5 text-[#0B1220] dark:text-white ${className}`}>
-      <EarnioMark className={`${iconClassName} text-[#2E5BFF]`} />
+    <div className={`flex items-center gap-2.5 text-landing-fg ${className}`}>
+      <EarnioMark className={`${iconClassName} text-primary`} />
       <div className="min-w-0">
         <span className="block text-[15px] font-semibold tracking-tight">Earnio</span>
         {showSlogan ? (
-          <p className="truncate text-[11px] font-medium text-[#5A6A85] dark:text-[#AEB9CC]">
+          <p className="truncate text-[11px] font-medium text-landing-muted">
             {EARNIO_SLOGAN}
           </p>
         ) : null}

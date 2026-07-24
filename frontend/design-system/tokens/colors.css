@@ -2,6 +2,10 @@
    Earnio — Color tokens
    Single electric-blue identity: Earnio Blue #2E5BFF (azure),
    cool slate ink ramp, cyan "spark" highlight, money-green.
+
+   Generated from the canonical source: app/globals.css.
+   Do not edit values here independently — update app/globals.css
+   and mirror the change into this file so the two never diverge.
    ============================================================ */
 
 :root {
@@ -41,27 +45,35 @@
   --gradient-ink:   linear-gradient(160deg, #161E2E 0%, #0B1220 100%); /* @kind color */
 
   /* === Semantic aliases (light) === */
-  --background:        #F7FAFF;
-  --foreground:        #0B1220;
-  --card:              #FFFFFF;
-  --card-muted:        #F4F7FC;
-  --surface:           #F4F7FC;
-  --border:            #D7DEEA;
-  --muted:             #5A6A85;
-  --muted-foreground:  #8492A8;
-  --primary:           #2E5BFF;
-  --primary-hover:     #1F45E5;
-  --primary-soft:      #EEF3FF;
-  --primary-foreground:#FFFFFF;
-  --accent:            #12C2F3;
-  --accent-soft:       #E0F9FF;
-  --success:           #10B981;
-  --success-soft:      #DCFCE7;
-  --warning:           #F59E0B;
-  --warning-soft:      #FEF3C7;
-  --destructive:       #F0455A;
-  --destructive-soft:  #FEE2E2;
-  --ring:              #2E5BFF;
+  --background:                  #F7FAFF;
+  --foreground:                  #0B1220;
+  --card:                        #FFFFFF;
+  --card-muted:                  #F4F7FC;
+  --surface:                     #F4F7FC;
+  --surface-raised:              #FFFFFF;
+  --border:                      #D7DEEA;
+  --border-strong:               #7E8DA6;
+  --muted:                       #5A6A85;
+  --muted-foreground:            #647596;
+  --primary:                     #2E5BFF;
+  --primary-hover:               #1F45E5;
+  --primary-soft:                #EEF3FF;
+  --primary-foreground:          #FFFFFF;
+  --accent:                      #12C2F3;
+  --accent-soft:                 #E0F9FF;
+  --accent-text:                 #0E7490;
+  --success:                     #10B981;
+  --success-soft:                #DCFCE7;
+  --success-text:                #047857;
+  --warning:                     #F59E0B;
+  --warning-soft:                #FEF3C7;
+  --destructive:                 #F0455A;
+  --destructive-fill:            #D11F38;
+  --destructive-fill-foreground: #FFFFFF;
+  --destructive-soft:            #FEE2E2;
+  --destructive-text:            #D11F38;
+  --on-color:                    #0B1220;
+  --ring:                        #2E5BFF;
 
   /* Landing palette — airy blue/white */
   --landing-fg:        #0B1220;
@@ -72,24 +84,38 @@
   --landing-sky-100:   #DCE6FF;
 }
 
-/* === Dark theme (full parity) === */
+/* === Dark theme (full parity — every token above gets a considered dark value,
+   not just an inversion; see app/globals.css for the WCAG contrast rationale) === */
 .dark {
-  --background:        #0B1220;
-  --foreground:        #F4F7FC;
-  --card:              #141C2C;
-  --card-muted:        #192234;
-  --surface:           #192234;
-  --border:            #27324A;
-  --muted:             #8492A8;
-  --muted-foreground:  #AEB9CC;
-  --primary:           #5C7DFF;
-  --primary-hover:     #8DA8FF;
-  --primary-soft:      #18233E;
-  --accent:            #3FD6FF;
-  --accent-soft:       #0D2A3A;
-  --success:           #34D399;
-  --destructive:       #F87171;
-  --ring:              #5C7DFF;
+  --background:                  #0B1220;
+  --foreground:                  #F4F7FC;
+  --card:                        #141C2C;
+  --card-muted:                  #192234;
+  --surface:                     #192234;
+  --surface-raised:              #1E2839;
+  --border:                      #27324A;
+  --border-strong:               #606F8A;
+  --muted:                       #8492A8;
+  --muted-foreground:            #AEB9CC;
+  --primary:                     #5C7DFF;
+  --primary-hover:               #8DA8FF;
+  --primary-soft:                #18233E;
+  --primary-foreground:          #0B1220;
+  --accent:                      #3FD6FF;
+  --accent-soft:                 #0D2A3A;
+  --accent-text:                 #3FD6FF;
+  --success:                     #34D399;
+  --success-soft:                #0F2E23;
+  --success-text:                #34D399;
+  --warning:                     #FBBF24;
+  --warning-soft:                #3A2A0D;
+  --destructive:                 #F87171;
+  --destructive-fill:            #F87171;
+  --destructive-fill-foreground: #0B1220;
+  --destructive-soft:            #3A1418;
+  --destructive-text:            #F87171;
+  --on-color:                    #0B1220;
+  --ring:                        #5C7DFF;
 
   --mesh-1: #16214A;
   --mesh-2: #102A3F;

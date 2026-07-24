@@ -23,6 +23,18 @@ Earnio uses a single electric-blue identity: **Earnio Blue `#2E5BFF`** (azure) p
 | Success | `#10B981` | `#34D399` |
 | Danger | `#F0455A` | `#F87171` |
 
+**Fills vs. text.** The colors above are tuned as *fills* (buttons, chips, icons, graphics) — several fail WCAG AA as small text on their own (e.g. `#12C2F3` on white is 2.0:1). For text, use the paired accessible variant instead of the fill color directly:
+
+| Text token | Light | Dark | Use instead of |
+|------------|-------|------|-----------------|
+| `--accent-text` | `#0E7490` | `#3FD6FF` (= accent) | `--accent` as text color |
+| `--success-text` | `#047857` | `#34D399` (= success) | `--success` as text color |
+| `--destructive-text` | `#D11F38` | `#F87171` (= destructive) | `--destructive` as text color |
+| `--primary-foreground` | `#FFFFFF` | `#0B1220` | text/icons placed *on* a `--primary` fill |
+| `--destructive-fill-foreground` | `#FFFFFF` | `#0B1220` | text/icons placed *on* a `--destructive-fill` button |
+
+Note the dark values above mostly equal the fill color as-is (it's already light enough to read as text on a dark card); the light values are the real correction. All pairs are verified with `lib/design/contrast.ts` and enforced by `lib/design/designSystem.test.ts` — see CLAUDE.md's "Design system rules."
+
 ### Gradients
 
 - **Brand:** `linear-gradient(135deg, #4D74FF 0%, #2E5BFF 45%, #1736B8 100%)`
@@ -43,15 +55,19 @@ Blue-tinted radial gradients using `--mesh-1` (`#DCE6FF`), `--mesh-2` (`#CFEBFF`
 
 Base unit: **4px**. Border radius base: **8px**.
 
-| Name | Value |
-|------|-------|
-| `--radius-xs` | 6px |
-| `--radius-sm` / `rounded-xl` | 8px — inputs, small chips |
-| `--radius-md` / `rounded-2xl` | 12px — buttons, rows |
-| `--radius-lg` | 16px — cards |
-| `--radius-xl` | 20px — panels |
-| `--radius-2xl` | 28px — hero cards |
-| `--radius-full` / `rounded-full` | 999px — pills, avatars |
+Each token below maps 1:1 to the identically-named Tailwind `rounded-*` utility
+(wired in `tailwind.config.ts`'s `borderRadius` extension) — e.g. `--radius-xl`
+is exactly `rounded-xl`, not a different Tailwind size key.
+
+| Token | Tailwind class | Value | Used for |
+|-------|---------------|-------|----------|
+| `--radius-xs` | `rounded-xs` | 6px | small chips |
+| `--radius-sm` | `rounded-sm` | 8px | inputs |
+| `--radius-md` | `rounded-md` | 12px | buttons, rows |
+| `--radius-lg` | `rounded-lg` | 16px | cards |
+| `--radius-xl` | `rounded-xl` | 20px | panels |
+| `--radius-2xl` | `rounded-2xl` | 28px | hero cards |
+| `--radius-full` | `rounded-full` | 999px | pills, avatars |
 
 ## Shadows
 
@@ -111,6 +127,11 @@ The Earnio mark is a **rising-trend arrow** — a geometric path going up-right 
 
 - `earnio-mark.svg` — gradient tile version
 - `earnio-mark-mono.svg` — `currentColor` monochrome
+
+## Keeping this system correct
+
+- **`app/globals.css` is canonical.** This file (`design-system/`) mirrors it for standalone handoff. When a token value changes in `globals.css`, update it here too.
+- **A CI-blocking test enforces dark-mode correctness** — see `frontend/lib/design/designSystem.test.ts` and CLAUDE.md's "Design system rules." It checks token contrast, bans hardcoded colors outside `:root`/`.dark`, and flags light-mode-only Tailwind utilities missing a `dark:` pair. Run `cd frontend && npm test` before shipping a design change.
 
 ## Anti-patterns
 

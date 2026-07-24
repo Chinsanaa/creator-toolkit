@@ -36,16 +36,42 @@
   --surface:            #F4F7FC;
   --border:             #D7DEEA;
   --muted:              #5A6A85;
-  --muted-foreground:   #8492A8;
+  --muted-foreground:   #647596;
   --primary:            #2E5BFF;
   --primary-hover:      #1F45E5;
   --primary-soft:       #EEF3FF;
+  --primary-foreground: #FFFFFF;
   --accent:             #12C2F3;
   --accent-soft:        #E0F9FF;
+  --accent-text:        #0E7490;
   --success:            #10B981;
+  --success-soft:       #DCFCE7;
+  --success-text:       #047857;
+  --warning:            #F59E0B;
+  --warning-soft:       #FEF3C7;
   --destructive:        #F0455A;
+  --destructive-fill:   #D11F38;
+  --destructive-fill-foreground: #FFFFFF;
+  --destructive-soft:   #FEE2E2;
+  --destructive-text:   #D11F38;
+  --on-color:           #0B1220;
+  --border-strong:      #7E8DA6;
+  --surface-raised:     #FFFFFF;
   --ring:               #2E5BFF;
+  --focus-ring:         0 0 0 3px color-mix(in srgb, var(--primary) 28%, transparent);
   --radius:             1rem;
+  --radius-xs:          0.375rem;
+  --radius-sm:          0.5rem;
+  --radius-md:          0.75rem;
+  --radius-lg:          1rem;
+  --radius-xl:          1.25rem;
+  --radius-2xl:         1.75rem;
+  --radius-full:        9999px;
+  --ease-out:           cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-spring:        cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast:           140ms;
+  --dur-base:           220ms;
+  --dur-slow:           360ms;
   --shadow-glow:        0 20px 50px -20px rgba(46, 91, 255, 0.35);
   --shadow-brand:       0 14px 30px -10px rgba(46, 91, 255, 0.45);
   --shadow-sm:          0 2px 6px rgba(11, 18, 32, 0.06), 0 1px 2px rgba(11, 18, 32, 0.04);
@@ -66,6 +92,47 @@
   --landing-card-shadow:      0 8px 32px rgba(11, 18, 32, 0.08);
   --landing-btn-shadow:       0 2px 8px rgba(46, 91, 255, 0.25);
   --landing-btn-light-shadow: 0 2px 4px rgba(11, 18, 32, 0.08);
+  --landing-surface:          rgb(255 255 255 / 0.92);
+  --landing-surface-strong:   rgb(255 255 255 / 0.98);
+  --landing-feature-bg:       rgb(255 255 255 / 0.7);
+  --landing-feature-border:   rgb(255 255 255 / 0.8);
+  --landing-menu-hover-bg:    rgb(255 255 255 / 0.8);
+  --landing-ray-color:        rgb(255 255 255 / 0.9);
+  --landing-btn-solid-bg:     #0B1220;
+  --landing-btn-solid-fg:     #FFFFFF;
+  --landing-btn-solid-hover:  #2A2A2A;
+  --landing-btn-soft-bg:      #FFFFFF;
+  --landing-btn-soft-fg:      #0B1220;
+  --landing-btn-soft-hover:   #F9FAFB;
+
+  /* Glass surfaces — creator app translucent panels */
+  --glass-soft:           rgb(255 255 255 / 0.6);
+  --glass-medium:         rgb(255 255 255 / 0.8);
+  --glass-strong:         rgb(255 255 255 / 0.9);
+  --glass-border-soft:    rgb(255 255 255 / 0.7);
+  --glass-border-medium:  rgb(255 255 255 / 0.85);
+  --glass-border-strong:  rgb(255 255 255 / 0.92);
+  --chrome-blur:          rgb(255 255 255 / 0.8);
+  --shadow-knob:          0 1px 3px rgba(0, 0, 0, 0.35);
+  --shadow-lift:          0 16px 36px rgba(11, 18, 32, 0.14);
+
+  /* Creator hero — an intentionally always-dark spotlight card, same in both themes */
+  --hero-bg-gradient: linear-gradient(135deg, #0b1220 0%, #121a2c 55%, #0b1220 100%);
+  --hero-shadow:      0 30px 60px -22px rgba(11, 18, 32, 0.35);
+  --hero-glow-1:      rgba(46, 91, 255, 0.4);
+  --hero-glow-2:      rgba(18, 194, 243, 0.22);
+  --hero-fg:          #ffffff;
+  --hero-fg-muted:    rgba(255, 255, 255, 0.6);
+  --hero-fg-faint:    rgba(255, 255, 255, 0.55);
+  --hero-divider:     rgba(255, 255, 255, 0.12);
+  --hero-trend-up-bg:    rgba(16, 185, 129, 0.16);
+  --hero-trend-up-fg:    #34d399;
+  --hero-trend-down-bg:  rgba(240, 69, 90, 0.16);
+  --hero-trend-down-fg:  #f87171;
+
+  /* Neutral darkening scrims — same in both themes, sit behind modals/drawers */
+  --overlay-scrim:      rgb(20 20 20 / 0.45);
+  --overlay-scrim-soft: rgb(20 20 20 / 0.25);
 
   /* Fonts */
   --font-display:  'Space Grotesk', system-ui, sans-serif;
@@ -85,12 +152,28 @@
   --primary:            #5C7DFF;
   --primary-hover:      #8DA8FF;
   --primary-soft:       #18233E;
+  --primary-foreground: #0B1220;
   --accent:             #3FD6FF;
   --accent-soft:        #0D2A3A;
+  --accent-text:        #3FD6FF;
   --success:            #34d399;
+  --success-soft:       #0F2E23;
+  --success-text:       #34d399;
+  --warning:            #FBBF24;
+  --warning-soft:       #3A2A0D;
   --destructive:        #F87171;
+  --destructive-fill:   #F87171;
+  --destructive-fill-foreground: #0B1220;
+  --destructive-soft:   #3A1418;
+  --destructive-text:   #F87171;
+  --on-color:           #0B1220;
+  --border-strong:      #606F8A;
+  --surface-raised:     #1E2839;
   --ring:               #5C7DFF;
   --shadow-glow:        0 20px 60px -15px rgba(92, 125, 255, 0.25);
+  --shadow-brand:       0 14px 34px -10px rgba(92, 125, 255, 0.35);
+  --shadow-sm:          0 2px 6px rgba(0, 0, 0, 0.35), 0 1px 2px rgba(0, 0, 0, 0.25);
+  --shadow-md:          0 8px 22px -6px rgba(0, 0, 0, 0.45), 0 2px 8px rgba(0, 0, 0, 0.30);
   --mesh-1: #16214A;
   --mesh-2: #102A3F;
   --mesh-3: #141C2C;
@@ -103,6 +186,29 @@
   --landing-card-shadow:      0 10px 40px rgba(0, 0, 0, 0.45);
   --landing-btn-shadow:       0 4px 14px rgba(0, 0, 0, 0.45);
   --landing-btn-light-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  --landing-surface:          rgb(20 28 44 / 0.92);
+  --landing-surface-strong:   rgb(20 28 44 / 0.98);
+  --landing-feature-bg:       rgb(30 40 57 / 0.7);
+  --landing-feature-border:   rgb(96 111 138 / 0.35);
+  --landing-menu-hover-bg:    rgb(255 255 255 / 0.08);
+  --landing-ray-color:        rgb(63 214 255 / 0.12);
+  --landing-btn-solid-bg:     #5C7DFF;
+  --landing-btn-solid-fg:     #0B1220;
+  --landing-btn-solid-hover:  #8DA8FF;
+  --landing-btn-soft-bg:      #1E2839;
+  --landing-btn-soft-fg:      #F4F7FC;
+  --landing-btn-soft-hover:   #27324A;
+
+  /* Glass surfaces — creator app translucent panels */
+  --glass-soft:           rgb(15 22 36 / 0.6);
+  --glass-medium:         rgb(13 19 31 / 0.82);
+  --glass-strong:         rgb(13 19 31 / 0.92);
+  --glass-border-soft:    rgb(51 65 85 / 0.6);
+  --glass-border-medium:  rgb(51 65 85 / 0.72);
+  --glass-border-strong:  rgb(51 65 85 / 0.8);
+  --chrome-blur:          rgb(11 18 32 / 0.75);
+  --shadow-knob:          0 1px 3px rgba(0, 0, 0, 0.5);
+  --shadow-lift:          0 16px 40px rgba(0, 0, 0, 0.5);
 }
 
 body {
@@ -354,7 +460,7 @@ html.apple-platform textarea {
 }
 
 .bg-landing-fg {
-  background: #0b1220;
+  background: var(--landing-fg);
 }
 
 .landing-footer {
@@ -478,7 +584,7 @@ html.apple-platform textarea {
   display: flex;
   align-items: center;
   justify-content: center;
-  background: rgb(20 20 20 / 0.45);
+  background: var(--overlay-scrim);
   padding: 1rem;
   backdrop-filter: blur(4px);
 }
@@ -490,8 +596,8 @@ html.apple-platform textarea {
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.25rem;
-  border: 1px solid rgb(255 255 255 / 0.9);
-  background: #fff;
+  border: 1px solid var(--border);
+  background: var(--card);
   box-shadow: var(--landing-card-shadow);
 }
 
@@ -562,7 +668,7 @@ html.apple-platform textarea {
 }
 
 .landing-menu-btn:hover {
-  background: rgb(255 255 255 / 0.8);
+  background: var(--landing-menu-hover-bg);
 }
 
 .landing-mobile-menu {
@@ -581,7 +687,7 @@ html.apple-platform textarea {
   position: absolute;
   inset: 0;
   border: none;
-  background: rgb(20 20 20 / 0.25);
+  background: var(--overlay-scrim-soft);
   opacity: 0;
   transition: opacity 0.2s;
 }
@@ -598,7 +704,7 @@ html.apple-platform textarea {
   width: min(100%, 20rem);
   transform: translateX(100%);
   border-left: 1px solid var(--landing-sky-100);
-  background: rgb(255 255 255 / 0.98);
+  background: var(--landing-surface-strong);
   box-shadow: var(--landing-card-shadow);
   transition: transform 0.25s ease;
   backdrop-filter: blur(12px);
@@ -609,13 +715,14 @@ html.apple-platform textarea {
 }
 
 .landing-btn-dark {
-  @apply inline-flex cursor-pointer items-center justify-center rounded-full font-semibold text-white transition;
-  background: #0b1220;
+  @apply inline-flex cursor-pointer items-center justify-center rounded-full font-semibold transition;
+  background: var(--landing-btn-solid-bg);
+  color: var(--landing-btn-solid-fg);
   box-shadow: var(--landing-btn-shadow);
 }
 
 .landing-btn-dark:hover {
-  background: #2a2a2a;
+  background: var(--landing-btn-solid-hover);
   transform: translateY(-1px);
 }
 
@@ -625,32 +732,32 @@ html.apple-platform textarea {
 
 .landing-btn-light {
   @apply inline-flex cursor-pointer items-center justify-center rounded-full font-semibold transition;
-  background: #ffffff;
-  color: #0b1220;
+  background: var(--landing-btn-soft-bg);
+  color: var(--landing-btn-soft-fg);
   box-shadow: var(--landing-btn-light-shadow);
 }
 
 .landing-btn-light:hover {
-  background: #f9fafb;
+  background: var(--landing-btn-soft-hover);
   transform: translateY(-1px);
 }
 
 .landing-float-card {
-  background: rgb(255 255 255 / 0.92);
+  background: var(--landing-surface);
   box-shadow: var(--landing-card-shadow);
   backdrop-filter: blur(8px);
 }
 
 .landing-feature-card {
-  background: rgb(255 255 255 / 0.7);
+  background: var(--landing-feature-bg);
   box-shadow: var(--landing-btn-light-shadow);
-  border: 1px solid rgb(255 255 255 / 0.8);
+  border: 1px solid var(--landing-feature-border);
 }
 
 .landing-rays {
   background: radial-gradient(
     ellipse 80% 60% at 50% 100%,
-    rgb(255 255 255 / 0.9) 0%,
+    var(--landing-ray-color) 0%,
     transparent 70%
   );
 }
@@ -703,7 +810,7 @@ html.apple-platform textarea {
   font-weight: 700;
   letter-spacing: -0.05em;
   line-height: 1;
-  color: var(--primary-foreground);
+  color: var(--landing-fg);
   opacity: 0.08;
   font-size: clamp(8rem, 28vw, 22rem);
   white-space: nowrap;
@@ -714,14 +821,14 @@ html.apple-platform textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: var(--primary-foreground);
+  background: var(--landing-btn-soft-bg);
   color: var(--primary);
   box-shadow: var(--landing-btn-light-shadow);
   transition: transform 0.15s ease, background 0.15s ease;
 }
 
 .not-found-cta:hover {
-  background: #f4f6ff;
+  background: var(--landing-btn-soft-hover);
   transform: translateY(-1px);
 }
 
@@ -764,131 +871,6 @@ html.apple-platform textarea {
   overflow: hidden;
 }
 
-.dark .creator-sidebar {
-  border-right-color: rgb(51 65 85 / 0.6);
-  background: rgb(10 15 26);
-}
-
-.dark .creator-sidebar-link:hover,
-.dark .creator-sidebar-logout:hover {
-  background: rgb(30 41 59 / 0.8);
-}
-
-.dark .creator-topbar {
-  border-bottom-color: rgb(51 65 85 / 0.6);
-  background: rgb(10 15 26);
-}
-
-.dark .creator-topbar-nav {
-  background: rgb(15 22 36 / 0.7);
-}
-
-.dark .creator-topbar-nav-link:hover {
-  color: var(--landing-fg);
-}
-
-.dark .creator-profile-trigger {
-  border-color: rgb(51 65 85 / 0.7);
-  background: rgb(15 22 36 / 0.7);
-}
-
-.dark .creator-profile-trigger:hover {
-  background: rgb(20 28 45 / 0.9);
-}
-
-.dark .creator-profile-trigger[aria-expanded='true'] {
-  border-color: var(--primary-border, var(--primary));
-  background: rgb(20 28 45 / 0.9);
-}
-
-.dark .creator-avatar {
-  box-shadow: 0 0 0 2px rgb(10 15 26), 0 0 0 3.5px rgb(51 65 85 / 0.6);
-}
-
-.dark .creator-profile-dropdown {
-  border-color: rgb(51 65 85 / 0.7);
-  background: rgb(13 19 31 / 0.98);
-  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5);
-}
-
-.dark .creator-profile-dropdown-header {
-  border-bottom-color: rgb(51 65 85 / 0.6);
-}
-
-.dark .creator-theme-switch {
-  background: rgb(51 65 85 / 0.9);
-}
-
-.dark .creator-theme-switch-on {
-  background: var(--primary);
-}
-
-.dark .creator-icon-btn {
-  border-color: rgb(51 65 85 / 0.7);
-  color: var(--landing-fg);
-}
-
-.dark .creator-icon-btn:hover {
-  background: rgb(30 41 59 / 0.8);
-}
-
-.dark .creator-main {
-  background: var(--landing-bg-top);
-}
-
-.dark .creator-bottom-nav {
-  border-top-color: rgb(51 65 85 / 0.7);
-  background: rgb(10 15 26);
-}
-
-.dark .creator-bottom-link-active {
-  background: rgb(30 41 59 / 0.95);
-}
-
-.dark .creator-panel,
-.dark .creator-panel-lg,
-.dark .creator-hero-card,
-.dark .creator-stat-card,
-.dark .creator-gig-card {
-  border-color: rgb(51 65 85 / 0.75);
-  background: rgb(10 15 26 / 0.86);
-}
-
-.dark .creator-stat-card-highlight {
-  border-color: transparent;
-}
-
-.dark .creator-platform-row {
-  border-color: rgb(51 65 85 / 0.7);
-  background: rgb(15 22 36 / 0.7);
-}
-
-.dark .creator-search {
-  border-color: rgb(51 65 85 / 0.7);
-  background: rgb(10 15 26 / 0.8);
-}
-
-.dark .creator-gig-thumb {
-  background: linear-gradient(135deg, rgb(31 48 70), rgb(15 31 51));
-}
-
-.dark .creator-table-wrap {
-  border-color: rgb(51 65 85 / 0.7);
-}
-
-.dark .creator-table th {
-  border-bottom-color: rgb(51 65 85 / 0.7);
-  background: rgb(10 15 26 / 0.6);
-}
-
-.dark .creator-table td {
-  border-bottom-color: rgb(51 65 85 / 0.5);
-}
-
-.dark .creator-table tbody tr:hover {
-  background: rgb(15 22 36 / 0.6);
-}
-
 /* Website (tablet/desktop): sidebar navigation on the left.
    Below the breakpoint (phone-width / native iOS app): bottom tab bar instead. */
 .creator-sidebar {
@@ -896,7 +878,7 @@ html.apple-platform textarea {
   height: 100%;
   overflow-y: auto;
   border-right: 1px solid var(--border);
-  background: #ffffff;
+  background: var(--card);
   padding: 1.5rem 0.875rem;
 }
 
@@ -943,14 +925,14 @@ html.apple-platform textarea {
 }
 
 .creator-sidebar-link-active {
-  background: #0b1220;
-  color: #fff;
+  background: var(--landing-btn-solid-bg);
+  color: var(--landing-btn-solid-fg);
   box-shadow: var(--landing-btn-shadow);
 }
 
 .creator-sidebar-link-active:hover {
-  background: #2a2a2a;
-  color: #fff;
+  background: var(--landing-btn-solid-hover);
+  color: var(--landing-btn-solid-fg);
 }
 
 .creator-sidebar-logout {
@@ -968,7 +950,7 @@ html.apple-platform textarea {
 }
 
 .creator-sidebar-logout:hover {
-  background: rgb(240 249 255);
+  background: var(--landing-sky-50);
   color: var(--landing-fg);
 }
 
@@ -980,7 +962,7 @@ html.apple-platform textarea {
   align-items: center;
   gap: 0.75rem;
   border-bottom: 1px solid var(--border);
-  background: rgb(255 255 255 / 0.8);
+  background: var(--chrome-blur);
   backdrop-filter: blur(14px);
   padding: 0.875rem 1rem;
 }
@@ -1036,14 +1018,14 @@ html.apple-platform textarea {
 }
 
 .creator-topbar-nav-link-active {
-  background: #0b1220;
-  color: #fff;
+  background: var(--landing-btn-solid-bg);
+  color: var(--landing-btn-solid-fg);
   box-shadow: var(--landing-btn-shadow);
 }
 
 .creator-topbar-nav-link-active:hover {
-  background: #2a2a2a;
-  color: #fff;
+  background: var(--landing-btn-solid-hover);
+  color: var(--landing-btn-solid-fg);
 }
 
 .creator-topbar-actions {
@@ -1073,12 +1055,12 @@ html.apple-platform textarea {
   border-radius: 9999px;
   padding: 0.1875rem 0.75rem 0.1875rem 0.1875rem;
   border: 1px solid var(--border);
-  background: #ffffff;
+  background: var(--card);
   transition: background 0.15s, border-color 0.15s;
 }
 
 .creator-profile-trigger:hover {
-  background: rgb(240 249 255);
+  background: var(--landing-sky-50);
 }
 
 .creator-profile-trigger[aria-expanded='true'] {
@@ -1103,13 +1085,13 @@ html.apple-platform textarea {
   gap: 0.25rem;
   border-radius: 1rem;
   border: 1px solid var(--landing-sky-100);
-  background: rgb(255 255 255 / 0.98);
+  background: var(--glass-strong);
   padding: 0.5rem;
   box-shadow: var(--landing-card-shadow);
 }
 
 .creator-profile-dropdown-header {
-  border-bottom: 1px solid rgb(224 242 254);
+  border-bottom: 1px solid var(--landing-sky-100);
   padding: 0.5rem 0.75rem 0.75rem;
   margin-bottom: 0.25rem;
 }
@@ -1121,7 +1103,7 @@ html.apple-platform textarea {
   flex-shrink: 0;
   align-items: center;
   border-radius: 9999px;
-  background: rgb(224 242 254);
+  background: var(--landing-sky-100);
   padding: 0.1875rem;
   transition: background 0.2s;
 }
@@ -1130,8 +1112,8 @@ html.apple-platform textarea {
   height: 1rem;
   width: 1rem;
   border-radius: 9999px;
-  background: #fff;
-  box-shadow: 0 1px 3px rgba(11, 18, 32, 0.25);
+  background: var(--card);
+  box-shadow: var(--shadow-knob);
   transition: transform 0.2s;
 }
 
@@ -1189,8 +1171,8 @@ html.apple-platform textarea {
   right: 0;
   z-index: 40;
   grid-template-columns: repeat(4, minmax(0, 1fr));
-  border-top: 1px solid rgb(224 242 254);
-  background: #ffffff;
+  border-top: 1px solid var(--landing-sky-100);
+  background: var(--card);
   padding: 0.5rem 0.25rem calc(0.5rem + env(safe-area-inset-bottom, 0px));
 }
 
@@ -1229,13 +1211,13 @@ html.apple-platform textarea {
   align-items: center;
   justify-content: center;
   border-radius: 0.75rem;
-  border: 1px solid rgb(224 242 254);
+  border: 1px solid var(--landing-sky-100);
   color: var(--landing-fg);
   transition: background 0.15s;
 }
 
 .creator-icon-btn:hover {
-  background: rgb(240 249 255);
+  background: var(--landing-sky-50);
 }
 
 .creator-avatar {
@@ -1246,11 +1228,11 @@ html.apple-platform textarea {
   align-items: center;
   justify-content: center;
   border-radius: 9999px;
-  background: #0b1220;
+  background: var(--landing-btn-solid-bg);
   font-size: 0.875rem;
   font-weight: 600;
-  color: #fff;
-  box-shadow: 0 0 0 2px #ffffff, 0 0 0 3.5px var(--landing-sky-100);
+  color: var(--landing-btn-solid-fg);
+  box-shadow: 0 0 0 2px var(--card), 0 0 0 3.5px var(--landing-sky-100);
 }
 
 .creator-avatar-lg {
@@ -1263,18 +1245,18 @@ html.apple-platform textarea {
   position: relative;
   overflow: hidden;
   border-radius: 1.25rem;
-  background: linear-gradient(135deg, #0b1220 0%, #121a2c 55%, #0b1220 100%);
-  color: #fff;
+  background: var(--hero-bg-gradient);
+  color: var(--hero-fg);
   padding: 1.75rem;
-  box-shadow: 0 30px 60px -22px rgba(11, 18, 32, 0.35);
+  box-shadow: var(--hero-shadow);
 }
 
 .creator-hero::before {
   content: '';
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(ellipse 60% 50% at 100% 0%, rgba(46, 91, 255, 0.4) 0%, transparent 60%),
-    radial-gradient(ellipse 50% 40% at 0% 100%, rgba(18, 194, 243, 0.22) 0%, transparent 60%);
+  background-image: radial-gradient(ellipse 60% 50% at 100% 0%, var(--hero-glow-1) 0%, transparent 60%),
+    radial-gradient(ellipse 50% 40% at 0% 100%, var(--hero-glow-2) 0%, transparent 60%);
   pointer-events: none;
 }
 
@@ -1285,7 +1267,7 @@ html.apple-platform textarea {
 .creator-hero-label {
   font-size: 0.8125rem;
   font-weight: 600;
-  color: rgba(255, 255, 255, 0.6);
+  color: var(--hero-fg-muted);
 }
 
 .creator-hero-amount {
@@ -1307,17 +1289,17 @@ html.apple-platform textarea {
 }
 
 .creator-trend-badge-up {
-  background: rgba(16, 185, 129, 0.16);
-  color: #34d399;
+  background: var(--hero-trend-up-bg);
+  color: var(--hero-trend-up-fg);
 }
 
 .creator-trend-badge-down {
-  background: rgba(240, 69, 90, 0.16);
-  color: #f87171;
+  background: var(--hero-trend-down-bg);
+  color: var(--hero-trend-down-fg);
 }
 
 .creator-hero-divider {
-  border-top: 1px solid rgba(255, 255, 255, 0.12);
+  border-top: 1px solid var(--hero-divider);
   margin: 1.25rem 0;
 }
 
@@ -1335,7 +1317,7 @@ html.apple-platform textarea {
 
 .creator-hero-stat-label {
   font-size: 0.75rem;
-  color: rgba(255, 255, 255, 0.55);
+  color: var(--hero-fg-faint);
 }
 
 .creator-hero-stat-value {
@@ -1347,8 +1329,8 @@ html.apple-platform textarea {
 
 .creator-panel {
   border-radius: 1.25rem;
-  border: 1px solid rgb(255 255 255 / 0.85);
-  background: rgb(255 255 255 / 0.78);
+  border: 1px solid var(--glass-border-medium);
+  background: var(--glass-medium);
   padding: 1.25rem;
   box-shadow: var(--landing-btn-light-shadow);
   backdrop-filter: blur(10px);
@@ -1356,8 +1338,8 @@ html.apple-platform textarea {
 
 .creator-panel-lg {
   border-radius: 1.5rem;
-  border: 1px solid rgb(255 255 255 / 0.9);
-  background: rgb(255 255 255 / 0.82);
+  border: 1px solid var(--glass-border-strong);
+  background: var(--glass-medium);
   padding: 1.5rem;
   box-shadow: var(--landing-card-shadow);
   backdrop-filter: blur(12px);
@@ -1373,8 +1355,8 @@ html.apple-platform textarea {
   position: relative;
   overflow: hidden;
   border-radius: 1.5rem;
-  border: 1px solid rgb(255 255 255 / 0.9);
-  background: rgb(255 255 255 / 0.88);
+  border: 1px solid var(--glass-border-strong);
+  background: var(--glass-strong);
   padding: 1.75rem;
   box-shadow: var(--landing-card-shadow);
   backdrop-filter: blur(12px);
@@ -1425,11 +1407,28 @@ html.apple-platform textarea {
   color: var(--landing-muted);
 }
 
+/* Onboarding progress bar (GettingStartedPlan) */
+.creator-progress-track {
+  margin-top: 1rem;
+  height: 0.5rem;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-full);
+  background: var(--border);
+}
+
+.creator-progress-fill {
+  height: 100%;
+  border-radius: var(--radius-full);
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  transition: width 0.3s var(--ease-out);
+}
+
 /* Stat cards (wallet balances, etc.) */
 .creator-stat-card {
   border-radius: 1.25rem;
-  border: 1px solid rgb(255 255 255 / 0.85);
-  background: rgb(255 255 255 / 0.82);
+  border: 1px solid var(--glass-border-medium);
+  background: var(--glass-medium);
   padding: 1.25rem;
   box-shadow: var(--landing-card-shadow);
   backdrop-filter: blur(10px);
@@ -1437,12 +1436,12 @@ html.apple-platform textarea {
 
 .creator-stat-card-highlight {
   border-color: transparent;
-  background: linear-gradient(135deg, var(--primary), var(--accent));
+  background: linear-gradient(135deg, var(--primary), var(--primary-hover));
 }
 
 .creator-stat-card-highlight .creator-stat-label,
 .creator-stat-card-highlight .creator-stat-value {
-  color: #fff;
+  color: var(--primary-foreground);
 }
 
 .creator-stat-label {
@@ -1466,36 +1465,27 @@ html.apple-platform textarea {
   justify-content: space-between;
   gap: 0.75rem;
   border-radius: 1rem;
-  border: 1px solid rgb(255 255 255 / 0.7);
-  background: rgb(255 255 255 / 0.6);
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-soft);
   padding: 0.75rem 1rem;
 }
 
 .creator-platform-stat {
   border-radius: 1rem;
-  border: 1px solid rgb(255 255 255 / 0.7);
-  background: rgb(255 255 255 / 0.6);
+  border: 1px solid var(--glass-border-soft);
+  background: var(--glass-soft);
   padding: 0.625rem 0.875rem;
-}
-
-.dark .creator-platform-stat {
-  border-color: rgb(255 255 255 / 0.08);
-  background: rgb(255 255 255 / 0.04);
 }
 
 .creator-remove-link {
   align-self: flex-start;
   font-size: 0.75rem;
   font-weight: 500;
-  color: rgb(220 38 38);
+  color: var(--destructive-text);
 }
 
 .creator-remove-link:hover {
   text-decoration: underline;
-}
-
-.dark .creator-remove-link {
-  color: rgb(248 113 113);
 }
 
 .creator-remove-confirm {
@@ -1504,27 +1494,23 @@ html.apple-platform textarea {
   justify-content: space-between;
   gap: 0.75rem;
   border-radius: 1rem;
-  border: 1px solid rgb(254 202 202);
-  background: rgb(254 242 242);
+  border: 1px solid color-mix(in srgb, var(--destructive) 35%, transparent);
+  background: var(--destructive-soft);
   padding: 0.625rem 0.875rem;
-}
-
-.dark .creator-remove-confirm {
-  border-color: rgb(248 113 113 / 0.3);
-  background: rgb(248 113 113 / 0.08);
 }
 
 .creator-remove-confirm-btn {
   border-radius: 0.75rem;
-  background: rgb(220 38 38);
+  background: var(--destructive-fill);
   padding: 0.375rem 0.75rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: white;
+  color: var(--destructive-fill-foreground);
+  transition: filter 0.15s;
 }
 
 .creator-remove-confirm-btn:hover {
-  background: rgb(185 28 28);
+  filter: brightness(0.88);
 }
 
 .creator-remove-confirm-btn:disabled {
@@ -1537,7 +1523,7 @@ html.apple-platform textarea {
   width: 100%;
   border-radius: 9999px;
   border: 1px solid var(--landing-sky-100);
-  background: rgb(255 255 255 / 0.9);
+  background: var(--glass-strong);
   padding: 0.75rem 1rem 0.75rem 2.75rem;
   font-size: 0.875rem;
   color: var(--landing-fg);
@@ -1560,8 +1546,8 @@ html.apple-platform textarea {
   flex-direction: column;
   overflow: hidden;
   border-radius: 1.25rem;
-  border: 1px solid rgb(255 255 255 / 0.85);
-  background: rgb(255 255 255 / 0.82);
+  border: 1px solid var(--glass-border-medium);
+  background: var(--glass-medium);
   box-shadow: var(--landing-card-shadow);
   backdrop-filter: blur(10px);
   transition: transform 0.2s, box-shadow 0.2s;
@@ -1569,7 +1555,7 @@ html.apple-platform textarea {
 
 .creator-gig-card:hover {
   transform: translateY(-2px);
-  box-shadow: 0 16px 36px rgba(11, 18, 32, 0.14);
+  box-shadow: var(--shadow-lift);
 }
 
 .creator-gig-thumb {
@@ -1584,18 +1570,18 @@ html.apple-platform textarea {
   right: 0.75rem;
   z-index: 1;
   border-radius: 9999px;
-  background: #0b1220;
+  background: var(--landing-btn-solid-bg);
   padding: 0.25rem 0.625rem;
   font-size: 0.75rem;
   font-weight: 600;
-  color: #fff;
+  color: var(--landing-btn-solid-fg);
 }
 
 /* Data tables (transaction history, etc.) */
 .creator-table-wrap {
   overflow-x: auto;
   border-radius: 1rem;
-  border: 1px solid rgb(255 255 255 / 0.7);
+  border: 1px solid var(--glass-border-soft);
 }
 
 .creator-table {
@@ -1609,7 +1595,7 @@ html.apple-platform textarea {
 .creator-table th {
   white-space: nowrap;
   border-bottom: 1px solid var(--landing-sky-100);
-  background: rgb(255 255 255 / 0.6);
+  background: var(--glass-soft);
   padding: 0.75rem 1rem;
   font-size: 0.75rem;
   font-weight: 600;
@@ -1619,7 +1605,7 @@ html.apple-platform textarea {
 }
 
 .creator-table td {
-  border-bottom: 1px solid rgb(226 232 240 / 0.7);
+  border-bottom: 1px solid var(--border);
   padding: 0.875rem 1rem;
   color: var(--landing-fg);
   vertical-align: middle;
@@ -1630,7 +1616,7 @@ html.apple-platform textarea {
 }
 
 .creator-table tbody tr:hover {
-  background: rgb(255 255 255 / 0.5);
+  background: var(--glass-soft);
 }
 
 .text-gradient {
@@ -1645,13 +1631,57 @@ html.apple-platform textarea {
   @apply text-muted-foreground;
 }
 
+/* Status badges — one definition per status, themed via dark: pairs.
+   Use instead of one-off bg-{color}-100/text-{color}-800 combinations. */
+.badge-status-success {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border border-emerald-200 bg-emerald-50 text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300;
+}
+
+.badge-status-pending {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200;
+}
+
+.badge-status-danger {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border border-red-200 bg-red-50 text-red-800 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300;
+}
+
+.badge-status-info {
+  @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold border border-sky-200 bg-sky-50 text-sky-800 dark:border-sky-900/50 dark:bg-sky-950/40 dark:text-sky-300;
+}
+
+.badge-status-neutral {
+  @apply inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold border-border bg-card-muted text-muted-foreground;
+}
+
+/* Icon circles used on OAuth callback result pages */
+.icon-circle-success {
+  @apply rounded-full p-3 bg-emerald-100 dark:bg-emerald-950/40;
+}
+
+.icon-circle-danger {
+  @apply rounded-full p-3 bg-red-100 dark:bg-red-950/40;
+}
+
+/* Alert banners — replaces the bg-red-50/text-red-700 block duplicated across auth forms */
+.alert-error {
+  @apply rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/40 dark:text-red-300;
+}
+
+.alert-success {
+  @apply rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-800 dark:border-emerald-900/50 dark:bg-emerald-950/40 dark:text-emerald-300;
+}
+
+.alert-warning {
+  @apply rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-200;
+}
+
 /* Forms */
 .input-touch {
   @apply min-h-11 w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-base text-foreground outline-none transition duration-200 placeholder:text-muted focus:border-primary focus:ring-2 focus:ring-primary/20;
 }
 
 .btn-primary {
-  @apply inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold tracking-wide text-white shadow-md transition duration-200 hover:bg-primary-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-primary px-4 py-3 text-sm font-semibold tracking-wide text-primary-foreground shadow-md transition duration-200 hover:bg-primary-hover active:scale-95 disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .btn-secondary {
@@ -1659,7 +1689,7 @@ html.apple-platform textarea {
 }
 
 .btn-accent {
-  @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-white shadow-md transition duration-200 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60;
+  @apply inline-flex min-h-12 cursor-pointer items-center justify-center gap-2 rounded-xl bg-accent px-4 py-3 text-sm font-semibold text-on-color shadow-md transition duration-200 hover:opacity-90 active:scale-95 disabled:cursor-not-allowed disabled:opacity-60;
 }
 
 .link-primary {
