@@ -69,9 +69,9 @@ export default function InstagramCallbackPage() {
         {status === 'success' && (
           <div className="space-y-4">
             <div className="flex justify-center">
-              <div className="rounded-full bg-emerald-100 p-3">
+              <div className="icon-circle-success">
                 <svg
-                  className="h-6 w-6 text-emerald-600"
+                  className="h-6 w-6 text-emerald-600 dark:text-emerald-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -80,7 +80,7 @@ export default function InstagramCallbackPage() {
                 </svg>
               </div>
             </div>
-            <p className="text-emerald-700">{message}</p>
+            <p className="text-emerald-700 dark:text-emerald-300">{message}</p>
             <p className="text-sm text-landing-muted">Redirecting to platforms...</p>
           </div>
         )}
@@ -88,9 +88,9 @@ export default function InstagramCallbackPage() {
         {status === 'error' && (
           <div className="space-y-4">
             <div className="flex justify-center">
-              <div className="rounded-full bg-red-100 p-3">
+              <div className="icon-circle-danger">
                 <svg
-                  className="h-6 w-6 text-red-600"
+                  className="h-6 w-6 text-red-600 dark:text-red-300"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -99,7 +99,7 @@ export default function InstagramCallbackPage() {
                 </svg>
               </div>
             </div>
-            <p className="text-red-700">{message}</p>
+            <p className="text-red-700 dark:text-red-300">{message}</p>
             <button
               onClick={() => router.push('/platforms')}
               className="landing-btn-dark mt-4 px-4 py-2 text-sm"

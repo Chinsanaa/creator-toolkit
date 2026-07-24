@@ -94,7 +94,7 @@ function AccountTypeCard({
   return (
     <Link
       href={href}
-      className="group block rounded-xl border border-sky-100 bg-white/80 p-5 text-left transition hover:border-landing-fg/20 hover:bg-white hover:shadow-sm"
+      className="group block rounded-xl border border-sky-100 bg-white/80 p-5 text-left transition hover:border-landing-fg/20 hover:bg-white hover:shadow-sm dark:border-border dark:bg-card/80 dark:hover:bg-card"
     >
       <span className="text-base font-semibold text-landing-fg group-hover:text-landing-fg">
         {label}

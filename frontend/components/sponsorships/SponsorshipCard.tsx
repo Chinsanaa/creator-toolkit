@@ -11,7 +11,7 @@ export function SponsorshipCard({ sponsorship }: { sponsorship: SponsorshipListi
       <div className="creator-gig-thumb">
         <span className="creator-gig-price">{formatMnt(sponsorship.payment_amount_mnt)}</span>
         <div className="flex h-full items-end p-4">
-          <span className="rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-landing-muted">
+          <span className="rounded-full bg-white/90 px-2.5 py-1 text-xs font-medium text-landing-muted dark:bg-card/90">
             {contentTypeLabel(sponsorship.content_type)}
           </span>
         </div>
@@ -20,7 +20,7 @@ export function SponsorshipCard({ sponsorship }: { sponsorship: SponsorshipListi
         <p className="text-xs font-medium text-landing-muted">{brand}</p>
         <h3 className="mt-1 line-clamp-2 text-base font-semibold text-landing-fg">{title}</h3>
         {sponsorship.hasApplied ? (
-          <p className="mt-2 text-sm font-medium text-sky-700">
+          <p className="mt-2 text-sm font-medium text-sky-700 dark:text-sky-300">
             {applicationStatusLabel(sponsorship.applicationStatus ?? 'pending')}
           </p>
         ) : null}

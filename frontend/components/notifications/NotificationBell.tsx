@@ -137,11 +137,7 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
           />
         </svg>
         {unread > 0 && (
-          <span
-            className={`absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full px-1 text-[10px] font-bold text-white ${
-              isCreator ? 'bg-landing-fg' : 'bg-primary text-primary-foreground'
-            }`}
-          >
+          <span className="absolute -right-1 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-primary px-1 text-[10px] font-bold text-primary-foreground">
             {unread > 9 ? '9+' : unread}
           </span>
         )}
@@ -158,7 +154,7 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
           <div
             className={
               isCreator
-                ? 'flex items-center justify-between border-b border-sky-100 px-4 py-3'
+                ? 'flex items-center justify-between border-b border-sky-100 px-4 py-3 dark:border-border'
                 : 'flex items-center justify-between border-b border-border px-4 py-3 dark:border-border'
             }
           >
@@ -195,8 +191,8 @@ export function NotificationBell({ tone = 'default' }: { tone?: 'default' | 'cre
                 key={n.id}
                 className={
                   isCreator
-                    ? `border-b border-sky-50 px-4 py-3 last:border-0 ${
-                        !n.read_at ? 'bg-sky-50/80' : ''
+                    ? `border-b border-sky-50 px-4 py-3 last:border-0 dark:border-border/60 ${
+                        !n.read_at ? 'bg-sky-50/80 dark:bg-primary-subtle/40' : ''
                       }`
                     : `border-b border-border/60 px-4 py-3 last:border-0 dark:border-border/60 ${
                         !n.read_at ? 'bg-primary-subtle/50 dark:bg-primary-subtle' : ''

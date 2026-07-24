@@ -107,13 +107,13 @@ export function CompanyProfileSection() {
           </div>
 
           {error ? (
-            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+            <p className="alert-error" role="alert">
               {error}
             </p>
           ) : null}
 
           {success ? (
-            <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700" role="status">
+            <p className="rounded-xl bg-green-50 px-4 py-3 text-sm text-green-700 dark:text-green-300" role="status">
               {t('company_profile_updated')}
             </p>
           ) : null}

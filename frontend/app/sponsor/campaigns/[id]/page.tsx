@@ -176,7 +176,7 @@ export default function SponsorCampaignDetailPage() {
         <p className="mt-8 text-sm text-[color:var(--muted-foreground)]">{t('loading')}</p>
       )}
       {error ? (
-        <p className="mt-8 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+        <p className="mt-8 alert-error">{error}</p>
       ) : null}
 
       {campaign && (
@@ -303,7 +303,7 @@ export default function SponsorCampaignDetailPage() {
             <p className="mt-3 text-2xl font-bold text-[color:var(--foreground)]">
               {formatMnt(payment.amountDueMnt)}
             </p>
-            {error && <p className="mt-3 text-sm text-red-700">{error}</p>}
+            {error && <p className="mt-3 text-sm text-destructive-text">{error}</p>}
             <div className="mt-6 flex gap-2">
               <button
                 type="button"

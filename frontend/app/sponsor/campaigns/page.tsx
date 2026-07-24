@@ -95,7 +95,7 @@ export default function SponsorCampaignsPage() {
         <p className="text-sm text-[color:var(--muted-foreground)]">{t('loading_campaigns')}</p>
       )}
       {error ? (
-        <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+        <p className="alert-error">{error}</p>
       ) : null}
 
       {!loading && !error && filtered.length === 0 && (

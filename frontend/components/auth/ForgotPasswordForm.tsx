@@ -42,7 +42,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
     return (
       <div className="w-full max-w-md">
         <div className="auth-card p-8 sm:p-10">
-          <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-600">
+          <div className="mb-6 flex h-10 w-10 items-center justify-center rounded-xl bg-green-100 text-green-600 dark:text-green-400">
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path
                 d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
@@ -59,7 +59,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
           <div className="mt-6 space-y-3">
             <Link
               href="/login/creator"
-              className="block text-center text-sm font-medium text-blue-600 hover:text-blue-700"
+              className="block text-center text-sm font-medium text-primary hover:text-primary-hover"
             >
               {t('back_to_login')} →
             </Link>
@@ -116,7 +116,7 @@ export function ForgotPasswordForm({ onSuccess }: ForgotPasswordFormProps) {
           </div>
 
           {error && (
-            <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+            <p className="alert-error">{error}</p>
           )}
 
           <button

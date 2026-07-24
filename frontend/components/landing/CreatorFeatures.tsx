@@ -24,7 +24,7 @@ export function CreatorFeatures() {
         <div className="mt-16 grid gap-6 sm:grid-cols-2">
           {features.map((feature) => (
             <div key={feature.title} className="landing-feature-card rounded-3xl p-8">
-              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100">
+              <div className="mb-6 flex h-12 w-12 items-center justify-center rounded-2xl bg-sky-100 dark:bg-sky-900/40">
                 <span className="h-3 w-3 rounded-full bg-sky-500" />
               </div>
               <h3 className="text-xl font-semibold text-landing-fg">{feature.title}</h3>

@@ -141,11 +141,9 @@ export default function PlatformsPage() {
           subtitle={t('connect_platforms_subtitle')}
         />
 
-        {message && (
-          <p className="mb-4 rounded-xl bg-emerald-50 px-4 py-3 text-sm text-emerald-800">{message}</p>
-        )}
+        {message && <p className="mb-4 alert-success">{message}</p>}
         {error && (
-          <p className="mb-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+          <p className="mb-4 alert-error">{error}</p>
         )}
 
         {loading ? (
@@ -172,9 +170,7 @@ export default function PlatformsPage() {
                   </div>
                   {account && (
                     <span
-                      className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-medium ${
-                        isSynced ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-600'
-                      }`}
+                      className={`shrink-0 ${isSynced ? 'badge-status-success' : 'badge-status-neutral'}`}
                     >
                       {isSynced ? t('synced') : t('off')}
                     </span>

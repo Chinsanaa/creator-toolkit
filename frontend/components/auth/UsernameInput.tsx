@@ -91,7 +91,7 @@ export function UsernameInput({
           </div>
         )}
         {!isChecking && isAvailable === true && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-green-500 dark:text-green-400">
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path
                 d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"
@@ -101,7 +101,7 @@ export function UsernameInput({
           </div>
         )}
         {!isChecking && isAvailable === false && (
-          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500">
+          <div className="absolute right-3 top-1/2 -translate-y-1/2 text-red-500 dark:text-red-400">
             <svg className="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden>
               <path
                 d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
@@ -112,10 +112,10 @@ export function UsernameInput({
         )}
       </div>
       {isAvailable === false && (
-        <p className="mt-2 text-sm text-red-600">{t('username_already_taken')}</p>
+        <p className="mt-2 text-sm text-red-600 dark:text-red-400">{t('username_already_taken')}</p>
       )}
       {isAvailable === true && (
-        <p className="mt-2 text-sm text-green-600">{t('username_available')}</p>
+        <p className="mt-2 text-sm text-green-600 dark:text-green-400">{t('username_available')}</p>
       )}
     </div>
   );

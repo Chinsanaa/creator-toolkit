@@ -7,7 +7,7 @@ export function CreatorTestimonials() {
   const { t } = useLanguage();
 
   return (
-    <section className="landing-section border-t border-sky-100/80 bg-white/40 px-6 py-24 lg:px-10">
+    <section className="landing-section border-t border-sky-100/80 bg-white/40 px-6 py-24 dark:border-border/60 dark:bg-card/20 lg:px-10">
       <div className="mx-auto max-w-7xl">
         <div className="mx-auto max-w-2xl text-center">
           <h2 className="text-3xl font-semibold tracking-tight text-landing-fg sm:text-4xl">

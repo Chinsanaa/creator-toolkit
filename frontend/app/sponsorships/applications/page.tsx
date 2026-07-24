@@ -11,11 +11,11 @@ import { applicationStatusLabel, formatDate, formatMnt } from '@/lib/format';
 import type { SponsorshipApplication } from '@/lib/types/sponsorship';
 
 const STATUS_STYLES: Record<string, string> = {
-  pending: 'bg-amber-100 text-amber-800',
-  approved: 'bg-emerald-100 text-emerald-800',
-  rejected: 'bg-sky-100 text-landing-muted',
-  completed: 'bg-sky-200 text-landing-fg',
-  paid: 'bg-landing-fg text-white',
+  pending: 'badge-status-pending',
+  approved: 'badge-status-success',
+  rejected: 'badge-status-neutral',
+  completed: 'badge-status-info',
+  paid: 'badge-status-success',
 };
 
 export default function MyApplicationsPage() {
@@ -70,7 +70,7 @@ export default function MyApplicationsPage() {
 
         {loading && <p className="text-sm text-landing-muted">{t('loading')}</p>}
         {error && (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+          <p className="alert-error">{error}</p>
         )}
 
         {!loading && !error && applications.length === 0 && (
@@ -96,11 +96,7 @@ export default function MyApplicationsPage() {
                     {t('applied')} {formatDate(app.applied_at)}
                   </p>
                 </div>
-                <span
-                  className={`rounded-full px-3 py-1 text-xs font-medium ${
-                    STATUS_STYLES[app.status] ?? STATUS_STYLES.pending
-                  }`}
-                >
+                <span className={STATUS_STYLES[app.status] ?? STATUS_STYLES.pending}>
                   {applicationStatusLabel(app.status)}
                 </span>
               </div>

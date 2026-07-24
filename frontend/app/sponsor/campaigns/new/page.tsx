@@ -59,7 +59,7 @@ export default function NewSponsorCampaignPage() {
           <CampaignEditor values={values} onChange={setValues} disabled={busy} />
 
           {error ? (
-            <p className="mt-4 rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700">{error}</p>
+            <p className="mt-4 alert-error">{error}</p>
           ) : null}
 
           <CampaignEditorToolbar variant="create" busy={busy} onPublish={() => void publish()} />

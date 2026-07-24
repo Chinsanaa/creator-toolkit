@@ -40,7 +40,7 @@ export function DeleteAccountSection() {
 
   return (
     <section className="creator-panel-lg border border-red-200/80">
-      <h2 className="text-base font-semibold tracking-tight text-red-700">{t('delete_account')}</h2>
+      <h2 className="text-base font-semibold tracking-tight text-red-700 dark:text-red-300">{t('delete_account')}</h2>
       <p className="mt-2 text-sm text-landing-muted">
         {t('delete_account_subtitle')}
       </p>
@@ -79,7 +79,7 @@ export function DeleteAccountSection() {
         </div>
 
         {error ? (
-          <p className="rounded-xl bg-red-50 px-4 py-3 text-sm text-red-700" role="alert">
+          <p className="alert-error" role="alert">
             {error}
           </p>
         ) : null}
